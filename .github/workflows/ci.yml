@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: main
+    tags: v*
+  pull_request:
+    branches: "*"
+
+jobs:
+  all:
+    name: all
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn run build
+      - run: yarn run lint:ci
+      - run: yarn run test
