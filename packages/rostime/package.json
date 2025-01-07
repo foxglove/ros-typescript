@@ -1,0 +1,63 @@
+{
+  "name": "@foxglove/rostime",
+  "version": "1.1.2",
+  "description": "ROS (Robot Operating System) Time and Duration primitives and helper methods",
+  "license": "MIT",
+  "keywords": [
+    "rostime",
+    "ros",
+    "ros2",
+    "robot",
+    "operating",
+    "system",
+    "time",
+    "date",
+    "duration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foxglove/rostime.git"
+  },
+  "author": {
+    "name": "Foxglove Technologies Inc",
+    "email": "contact@foxglove.dev"
+  },
+  "homepage": "https://github.com/foxglove/rostime",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "lint:ci": "eslint --report-unused-disable-directives .",
+    "lint": "eslint --report-unused-disable-directives --fix .",
+    "prepack": "yarn build",
+    "prepublishOnly": "yarn lint:ci && yarn test",
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "devDependencies": {
+    "@foxglove/eslint-plugin": "0.13.0",
+    "@types/eslint": "^7",
+    "@types/eslint-plugin-prettier": "^3",
+    "@types/jest": "^26.0.23",
+    "@types/prettier": "2.3.2",
+    "@typescript-eslint/eslint-plugin": "4.28.3",
+    "@typescript-eslint/parser": "4.28.3",
+    "esbuild": "0.12.15",
+    "esbuild-jest": "0.5.0",
+    "eslint": "7.31.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-filenames": "^1.3.2",
+    "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-jest": "24.3.6",
+    "eslint-plugin-prettier": "3.4.0",
+    "jest": "27.0.6",
+    "prettier": "2.3.2",
+    "typescript": "4.3.5"
+  }
+}

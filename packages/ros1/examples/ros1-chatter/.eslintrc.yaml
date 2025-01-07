@@ -1,0 +1,2 @@
+parserOptions:
+  project: examples/ros1-chatter/tsconfig.json

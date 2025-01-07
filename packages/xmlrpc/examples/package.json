@@ -1,0 +1,20 @@
+{
+  "name": "xmlrpc-examples",
+  "version": "0.0.0",
+  "description": "@foxglove/xmlrpc example code",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "client": "ts-node client.ts",
+    "server": "ts-node server.ts"
+  },
+  "dependencies": {
+    "@foxglove/xmlrpc": "../"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "ts-node": "^10.7.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3"
+  }
+}

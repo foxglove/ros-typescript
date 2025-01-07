@@ -1,0 +1,2 @@
+parserOptions:
+  project: examples/ros1-turtlesim-test/tsconfig.json
