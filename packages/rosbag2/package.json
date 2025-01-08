@@ -32,27 +32,22 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "lint:ci": "eslint .",
-    "lint": "eslint --fix .",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
     "test": "jest"
   },
   "devDependencies": {
-    "@foxglove/eslint-plugin": "2.0.0",
     "@types/jest": "29.5.14",
     "@types/js-yaml": "4.0.9",
-    "eslint": "9.17.0",
     "jest": "29.7.0",
     "prettier": "3.4.2",
     "ts-jest": "29.2.5",
-    "typescript": "5.7.2",
-    "typescript-eslint": "8.19.0"
+    "typescript": "5.7.2"
   },
   "dependencies": {
-    "@foxglove/rosmsg-msgs-common": "^3.2.1",
-    "@foxglove/rosmsg2-serialization": "^3.0.0",
-    "@foxglove/rostime": "^1.1.2",
+    "@foxglove/rosmsg-msgs-common": "workspace:^",
+    "@foxglove/rosmsg2-serialization": "workspace:^",
+    "@foxglove/rostime": "workspace:^",
     "@foxglove/schemas": "^1.6.5",
     "js-yaml": "^4.1.0"
   },

@@ -12,9 +12,7 @@ import type { Chunk, ChunkInfo, Connection, IndexData } from "./record";
 
 export type RawFields = { [k: string]: Uint8Array };
 
-export interface Constructor<T> {
-  new (fields: RawFields): T;
-}
+export type Constructor<T> = new (fields: RawFields) => T;
 
 export interface Filelike {
   read(offset: number, length: number): Promise<Uint8Array>;

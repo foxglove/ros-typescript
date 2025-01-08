@@ -6,6 +6,6 @@
     "outDir": "./dist/esm",
     "lib": ["es2020", "dom"],
     "importHelpers": false,
-    "typeRoots": ["./node_modules/@types", "./typings"]
+    "typeRoots": ["./typings", "./node_modules/@types", "../../node_modules/@types"]
   }
 }

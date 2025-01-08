@@ -8,7 +8,7 @@
 import Heap from "heap";
 
 function nmerge<T>(key: (a: T, b: T) => number, ...iterables: Array<Iterator<T>>): Iterator<T> {
-  const heap: Heap<{ i: number; value: T }> = new Heap((a, b) => {
+  const heap = new Heap<{ i: number; value: T }>((a, b) => {
     return key(a.value, b.value);
   });
   for (let i = 0; i < iterables.length; i++) {

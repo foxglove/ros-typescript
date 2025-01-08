@@ -16,6 +16,7 @@ async function readMessages() {
 
   const start = performance.now();
   let count = 0;
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   await bag.readMessages({ noParse: true, decompress }, (result) => {
     // no-op
     count += 1;

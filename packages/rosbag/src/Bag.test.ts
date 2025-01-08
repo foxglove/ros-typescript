@@ -36,6 +36,7 @@ async function fullyReadBag<T>(name: string, opts?: ReadOptions): Promise<ReadRe
   const reader = new FileReader(filename);
   const bag = await open(reader);
   const messages: ReadResult<T>[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   await bag.readMessages<T>(opts ?? {}, (msg) => {
     messages.push(msg);
   });
@@ -93,6 +94,7 @@ describe("Bag", () => {
     const reader = new FileReader(filename);
     const bag = await open(reader);
     const messages: ReadResult<unknown>[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     await bag.readMessages({}, (msg) => {
       messages.push(msg);
     });
@@ -134,9 +136,11 @@ describe("Bag", () => {
     const bag = await open(reader);
     const messages1: ReadResult<unknown>[] = [];
     const messages2: ReadResult<unknown>[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const readPromise1 = bag.readMessages({ topics: ["/tf"] }, (msg) => {
       messages1.push(msg);
     });
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const readPromise2 = bag.readMessages({ topics: ["/tf"] }, (msg) => {
       messages2.push(msg);
     });
@@ -186,7 +190,9 @@ describe("Bag", () => {
     const messages = await fullyReadBag(FILENAME, { topics: ["/turtle1/color_sensor"] });
     const topics = messages.map((msg) => msg.topic);
     expect(topics).toHaveLength(1351);
-    topics.forEach((topic) => expect(topic).toBe("/turtle1/color_sensor"));
+    topics.forEach((topic) => {
+      expect(topic).toBe("/turtle1/color_sensor");
+    });
   });
 
   it("reads messages filtered to multiple topics", async () => {
@@ -194,9 +200,9 @@ describe("Bag", () => {
     const messages = await fullyReadBag(FILENAME, opts);
     const topics = messages.map((msg) => msg.topic);
     expect(topics).toHaveLength(2695);
-    topics.forEach((topic) =>
-      expect(topic === "/turtle1/color_sensor" || topic === "/turtle2/color_sensor").toBe(true),
-    );
+    topics.forEach((topic) => {
+      expect(topic === "/turtle1/color_sensor" || topic === "/turtle2/color_sensor").toBe(true);
+    });
   });
 
   it("reads messages from a shuffled bag", async () => {
@@ -244,7 +250,10 @@ describe("Bag", () => {
       const filename = getFixture("example-bz2");
       const reader = new FileReader(filename);
       const bag = await open(reader);
-      await expect(async () => await bag.readMessages({}, () => {})).rejects.toThrow("compression");
+      await expect(async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-deprecated
+        await bag.readMessages({}, () => {});
+      }).rejects.toThrow("compression");
       await reader.close();
     });
 
@@ -259,7 +268,9 @@ describe("Bag", () => {
       });
       const topics = messages.map((msg) => msg.topic);
       expect(topics).toHaveLength(1351);
-      topics.forEach((topic) => expect(topic).toBe("/turtle1/color_sensor"));
+      topics.forEach((topic) => {
+        expect(topic).toBe("/turtle1/color_sensor");
+      });
     });
 
     it("reads lz4 with supplied decompression callback", async () => {
@@ -271,7 +282,9 @@ describe("Bag", () => {
       });
       const topics = messages.map((msg) => msg.topic);
       expect(topics).toHaveLength(1351);
-      topics.forEach((topic) => expect(topic).toBe("/turtle1/color_sensor"));
+      topics.forEach((topic) => {
+        expect(topic).toBe("/turtle1/color_sensor");
+      });
     });
 
     it("calls decompress with the chunk size", async () => {

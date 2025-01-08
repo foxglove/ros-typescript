@@ -21,7 +21,7 @@ describe("XmlRpcServer", () => {
       return await Promise.resolve([1, "test", undefined]);
     });
     server.listen().then(() => {
-      const port = parseInt(new URL(server.server.url() as string).port);
+      const port = parseInt(new URL(server.server.url()!).port);
       expect(port).not.toBeNaN();
 
       const options = { host: "localhost", port, path: "/", method: "POST" };
@@ -69,7 +69,7 @@ describe("XmlRpcServer", () => {
       return await Promise.resolve([1, "test", "", undefined]);
     });
     server.listen().then(() => {
-      const port = parseInt(new URL(server.server.url() as string).port);
+      const port = parseInt(new URL(server.server.url()!).port);
       expect(port).not.toBeNaN();
 
       const options = { host: "localhost", port, path: "/", method: "POST" };
@@ -122,7 +122,7 @@ describe("XmlRpcServer", () => {
     });
 
     await server.listen();
-    const port = parseInt(new URL(server.server.url() as string).port);
+    const port = parseInt(new URL(server.server.url()!).port);
     expect(port).not.toBeNaN();
 
     const options = { host: "localhost", port, path: "/", method: "POST" };
@@ -131,7 +131,9 @@ describe("XmlRpcServer", () => {
       // Generic error produces generic fault code
       await new Promise<void>((resolve, reject) => {
         const req = http.request(options);
-        req.on("error", (err) => reject(err));
+        req.on("error", (err) => {
+          reject(err);
+        });
         req.on("response", (res) => {
           let resData = "";
           expect(res.statusCode).toEqual(200);
@@ -161,7 +163,9 @@ describe("XmlRpcServer", () => {
       // Custom XmlRpcFault code is passed through
       await new Promise<void>((resolve, reject) => {
         const req = http.request(options);
-        req.on("error", (err) => reject(err));
+        req.on("error", (err) => {
+          reject(err);
+        });
         req.on("response", (res) => {
           let resData = "";
           expect(res.statusCode).toEqual(200);

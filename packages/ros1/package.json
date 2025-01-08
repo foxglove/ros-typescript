@@ -39,40 +39,28 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "lint:ci": "eslint --report-unused-disable-directives .",
-    "lint": "eslint --report-unused-disable-directives --fix .",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit",
     "roscore": "node -r esbuild-runner/register src/nodejs/roscore.ts"
   },
   "engines": {
     "node": ">= 14"
   },
   "devDependencies": {
-    "@foxglove/eslint-plugin": "0.21.0",
-    "@types/jest": "^29.4.0",
-    "@typescript-eslint/eslint-plugin": "5.54.0",
-    "@typescript-eslint/parser": "5.54.0",
+    "@types/jest": "^29.5.14",
     "esbuild": "0.17.10",
     "esbuild-runner": "2.2.2",
-    "eslint": "8.35.0",
-    "eslint-config-prettier": "8.6.0",
-    "eslint-plugin-es": "4.1.0",
-    "eslint-plugin-filenames": "1.3.2",
-    "eslint-plugin-import": "2.27.5",
-    "eslint-plugin-jest": "27.2.1",
-    "eslint-plugin-prettier": "4.2.1",
-    "jest": "29.4.3",
-    "prettier": "2.8.4",
-    "ts-jest": "29.0.5",
-    "typescript": "4.9.5"
+    "jest": "29.7.0",
+    "prettier": "3.4.2",
+    "ts-jest": "29.2.5",
+    "typescript": "5.7.2"
   },
   "dependencies": {
     "@foxglove/message-definition": "^0.2.0",
-    "@foxglove/rosmsg": "^4.0.0",
-    "@foxglove/rosmsg-serialization": "^2.0.0",
-    "@foxglove/xmlrpc": "^1.3.0",
+    "@foxglove/rosmsg": "workspace:^",
+    "@foxglove/rosmsg-serialization": "workspace:^",
+    "@foxglove/xmlrpc": "workspace:^",
     "eventemitter3": "^5.0.0",
     "ipaddr.js": "^2.0.1"
   }

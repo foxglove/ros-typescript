@@ -12,7 +12,7 @@ function CheckArguments(args: XmlRpcValue[], expected: string[]): Error | undefi
 
   for (let i = 0; i < args.length; i++) {
     if (expected[i] !== "*" && typeof args[i] !== expected[i]) {
-      return new Error(`Expected "${expected[i]}" for arg ${i}, got "${typeof args[i]}"`);
+      return new Error(`Expected "${expected[i]!}" for arg ${i}, got "${typeof args[i]}"`);
     }
   }
 
@@ -48,6 +48,7 @@ export class RosFollower extends EventEmitter<RosFollowerEvents> {
 
   async start(hostname: string, port?: number): Promise<void> {
     await this._server.listen(port, undefined, 10);
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     this._url = `http://${hostname}:${this._server.port()}/`;
 
     this._server.setHandler("getBusStats", this.getBusStats);

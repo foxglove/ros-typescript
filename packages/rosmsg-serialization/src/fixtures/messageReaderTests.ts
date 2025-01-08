@@ -43,9 +43,9 @@ const messageReaderTests: MessageReaderTest[] = [
   [`float32 sample`, float32Buffer([5.5]), { sample: 5.5 }],
   [
     `float64 sample`,
-    // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+    // eslint-disable-next-line no-loss-of-precision
     new Uint8Array(Float64Array.of(0.123456789121212121212).buffer),
-    // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+    // eslint-disable-next-line no-loss-of-precision
     { sample: 0.123456789121212121212 },
   ],
   [`time stamp`, [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00], { stamp: { sec: 0, nsec: 1 } }],

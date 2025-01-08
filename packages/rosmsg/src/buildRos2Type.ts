@@ -85,7 +85,7 @@ function parseArrayLiteral(
       LITERAL_REGEX.lastIndex = offset;
       let match = LITERAL_REGEX.exec(str);
       if (match) {
-        results.push(parseStringLiteral(match[0]!));
+        results.push(parseStringLiteral(match[0]));
         offset = LITERAL_REGEX.lastIndex;
       }
 
@@ -122,6 +122,7 @@ function parseStringLiteral(maybeQuotedStr: string): string {
     }
   }
   if (
+    // eslint-disable-next-line no-constant-binary-expression, @typescript-eslint/no-unnecessary-condition
     !new RegExp(String.raw`^(?:[^\\${quoteThatMustBeEscaped}]|${STRING_ESCAPES})*$`).test(str) ==
     undefined
   ) {

@@ -5,10 +5,6 @@ import { TcpAddress, TcpServer, TcpServerEvents, TcpSocket, TcpSocketEvents } fr
 export class MockTcpSocket extends EventEmitter<TcpSocketEvents> implements TcpSocket {
   private _connected = true;
 
-  constructor() {
-    super();
-  }
-
   async remoteAddress(): Promise<TcpAddress | undefined> {
     return {
       address: "192.168.1.2",
@@ -49,10 +45,6 @@ export class MockTcpSocket extends EventEmitter<TcpSocketEvents> implements TcpS
 
 export class MockTcpServer extends EventEmitter<TcpServerEvents> implements TcpServer {
   listening = true;
-
-  constructor() {
-    super();
-  }
 
   async address(): Promise<TcpAddress | undefined> {
     return this.listening ? { address: "192.168.1.1", port: 20000, family: "IPv4" } : undefined;

@@ -74,14 +74,18 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
       this._stats.messagesSent++;
       this._stats.bytesSent += data.length;
     } catch (err) {
-      this._log?.warn?.(`failed to write ${data.length} bytes to ${this.toString()}: ${err}`);
+      this._log?.warn?.(
+        `failed to write ${data.length} bytes to ${this.toString()}: ${err as Error}`,
+      );
     }
   }
 
   close(): void {
     this._socket
       .close()
-      .catch((err) => this._log?.warn?.(`error closing client socket ${this.toString()}: ${err}`));
+      .catch((err: unknown) =>
+        this._log?.warn?.(`error closing client socket ${this.toString()}: ${err as Error}`),
+      );
   }
 
   getTransportInfo(): string {
@@ -109,8 +113,8 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
       this._transportInfo = `TCPROS connection on port ${localPort} to [${host}:${port} on socket ${fd}]`;
     } catch (err) {
       this._transportInfo = `TCPROS not connected [socket ${fd}]`;
-      this._log?.warn?.(`Cannot resolve address for tcp connection: ${err}`);
-      this.emit("error", new Error(`Cannot resolve address for tcp connection: ${err}`));
+      this._log?.warn?.(`Cannot resolve address for tcp connection: ${err as Error}`);
+      this.emit("error", new Error(`Cannot resolve address for tcp connection: ${err as Error}`));
     }
   };
 
@@ -129,7 +133,7 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
       this._stats.bytesSent += payload.length;
     } catch (err) {
       this._log?.warn?.(
-        `failed to write ${data.length + 4} byte header to ${this.toString()}: ${err}`,
+        `failed to write ${data.length + 4} byte header to ${this.toString()}: ${err as Error}`,
       );
     }
   }
@@ -179,9 +183,11 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
 
     if (topic == undefined || dataType == undefined || destinationCallerId == undefined) {
       this._log?.warn?.(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `tcp client ${this.toString()} sent incomplete header. topic="${topic}", type="${dataType}", callerid="${destinationCallerId}"`,
       );
-      return this.close();
+      this.close();
+      return;
     }
 
     // Check if we are publishing this topic
@@ -190,7 +196,8 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
       this._log?.warn?.(
         `tcp client ${this.toString()} attempted to subscribe to unadvertised topic ${topic}`,
       );
-      return this.close();
+      this.close();
+      return;
     }
 
     this._stats.bytesReceived += msgData.byteLength;
@@ -202,7 +209,8 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
           pub.dataType
         }"`,
       );
-      return this.close();
+      this.close();
+      return;
     }
 
     // Check the md5sum matches
@@ -212,7 +220,8 @@ export class TcpClient extends EventEmitter<TcpClientEvents> implements Client {
           pub.md5sum
         }"`,
       );
-      return this.close();
+      this.close();
+      return;
     }
 
     // Write the response header

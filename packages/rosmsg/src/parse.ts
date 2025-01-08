@@ -51,6 +51,7 @@ export function parse(messageDefinition: string, options: ParseOptions = {}): Me
   const allLines = messageDefinition
     .split("\n")
     .map((line) => line.trim())
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     .filter((line) => line);
 
   let definitionLines: { line: string }[] = [];
@@ -84,6 +85,7 @@ export function parse(messageDefinition: string, options: ParseOptions = {}): Me
   // e.g. caused by a bug in `mcap convert`. Removing duplicates here will avoid that searching
   // a type by name will return more than one result.
   const seenTypes: MessageDefinition[] = [];
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const uniqueTypes = types.filter((definition) => {
     return seenTypes.find((otherDefinition) => isMsgDefEqual(definition, otherDefinition))
       ? false
@@ -147,10 +149,13 @@ function buildType(lines: { line: string }[], grammar: Grammar): MessageDefiniti
 }
 
 function simpleTokenization(line: string): string[] {
-  return line
-    .replace(/#.*/gi, "")
-    .split(" ")
-    .filter((word) => word);
+  return (
+    line
+      .replace(/#.*/gi, "")
+      .split(" ")
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      .filter((word) => word)
+  );
 }
 
 function findTypeByName(

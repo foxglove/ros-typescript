@@ -5,7 +5,8 @@ import { MessageDefinition, DefaultValue } from "@foxglove/message-definition";
 export function stringify(msgDefs: MessageDefinition[]): string {
   let output = "";
   for (let i = 0; i < msgDefs.length; i++) {
-    const msgDef = msgDefs[i] as MessageDefinition;
+    const msgDef = msgDefs[i]!;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     const constants = msgDef.definitions.filter(({ isConstant }) => isConstant);
     const variables = msgDef.definitions.filter(
       ({ isConstant }) => isConstant == undefined || !isConstant,
@@ -30,8 +31,8 @@ export function stringify(msgDefs: MessageDefinition[]): string {
           def.arrayLength != undefined
             ? String(def.arrayLength)
             : def.arrayUpperBound != undefined
-            ? `<=${def.arrayUpperBound}`
-            : "";
+              ? `<=${def.arrayUpperBound}`
+              : "";
         const array = def.isArray === true ? `[${arrayLength}]` : "";
         const defaultValue =
           def.defaultValue != undefined ? ` ${stringifyDefaultValue(def.defaultValue)}` : "";

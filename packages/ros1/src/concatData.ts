@@ -7,7 +7,8 @@ export function concatData(chunks: Uint8Array[]): Uint8Array {
   let result: Uint8Array | undefined;
   try {
     result = new Uint8Array(totalLength);
-  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_err) {
     throw new Error(
       `failed to allocate ${totalLength} bytes to concatenate ${chunks.length} chunks`,
     );

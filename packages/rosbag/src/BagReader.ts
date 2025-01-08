@@ -103,9 +103,12 @@ export default class BagReader {
     endTime: Time,
     decompress: Decompress,
   ): Promise<MessageData[]> {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const start = startTime ?? { sec: 0, nsec: 0 };
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const end = endTime ?? { sec: Number.MAX_VALUE, nsec: Number.MAX_VALUE };
     const conns =
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       connections ??
       chunkInfo.connections.map((connection) => {
         return connection.conn;
@@ -133,6 +136,7 @@ export default class BagReader {
     while (item.done !== true) {
       const { value } = item;
       item = iter.next();
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (value == null || isGreaterThan(start, value.time)) {
         continue;
       }

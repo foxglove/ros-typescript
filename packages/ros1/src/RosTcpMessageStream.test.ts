@@ -70,11 +70,11 @@ describe("RosTcpMessageStream", () => {
 
   it("fails on invalid stream data", () => {
     // 1000000001 === 0x3B9ACA01
-    expect(() =>
-      new RosTcpMessageStream().addData(new Uint8Array([0x01, 0xca, 0x9a, 0x3b])),
-    ).toThrow();
-    expect(() =>
-      new RosTcpMessageStream().addData(new Uint8Array([0x00, 0xca, 0x9a, 0x3b])),
-    ).not.toThrow();
+    expect(() => {
+      new RosTcpMessageStream().addData(new Uint8Array([0x01, 0xca, 0x9a, 0x3b]));
+    }).toThrow();
+    expect(() => {
+      new RosTcpMessageStream().addData(new Uint8Array([0x00, 0xca, 0x9a, 0x3b]));
+    }).not.toThrow();
   });
 });

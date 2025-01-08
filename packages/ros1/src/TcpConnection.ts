@@ -91,7 +91,7 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
       await this._socket.connect();
       this._log?.debug?.(`connected to ${this.toString()}`);
     } catch (err) {
-      this._log?.warn?.(`${this.toString()} connection failed: ${err}`);
+      this._log?.warn?.(`${this.toString()} connection failed: ${err as Error}`);
       // _handleClose() will be called, triggering a reconnect attempt
     }
   }
@@ -101,9 +101,9 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
       backoff(++this.retries)
         // eslint-disable-next-line @typescript-eslint/promise-function-async
         .then(() => this.connect())
-        .catch((err) => {
+        .catch((err: unknown) => {
           // This should never be called, this.connect() is not expected to throw
-          this._log?.warn?.(`${this.toString()} unexpected retry failure: ${err}`);
+          this._log?.warn?.(`${this.toString()} unexpected retry failure: ${err as Error}`);
         });
     }
   }
@@ -134,8 +134,8 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
     this._shutdown = true;
     this._connected = false;
     this.removeAllListeners();
-    this._socket.close().catch((err) => {
-      this._log?.warn?.(`${this.toString()} close failed: ${err}`);
+    this._socket.close().catch((err: unknown) => {
+      this._log?.warn?.(`${this.toString()} close failed: ${err as Error}`);
     });
   }
 
@@ -154,7 +154,7 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
     data.set(serializedHeader, 4);
 
     // Write the length and serialized header payload
-    return await this._socket.write(data);
+    await this._socket.write(data);
   }
 
   // e.g. "TCPROS connection on port 59746 to [host:34318 on socket 11]"
@@ -192,9 +192,9 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
       // Write the initial request header. This prompts the publisher to respond
       // with its own header then start streaming messages
       await this.writeHeader();
-    } catch (err) {
-      this._log?.warn?.(`${this.toString()} failed to write header. reconnecting: ${err}`);
-      this.emit("error", new Error(`Header write failed: ${err}`));
+    } catch (err: unknown) {
+      this._log?.warn?.(`${this.toString()} failed to write header. reconnecting: ${err as Error}`);
+      this.emit("error", new Error(`Header write failed: ${err as Error}`));
       this._retryConnection();
     }
   };
@@ -228,8 +228,8 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
         `failed to decode ${chunk.length} byte chunk from tcp publisher ${this.toString()}: ${err}`,
       );
       // Close the socket, the stream is now corrupt
-      this._socket.close().catch((closeErr) => {
-        this._log?.warn?.(`${this.toString()} close failed: ${closeErr}`);
+      this._socket.close().catch((closeErr: unknown) => {
+        this._log?.warn?.(`${this.toString()} close failed: ${closeErr as Error}`);
       });
       this.emit("error", err);
     }
@@ -306,7 +306,9 @@ export class TcpConnection extends EventEmitter<TcpConnectionEvents> implements 
       if (equalIdx < 0) {
         equalIdx = str.length;
       }
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       const key = str.substr(0, equalIdx);
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       const value = str.substr(equalIdx + 1);
       result.set(key, value);
       idx += len;

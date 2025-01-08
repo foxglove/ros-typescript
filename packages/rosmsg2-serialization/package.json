@@ -42,23 +42,19 @@
     "node": ">= 20"
   },
   "devDependencies": {
-    "@foxglove/eslint-plugin": "2.0.0",
     "@foxglove/ros2idl-parser": "0.3.5",
-    "@foxglove/rosmsg": "5.0.4",
+    "@foxglove/rosmsg": "workspace:*",
     "@sounisi5011/jest-binary-data-matchers": "1.2.1",
-    "@types/jest": "^29.4.0",
-    "@types/prettier": "^3.0.0",
-    "eslint": "9.16.0",
+    "@types/jest": "^29.5.14",
     "jest": "29.7.0",
-    "prettier": "3.4.1",
+    "prettier": "3.4.2",
     "ts-jest": "29.2.5",
-    "typescript": "5.7.2",
-    "typescript-eslint": "8.17.0"
+    "typescript": "5.7.2"
   },
   "dependencies": {
     "@foxglove/cdr": "^3.3.0",
     "@foxglove/message-definition": "^0.4.0",
-    "@foxglove/rostime": "^1.1.2"
+    "@foxglove/rostime": "workspace:^"
   },
   "packageManager": "yarn@4.5.3"
 }

@@ -1,5 +1,6 @@
 import { isEmptyPlainObject, isPlainObject } from "./objectTests";
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 class NonPlainObject {}
 
 describe("isPlainObject", () => {

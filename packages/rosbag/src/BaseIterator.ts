@@ -47,6 +47,7 @@ export abstract class BaseIterator implements MessageIterator {
 
       // When filtering to topics, limit the chunkInfos to the chunks containing
       // the topic. We can do this filter once during construction
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       this.chunkInfos = args.chunkInfos.filter((info) => {
         return info.connections.find((conn) => {
           return connectionIds.has(conn.conn);
@@ -65,7 +66,7 @@ export abstract class BaseIterator implements MessageIterator {
    * @returns An AsyncIterator of MessageEvents
    */
   async *[Symbol.asyncIterator](): AsyncIterator<MessageEvent> {
-    while (true) {
+    for (;;) {
       // Keep on reading chunks into the heap until no more chunk can be loaded (EOF)
       while (!this.heap.front()) {
         const chunkLoaded = await this.loadNext();

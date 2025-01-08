@@ -48,6 +48,7 @@ export class HttpServerNodejs implements HttpServer {
       return addr ?? undefined;
     }
     const hostname = addr.address === "::" ? "[::]" : addr.address;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     return `http://${hostname}${addr.port != undefined ? ":" + String(addr.port) : ""}/`;
   }
 
@@ -60,7 +61,7 @@ export class HttpServerNodejs implements HttpServer {
   }
 
   async listen(port?: number, hostname?: string, backlog?: number): Promise<void> {
-    return await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       this._server.on("error", reject);
       this._server.listen(port, hostname, backlog, () => {
         this._server.removeListener("error", reject);

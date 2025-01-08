@@ -85,7 +85,8 @@ export class XmlRpcClientMock {
         if (nodeName === "/turtlesim") {
           return [1, "node api", "http://localhost:39211/"];
         }
-        return [-1, `unknown node [${nodeName}]`, ""];
+        // workaround for https://github.com/typescript-eslint/typescript-eslint/issues/10632
+        return [-1, `unknown node [${nodeName as string}]`, ""];
       }
       case "lookupService": {
         const serviceName = args[1];

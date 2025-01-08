@@ -10,7 +10,7 @@ describe("RosNode", () => {
   it("Publishes and subscribes to topics and parameters", async () => {
     const rosMaster = new RosMaster(new HttpServerNodejs());
     await rosMaster.start("localhost");
-    const rosMasterUri = rosMaster.url() as string;
+    const rosMasterUri = rosMaster.url()!;
     expect(typeof rosMasterUri).toBe("string");
 
     let errA: Error | undefined;
@@ -23,8 +23,7 @@ describe("RosNode", () => {
       rosMasterUri,
       httpServer: new HttpServerNodejs(),
       tcpSocketCreate: TcpSocketNode.Create,
-      tcpServer: await TcpServerNode.Listen({ host: "0.0.0.0" }),
-      // log: console,
+      tcpServer: await TcpServerNode.Listen({ host: "localhost" }),
     });
     nodeA.on("error", (err) => (errA = err));
 
@@ -35,8 +34,7 @@ describe("RosNode", () => {
       rosMasterUri,
       httpServer: new HttpServerNodejs(),
       tcpSocketCreate: TcpSocketNode.Create,
-      tcpServer: await TcpServerNode.Listen({ host: "0.0.0.0" }),
-      // log: console,
+      tcpServer: await TcpServerNode.Listen({ host: "localhost" }),
     });
     nodeB.on("error", (err) => (errB = err));
 
@@ -45,7 +43,9 @@ describe("RosNode", () => {
     const received = new Promise<[unknown, Uint8Array, PublisherLink]>((r) => {
       nodeA
         .subscribe({ topic: "/a", dataType: "std_msgs/Bool" })
-        .on("message", (msg, data, pub) => r([msg, data, pub]));
+        .on("message", (msg, data, pub) => {
+          r([msg, data, pub]);
+        });
     });
 
     await nodeB.start();
@@ -72,7 +72,9 @@ describe("RosNode", () => {
     const initParamValue = await nodeB.subscribeParam("a");
     expect(initParamValue).toBeUndefined();
     const paramUpdated = new Promise<ParamUpdateArgs>((r) => {
-      nodeB.on("paramUpdate", (args) => r(args));
+      nodeB.on("paramUpdate", (args) => {
+        r(args);
+      });
     });
 
     await nodeA.setParameter("a", 42);

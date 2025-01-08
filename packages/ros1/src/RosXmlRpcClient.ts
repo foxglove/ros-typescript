@@ -24,7 +24,8 @@ export class RosXmlRpcClient {
 
     const [code, msg] = res;
     if (typeof code !== "number" || typeof msg !== "string") {
-      throw new Error(`Invalid code/msg, code="${code}", msg="${msg}"`);
+      // workaround for https://github.com/typescript-eslint/typescript-eslint/issues/10632
+      throw new Error(`Invalid code/msg, code="${code as string}", msg="${msg as string}"`);
     }
     return res as RosXmlRpcResponse;
   };
@@ -43,7 +44,8 @@ export class RosXmlRpcClient {
       } else {
         const [code, msg] = entry;
         if (typeof code !== "number" || typeof msg !== "string") {
-          throw new Error(`Invalid code/msg, code="${code}", msg="${msg}"`);
+          // workaround for https://github.com/typescript-eslint/typescript-eslint/issues/10632
+          throw new Error(`Invalid code/msg, code="${code as string}", msg="${msg as string}"`);
         }
         output.push(entry as RosXmlRpcResponse);
       }

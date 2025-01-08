@@ -32,7 +32,7 @@ async function main() {
     });
     console.dir(sub.getStats());
   } catch (err) {
-    const msg = (err as Error).stack ?? `${err}`;
+    const msg = (err as Error).stack ?? `${err as Error}`;
     console.error(msg);
   } finally {
     rosNode?.shutdown();
