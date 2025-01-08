@@ -6,13 +6,13 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/foxglove/ros1.git"
+    "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
     "name": "Foxglove Technologies Inc",
     "email": "contact@foxglove.dev"
   },
-  "homepage": "https://foxglove.dev/",
+  "homepage": "https://github.com/foxglove/ros-typescript",
   "main": "dist/index.js",
   "files": [
     "dist"

@@ -1,7 +1,7 @@
 {
   "name": "@foxglove/rosmsg-serialization",
   "version": "2.0.3",
-  "description": "ROS1 (Robot Operating System) message serialization, for reading and writing bags and network messages",
+  "description": "ROS 1 message serialization, for reading and writing bags and network messages",
   "license": "MIT",
   "keywords": [
     "ros",
@@ -16,13 +16,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/foxglove/rosmsg-serialization.git"
+    "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
     "name": "Foxglove Technologies Inc",
     "email": "contact@foxglove.dev"
   },
-  "homepage": "https://github.com/foxglove/rosmsg-serialization",
+  "homepage": "https://github.com/foxglove/ros-typescript",
   "module": "dist/esm/index.js",
   "main": "dist/cjs/index.js",
   "typings": "dist/esm/index.d.ts",

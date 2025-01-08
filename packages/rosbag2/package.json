@@ -1,7 +1,7 @@
 {
   "name": "@foxglove/rosbag2",
   "version": "6.0.0",
-  "description": "ROS 2 (Robot Operating System) bag reader and writer abstract implementation",
+  "description": "ROS 2 bag reader and writer abstract implementation",
   "license": "MIT",
   "keywords": [
     "ros",
@@ -17,13 +17,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/foxglove/rosbag2.git"
+    "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
     "name": "Foxglove Technologies Inc",
     "email": "contact@foxglove.dev"
   },
-  "homepage": "https://github.com/foxglove/rosbag2",
+  "homepage": "https://github.com/foxglove/ros-typescript",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [

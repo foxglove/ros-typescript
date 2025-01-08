@@ -1,7 +1,7 @@
 {
   "name": "@foxglove/rostime",
   "version": "1.1.2",
-  "description": "ROS (Robot Operating System) Time and Duration primitives and helper methods",
+  "description": "ROS Time and Duration primitives and helper methods",
   "license": "MIT",
   "keywords": [
     "rostime",
@@ -16,13 +16,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/foxglove/rostime.git"
+    "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
     "name": "Foxglove Technologies Inc",
     "email": "contact@foxglove.dev"
   },
-  "homepage": "https://github.com/foxglove/rostime",
+  "homepage": "https://github.com/foxglove/ros-typescript",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [

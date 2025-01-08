@@ -12,13 +12,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/foxglove/xmlrpc.git"
+    "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
     "name": "Foxglove Technologies Inc",
     "email": "contact@foxglove.dev"
   },
-  "homepage": "https://github.com/foxglove/xmlrpc",
+  "homepage": "https://github.com/foxglove/ros-typescript",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "exports": {
