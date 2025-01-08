@@ -7,7 +7,7 @@ import { TcpServerNode } from "./nodejs/TcpServerNode";
 import { TcpSocketNode } from "./nodejs/TcpSocketNode";
 
 describe("RosNode", () => {
-  it.failing("Publishes and subscribes to topics and parameters", async () => {
+  it("Publishes and subscribes to topics and parameters", async () => {
     const rosMaster = new RosMaster(new HttpServerNodejs());
     await rosMaster.start("localhost");
     const rosMasterUri = rosMaster.url()!;
@@ -23,8 +23,7 @@ describe("RosNode", () => {
       rosMasterUri,
       httpServer: new HttpServerNodejs(),
       tcpSocketCreate: TcpSocketNode.Create,
-      tcpServer: await TcpServerNode.Listen({ host: "0.0.0.0" }),
-      // log: console,
+      tcpServer: await TcpServerNode.Listen({ host: "localhost" }),
     });
     nodeA.on("error", (err) => (errA = err));
 
@@ -35,8 +34,7 @@ describe("RosNode", () => {
       rosMasterUri,
       httpServer: new HttpServerNodejs(),
       tcpSocketCreate: TcpSocketNode.Create,
-      tcpServer: await TcpServerNode.Listen({ host: "0.0.0.0" }),
-      // log: console,
+      tcpServer: await TcpServerNode.Listen({ host: "localhost" }),
     });
     nodeB.on("error", (err) => (errB = err));
 
