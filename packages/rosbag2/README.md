@@ -22,4 +22,4 @@ This package contains the subset of the full rosbag2 SQLite implementation that 
 
 ## Stay in touch
 
-Join our [Slack channel](https://foxglove.dev/slack) to ask questions, share feedback, and stay up to date on what our team is working on.
+Join our [Discord community](https://foxglove.dev/chat) to ask questions, share feedback, and stay up to date on what our team is working on.
