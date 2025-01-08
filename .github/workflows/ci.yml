@@ -3,28 +3,111 @@ name: CI
 on:
   push:
     branches: main
-    tags: v*
+    tags: "*/v*"
   pull_request:
-    branches: "*"
+    branches: "**"
 
 jobs:
-  all:
-    name: all
+  build:
+    name: ${{ matrix.package }}
+    strategy:
+      matrix:
+        package:
+          - ros1
+          - rosbag
+          - rosbag2
+          - rosbag2-node
+          - rosbag2-web
+          - rosmsg
+          - rosmsg-msgs-common
+          - rosmsg-serialization
+          - rosmsg2-serialization
+          - rostime
+          - xmlrpc
+
     runs-on: ubuntu-latest
 
+    permissions:
+      # https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions
+      id-token: write
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
+        with:
+          lfs: true
 
       - run: corepack enable
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.1.0
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org
           cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
 
-      - run: yarn run build
-      - run: yarn run lint:ci
-      - run: yarn run test
+      - run: yarn workspaces foreach -Rpt --from ${{ matrix.package }} run build
+      - run: yarn lint packages/${{ matrix.package }}
+      - run: yarn workspace @foxglove/${{ matrix.package }} run test
+
+      - name: build xmlrpc examples
+        if: ${{ matrix.package == 'xmlrpc' }}
+        run: yarn tsc -b
+        working-directory: packages/xmlrpc/examples
+
+      - run: yarn workspace @foxglove/${{ matrix.package }} pack
+      - name: Publish to NPM (dry run)
+        # `yarn npm publish` does not currently support --provenance: https://github.com/yarnpkg/berry/issues/5430
+        run: npm publish packages/${{ matrix.package }}/package.tgz --provenance --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      - name: Publish to NPM
+        if: ${{ startsWith(github.ref, format('refs/tags/{0}/v', matrix.package)) }}
+        # `yarn npm publish` does not currently support --provenance: https://github.com/yarnpkg/berry/issues/5430
+        run: npm publish packages/${{ matrix.package }}/package.tgz --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+  rosbag-docs:
+    name: rosbag docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - run: yarn install --immutable
+
+      - run: yarn workspaces foreach -Rpt --from @foxglove/rosbag run build
+      - run: yarn workspace @foxglove/rosbag docs
+
+      - name: Deploy to GitHub pages
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: docs
+
+  rosmsg-serialization-bench:
+    name: rosmsg-serialization benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+
+      - run: yarn install --immutable
+
+      - run: yarn workspaces foreach -Rpt --from @foxglove/rosmsg run build
+      - run: yarn workspace @foxglove/rosmsg bench:benny

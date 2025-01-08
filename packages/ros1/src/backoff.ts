@@ -19,7 +19,7 @@ export async function backoff(
   maxJitterMs = 1000,
   rng: () => number = Math.random,
 ): Promise<void> {
-  return await new Promise((resolve) =>
+  await new Promise((resolve) =>
     setTimeout(resolve, backoffTime(retries, maxMs, maxJitterMs, rng)),
   );
 }
@@ -28,11 +28,12 @@ export async function backoff(
 // exception
 export async function retryForever<T>(fn: () => Promise<T>): Promise<T> {
   let retries = 0;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+
+  for (;;) {
     try {
       return await fn();
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
       await backoff(++retries);
     }
   }

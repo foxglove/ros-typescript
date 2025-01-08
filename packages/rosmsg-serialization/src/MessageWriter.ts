@@ -139,9 +139,9 @@ class StandardTypeWriter {
     );
     if (read !== value.length) {
       throw new Error(
-        `Not enough space to encode string into subarray (wrote ${read!} of ${
+        `Not enough space to encode string into subarray (wrote ${read} of ${
           value.length
-        } code units into ${written!} of ${this.data.subarray(stringOffset + 4).length} bytes)`,
+        } code units into ${written} of ${this.data.subarray(stringOffset + 4).length} bytes)`,
       );
     }
   }

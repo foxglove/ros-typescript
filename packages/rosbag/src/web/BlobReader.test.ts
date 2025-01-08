@@ -27,7 +27,7 @@ global.Blob.prototype.arrayBuffer = async function arrayBuffer(): Promise<ArrayB
       reader.onerror = null;
 
       if (reader.result == undefined || !(reader.result instanceof ArrayBuffer)) {
-        reject("Unsupported format for BlobReader");
+        reject(new Error("Unsupported format for BlobReader"));
         return;
       }
 
@@ -67,7 +67,7 @@ describe("browser reader", () => {
     const buffer = new Blob([Uint8Array.from([0x00, 0x01, 0x02, 0x03, 0x04])]);
     const reader = new BlobReader(buffer);
     const actualFileReader = global.FileReader;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     (global as any).FileReader = class FailReader {
       onerror!: (_: this) => void;
       readAsArrayBuffer() {

@@ -44,8 +44,8 @@ async function main() {
     ros2: true,
   });
 
-  const libOutput = generateCjsLibrary(definitionsByGroup);
-  const esmOutput = generateEsmLibrary(definitionsByGroup);
+  const libOutput = await generateCjsLibrary(definitionsByGroup);
+  const esmOutput = await generateEsmLibrary(definitionsByGroup);
   const declOutput = generateDefinitions(definitionsByGroup);
 
   await mkdir(distDir, { recursive: true });
@@ -77,7 +77,7 @@ async function loadDefinitions(
     const typeName = dataTypeToTypeName(dataType);
     const msgdef = await readFile(filename, { encoding: "utf8" });
     const schema = parse(msgdef, parseOptions);
-    (schema[0] as MessageDefinition).name = typeName;
+    schema[0]!.name = typeName;
     for (const entry of schema) {
       if (entry.name == undefined) {
         throw new Error(`Failed to parse ${dataType} from ${filename}`);
@@ -130,9 +130,9 @@ function stringifyDefinitions(definitions: Record<string, MessageDefinition>) {
   return JSON.stringify(definitions, replacer).replace(bigintRegex, bigintFromString);
 }
 
-function generateCjsLibrary(
+async function generateCjsLibrary(
   definitionsByGroup: Map<string, Record<string, MessageDefinition>>,
-): string {
+): Promise<string> {
   let lib = `${LICENSE}\n`;
   for (const [groupName, definitions] of definitionsByGroup.entries()) {
     lib += `
@@ -140,12 +140,12 @@ const ${groupName}Definitions = ${stringifyDefinitions(definitions)}
 module.exports.${groupName} = ${groupName}Definitions
 `;
   }
-  return format(lib, PRETTIER_OPTS);
+  return await format(lib, PRETTIER_OPTS);
 }
 
-function generateEsmLibrary(
+async function generateEsmLibrary(
   definitionsByGroup: Map<string, Record<string, MessageDefinition>>,
-): string {
+): Promise<string> {
   let lib = `${LICENSE}\n`;
   for (const [groupName, definitions] of definitionsByGroup.entries()) {
     lib += `
@@ -157,7 +157,7 @@ export { ${groupName}Definitions as ${groupName} }
     .map((groupName) => `${groupName}: ${groupName}Definitions`)
     .join(", ")} }`;
 
-  return format(lib, PRETTIER_OPTS);
+  return await format(lib, PRETTIER_OPTS);
 }
 
 function generateDefinitions(

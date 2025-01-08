@@ -50,6 +50,7 @@ export class FakeBagReader implements IBagReader {
           conn: msg.connection,
           count: 1,
           indices: [],
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           parseData: () => {},
         };
         indexByConnId.set(msg.connection, indexData);
@@ -73,6 +74,7 @@ export class FakeBagReader implements IBagReader {
         size: chunk.messages.length,
         data: new Uint8Array(offsets),
         dataOffset: chunkInfo.chunkPosition,
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         parseData: () => {},
       },
       indices: Array.from(indexByConnId.values()),
@@ -117,6 +119,7 @@ export function generateFixtures(input: FixtureInput): FixtureOutput {
         conn: connId,
         topic,
         messageDefinition: `${connId}`,
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         parseData: () => {},
       });
 
@@ -145,6 +148,7 @@ export function generateFixtures(input: FixtureInput): FixtureOutput {
       endTime: { sec: 0, nsec: endNs },
       count: 1,
       connections: Array.from(connCounts.values()),
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       parseData: () => {},
       messages: chunk.messages,
     });

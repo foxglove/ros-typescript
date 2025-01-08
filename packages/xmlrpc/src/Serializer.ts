@@ -36,7 +36,9 @@ export function serializeMethodCall(
     .txt(method)
     .up()
     .ele("params");
-  params.forEach((param) => serializeValue(param, xml.ele("param")));
+  params.forEach((param) => {
+    serializeValue(param, xml.ele("param"));
+  });
 
   // Includes the <?xml ...> declaration
   return xml.doc().toString();
@@ -68,7 +70,7 @@ function serializeValue(value: XmlRpcValue, xml: XMLBuilder) {
   let next;
 
   while (stack.length > 0) {
-    current = stack[stack.length - 1] as ValueInfo;
+    current = stack[stack.length - 1]!;
 
     if (current.index != undefined) {
       // Iterating a compound
@@ -81,6 +83,7 @@ function serializeValue(value: XmlRpcValue, xml: XMLBuilder) {
     } else {
       // we're about to add a new value (compound or simple)
       valueNode = current.xml.ele("value");
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
       switch (typeof current.value) {
         case "boolean":
           appendBoolean(current.value, valueNode);
@@ -95,6 +98,7 @@ function serializeValue(value: XmlRpcValue, xml: XMLBuilder) {
           stack.pop();
           break;
         case "object":
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (current.value == undefined) {
             valueNode.ele("nil");
             stack.pop();
@@ -136,7 +140,7 @@ function getNextItemsFrame(frame: ValueInfo) {
 
   if (frame.keys != undefined && frame.index != undefined) {
     if (frame.index < frame.keys.length) {
-      const key = frame.keys[frame.index++] as string;
+      const key = frame.keys[frame.index++]!;
       const member = frame.xml.ele("member").ele("name").txt(key).up();
       nextFrame = {
         value: (frame.value as XmlRpcStruct)[key],

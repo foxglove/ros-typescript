@@ -9,6 +9,7 @@ export default function decodeString(data: Uint8Array): string {
   if (data.length >= 50) {
     return decoder.decode(data);
   }
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < data.length; i++) {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (data[i]! & 0x80) {

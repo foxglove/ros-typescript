@@ -80,15 +80,32 @@ describe("MessageWriter", () => {
       });
     };
 
-    testNum("int8", 1, -3, (data) => writeInt8(data, -3, 0));
-    testNum("uint8", 1, 13, (data) => writeInt8(data, 13, 0));
-    testNum("int16", 2, -21, (data) => writeInt16LE(data, -21, 0));
-    testNum("uint16", 2, 21, (data) => writeUInt16LE(data, 21, 0));
-    testNum("int32", 4, -210010, (data) => writeInt32LE(data, -210010, 0));
-    testNum("uint32", 4, 210010, (data) => writeUInt32LE(data, 210010, 0));
-    testNum("float32", 4, 5.5, (data) => writeFloatLE(data, 5.5, 0));
-    // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
-    testNum("float64", 8, 0xdeadbeefcafebabe, (data) => writeDoubleLE(data, 0xdeadbeefcafebabe, 0));
+    testNum("int8", 1, -3, (data) => {
+      writeInt8(data, -3, 0);
+    });
+    testNum("uint8", 1, 13, (data) => {
+      writeInt8(data, 13, 0);
+    });
+    testNum("int16", 2, -21, (data) => {
+      writeInt16LE(data, -21, 0);
+    });
+    testNum("uint16", 2, 21, (data) => {
+      writeUInt16LE(data, 21, 0);
+    });
+    testNum("int32", 4, -210010, (data) => {
+      writeInt32LE(data, -210010, 0);
+    });
+    testNum("uint32", 4, 210010, (data) => {
+      writeUInt32LE(data, 210010, 0);
+    });
+    testNum("float32", 4, 5.5, (data) => {
+      writeFloatLE(data, 5.5, 0);
+    });
+    // eslint-disable-next-line no-loss-of-precision
+    testNum("float64", 8, 0xdeadbeefcafebabe, (data) => {
+      // eslint-disable-next-line no-loss-of-precision
+      writeDoubleLE(data, 0xdeadbeefcafebabe, 0);
+    });
 
     it("writes strings", () => {
       const writer = new MessageWriter(parseMessageDefinition("string name"));

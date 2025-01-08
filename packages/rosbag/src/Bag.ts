@@ -93,7 +93,7 @@ export default class Bag {
     }
 
     if (opt?.reverse === true) {
-      const position = opt?.start ?? this.endTime;
+      const position = opt.start ?? this.endTime;
       if (!position) {
         throw new Error("no timestamp");
       }
@@ -175,7 +175,8 @@ export default class Bag {
       }
       return new ReadResult<T>(
         topic,
-        message!,
+        // @ts-expect-error may be null if noParse is true
+        message,
         timestamp,
         data,
         chunkOffset,
@@ -193,7 +194,9 @@ export default class Bag {
         endTime,
         decompress,
       );
-      messages.forEach((msg) => callback(parseMsg(msg, i)));
+      messages.forEach((msg) => {
+        callback(parseMsg(msg, i));
+      });
     }
   }
 }

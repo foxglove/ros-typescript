@@ -83,7 +83,7 @@ async function main() {
     runCases("read", [
       {
         name: "reg",
-        benchCase: () => reader.readMessage(msgData),
+        benchCase: () => reader.readMessage<Record<string, unknown>>(msgData),
       },
       {
         name: "lazy",

@@ -41,12 +41,13 @@ async function main() {
     let running = true;
     process.on("SIGINT", () => (running = false));
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (running) {
       void rosNode.publish("/chatter", { data: "Hello, world!" });
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   } catch (err) {
-    const msg = (err as Error).stack ?? `${err}`;
+    const msg = (err as Error).stack ?? `${err as Error}`;
     console.error(msg);
   } finally {
     rosNode?.shutdown();

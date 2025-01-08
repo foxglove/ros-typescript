@@ -133,6 +133,7 @@ export class MessageReader<T = unknown> {
 }
 
 function isConstantModule(def: MessageDefinition): boolean {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   return def.definitions.length > 0 && def.definitions.every((field) => field.isConstant);
 }
 

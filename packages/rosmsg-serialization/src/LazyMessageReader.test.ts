@@ -1,6 +1,5 @@
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
-import parserBabel from "prettier/parser-babel";
-import prettier from "prettier/standalone";
+import * as prettier from "prettier";
 
 import { LazyMessageReader } from "./LazyMessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
@@ -8,15 +7,13 @@ import messageReaderTests from "./fixtures/messageReaderTests";
 describe("LazyReader", () => {
   it.each(messageReaderTests)(
     "should deserialize %s",
-    (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
+    async (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
       const buffer = Uint8Array.from(arr);
       const reader = new LazyMessageReader<Record<string, unknown>>(parseMessageDefinition(msgDef));
 
       // allows for easier review of the generated parser source
       const source = reader.source();
-      expect(prettier.format(source, { parser: "babel", plugins: [parserBabel] })).toMatchSnapshot(
-        msgDef,
-      );
+      expect(await prettier.format(source, { parser: "babel" })).toMatchSnapshot(msgDef);
 
       // read aligned array
       {
@@ -30,6 +27,7 @@ describe("LazyReader", () => {
         expect(read.toObject()).toEqual(expected);
 
         // legacy api
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         expect(read.toJSON()).toEqual(expected);
 
         // manually read each field to ensure lazy field access works
@@ -59,6 +57,7 @@ describe("LazyReader", () => {
         expect(obj).toEqual(expected);
 
         // legacy api
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         expect(read.toJSON()).toEqual(expected);
 
         // manually read each field to ensure lazy field access works

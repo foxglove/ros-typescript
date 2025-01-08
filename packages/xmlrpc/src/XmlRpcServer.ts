@@ -23,7 +23,7 @@ export class XmlRpcServer {
   }
 
   async listen(port?: number, hostname?: string, backlog?: number): Promise<void> {
-    return await this.server.listen(port, hostname, backlog);
+    await this.server.listen(port, hostname, backlog);
   }
 
   close(): void {

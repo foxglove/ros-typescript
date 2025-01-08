@@ -11,7 +11,7 @@ exports[`LazyReader should deserialize CustomType custom
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class custom_type_CustomType {
     static __first$size(view /* dataview */, offset) {
@@ -56,7 +56,7 @@ exports[`LazyReader should deserialize CustomType custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -70,7 +70,7 @@ exports[`LazyReader should deserialize CustomType custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -128,7 +128,7 @@ exports[`LazyReader should deserialize CustomType custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -142,7 +142,7 @@ exports[`LazyReader should deserialize CustomType custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -175,7 +175,7 @@ exports[`LazyReader should deserialize CustomType[] custom
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class custom_type_MoreCustom {
     static __field$size(view /* dataview */, offset) {
@@ -220,7 +220,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/MoreCustom"))(reader);
@@ -234,7 +234,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/MoreCustom"))(reader);
@@ -292,7 +292,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -306,7 +306,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -364,7 +364,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -378,7 +378,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -391,7 +391,7 @@ exports[`LazyReader should deserialize CustomType[] custom
         this.#view,
         offset,
         custom_type_CustomType.build,
-        custom_type_CustomType.size
+        custom_type_CustomType.size,
       );
     }
   }
@@ -411,7 +411,7 @@ exports[`LazyReader should deserialize CustomType[] custom
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class custom_type_CustomType {
     static __first$size(view /* dataview */, offset) {
@@ -456,7 +456,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -470,7 +470,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -528,7 +528,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -542,7 +542,7 @@ exports[`LazyReader should deserialize CustomType[] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -555,7 +555,7 @@ exports[`LazyReader should deserialize CustomType[] custom
         this.#view,
         offset,
         custom_type_CustomType.build,
-        custom_type_CustomType.size
+        custom_type_CustomType.size,
       );
     }
   }
@@ -575,7 +575,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class custom_type_CustomType {
     static __first$size(view /* dataview */, offset) {
@@ -620,7 +620,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -634,7 +634,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("custom_type/CustomType"))(reader);
@@ -652,7 +652,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
         view,
         offset,
         3,
-        custom_type_CustomType.size
+        custom_type_CustomType.size,
       );
     }
 
@@ -697,7 +697,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -711,7 +711,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -725,7 +725,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
         offset,
         3,
         custom_type_CustomType.build,
-        custom_type_CustomType.size
+        custom_type_CustomType.size,
       );
     }
   }
@@ -739,7 +739,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __stamp$size(view /* dataview */, offset) {
@@ -784,7 +784,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -798,7 +798,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -819,7 +819,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 2`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __stamp$size(view /* dataview */, offset) {
@@ -864,7 +864,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 2`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -878,7 +878,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 2`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -899,7 +899,7 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -948,7 +948,7 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -962,7 +962,7 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -985,7 +985,7 @@ exports[`LazyReader should deserialize duration[1] arr: duration[1] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -1030,7 +1030,7 @@ exports[`LazyReader should deserialize duration[1] arr: duration[1] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1044,7 +1044,7 @@ exports[`LazyReader should deserialize duration[1] arr: duration[1] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1066,7 +1066,7 @@ exports[`LazyReader should deserialize float32 sample: float32 sample 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -1111,7 +1111,7 @@ exports[`LazyReader should deserialize float32 sample: float32 sample 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1125,7 +1125,7 @@ exports[`LazyReader should deserialize float32 sample: float32 sample 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1146,7 +1146,7 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -1195,7 +1195,7 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1209,7 +1209,7 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1234,7 +1234,7 @@ float32[] second 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -1306,7 +1306,7 @@ float32[] second 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1320,7 +1320,7 @@ float32[] second 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1350,7 +1350,7 @@ exports[`LazyReader should deserialize float32[2] arr: float32[2] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -1395,7 +1395,7 @@ exports[`LazyReader should deserialize float32[2] arr: float32[2] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1409,7 +1409,7 @@ exports[`LazyReader should deserialize float32[2] arr: float32[2] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1431,7 +1431,7 @@ exports[`LazyReader should deserialize float64 sample: float64 sample 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -1476,7 +1476,7 @@ exports[`LazyReader should deserialize float64 sample: float64 sample 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1490,7 +1490,7 @@ exports[`LazyReader should deserialize float64 sample: float64 sample 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1515,7 +1515,7 @@ exports[`LazyReader should deserialize int8 STATUS_ONE = 1
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __status$size(view /* dataview */, offset) {
@@ -1560,7 +1560,7 @@ exports[`LazyReader should deserialize int8 STATUS_ONE = 1
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1574,7 +1574,7 @@ exports[`LazyReader should deserialize int8 STATUS_ONE = 1
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1597,7 +1597,7 @@ int8 second 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -1661,7 +1661,7 @@ int8 second 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1675,7 +1675,7 @@ int8 second 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1700,7 +1700,7 @@ exports[`LazyReader should deserialize int8 sample # highest: int8 sample # high
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -1745,7 +1745,7 @@ exports[`LazyReader should deserialize int8 sample # highest: int8 sample # high
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1759,7 +1759,7 @@ exports[`LazyReader should deserialize int8 sample # highest: int8 sample # high
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1780,7 +1780,7 @@ exports[`LazyReader should deserialize int8 sample # lowest: int8 sample # lowes
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -1825,7 +1825,7 @@ exports[`LazyReader should deserialize int8 sample # lowest: int8 sample # lowes
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1839,7 +1839,7 @@ exports[`LazyReader should deserialize int8 sample # lowest: int8 sample # lowes
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1860,7 +1860,7 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -1909,7 +1909,7 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1923,7 +1923,7 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -1946,7 +1946,7 @@ exports[`LazyReader should deserialize int8[4] first: int8[4] first 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -1991,7 +1991,7 @@ exports[`LazyReader should deserialize int8[4] first: int8[4] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2005,7 +2005,7 @@ exports[`LazyReader should deserialize int8[4] first: int8[4] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2027,7 +2027,7 @@ exports[`LazyReader should deserialize int16 sample # highest: int16 sample # hi
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2072,7 +2072,7 @@ exports[`LazyReader should deserialize int16 sample # highest: int16 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2086,7 +2086,7 @@ exports[`LazyReader should deserialize int16 sample # highest: int16 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2107,7 +2107,7 @@ exports[`LazyReader should deserialize int16 sample # lowest: int16 sample # low
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2152,7 +2152,7 @@ exports[`LazyReader should deserialize int16 sample # lowest: int16 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2166,7 +2166,7 @@ exports[`LazyReader should deserialize int16 sample # lowest: int16 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2187,7 +2187,7 @@ exports[`LazyReader should deserialize int32 sample # highest: int32 sample # hi
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2232,7 +2232,7 @@ exports[`LazyReader should deserialize int32 sample # highest: int32 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2246,7 +2246,7 @@ exports[`LazyReader should deserialize int32 sample # highest: int32 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2267,7 +2267,7 @@ exports[`LazyReader should deserialize int32 sample # lowest: int32 sample # low
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2312,7 +2312,7 @@ exports[`LazyReader should deserialize int32 sample # lowest: int32 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2326,7 +2326,7 @@ exports[`LazyReader should deserialize int32 sample # lowest: int32 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2347,7 +2347,7 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -2396,7 +2396,7 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2410,7 +2410,7 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2433,7 +2433,7 @@ exports[`LazyReader should deserialize int64 sample # highest: int64 sample # hi
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2478,7 +2478,7 @@ exports[`LazyReader should deserialize int64 sample # highest: int64 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2492,7 +2492,7 @@ exports[`LazyReader should deserialize int64 sample # highest: int64 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2513,7 +2513,7 @@ exports[`LazyReader should deserialize int64 sample # lowest: int64 sample # low
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2558,7 +2558,7 @@ exports[`LazyReader should deserialize int64 sample # lowest: int64 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2572,7 +2572,7 @@ exports[`LazyReader should deserialize int64 sample # lowest: int64 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2595,7 +2595,7 @@ int8 second 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -2662,7 +2662,7 @@ int8 second 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2676,7 +2676,7 @@ int8 second 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2701,7 +2701,7 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2749,7 +2749,7 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2763,7 +2763,7 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2784,7 +2784,7 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2832,7 +2832,7 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2846,7 +2846,7 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2867,7 +2867,7 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -2915,7 +2915,7 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2929,7 +2929,7 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -2950,7 +2950,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -2998,7 +2998,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3012,7 +3012,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3025,7 +3025,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
         this.#view,
         offset,
         deserializers.string,
-        builtinSizes.string
+        builtinSizes.string,
       );
     }
   }
@@ -3039,7 +3039,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -3087,7 +3087,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3101,7 +3101,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3115,7 +3115,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
         offset,
         2,
         deserializers.string,
-        builtinSizes.string
+        builtinSizes.string,
       );
     }
   }
@@ -3129,7 +3129,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __stamp$size(view /* dataview */, offset) {
@@ -3174,7 +3174,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3188,7 +3188,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3209,7 +3209,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 2`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __stamp$size(view /* dataview */, offset) {
@@ -3254,7 +3254,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 2`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3268,7 +3268,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 2`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3289,7 +3289,7 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -3338,7 +3338,7 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3352,7 +3352,7 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3375,7 +3375,7 @@ exports[`LazyReader should deserialize time[1] arr: time[1] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __arr$size(view /* dataview */, offset) {
@@ -3420,7 +3420,7 @@ exports[`LazyReader should deserialize time[1] arr: time[1] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3434,7 +3434,7 @@ exports[`LazyReader should deserialize time[1] arr: time[1] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3458,7 +3458,7 @@ float32[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __blank$size(view /* dataview */, offset) {
@@ -3526,7 +3526,7 @@ float32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3540,7 +3540,7 @@ float32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3570,7 +3570,7 @@ float32[2] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __blank$size(view /* dataview */, offset) {
@@ -3634,7 +3634,7 @@ float32[2] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3648,7 +3648,7 @@ float32[2] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3677,7 +3677,7 @@ int32[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __blank$size(view /* dataview */, offset) {
@@ -3745,7 +3745,7 @@ int32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3759,7 +3759,7 @@ int32[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3789,7 +3789,7 @@ time[] arr 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __blank$size(view /* dataview */, offset) {
@@ -3857,7 +3857,7 @@ time[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3871,7 +3871,7 @@ time[] arr 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3899,7 +3899,7 @@ exports[`LazyReader should deserialize uint8 sample # highest: uint8 sample # hi
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -3944,7 +3944,7 @@ exports[`LazyReader should deserialize uint8 sample # highest: uint8 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3958,7 +3958,7 @@ exports[`LazyReader should deserialize uint8 sample # highest: uint8 sample # hi
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -3979,7 +3979,7 @@ exports[`LazyReader should deserialize uint8 sample # lowest: uint8 sample # low
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4024,7 +4024,7 @@ exports[`LazyReader should deserialize uint8 sample # lowest: uint8 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4038,7 +4038,7 @@ exports[`LazyReader should deserialize uint8 sample # lowest: uint8 sample # low
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4059,7 +4059,7 @@ exports[`LazyReader should deserialize uint8[4] first: uint8[4] first 1`] = `
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __first$size(view /* dataview */, offset) {
@@ -4104,7 +4104,7 @@ exports[`LazyReader should deserialize uint8[4] first: uint8[4] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4118,7 +4118,7 @@ exports[`LazyReader should deserialize uint8[4] first: uint8[4] first 1`] = `
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4140,7 +4140,7 @@ exports[`LazyReader should deserialize uint16 sample # highest: uint16 sample # 
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4185,7 +4185,7 @@ exports[`LazyReader should deserialize uint16 sample # highest: uint16 sample # 
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4199,7 +4199,7 @@ exports[`LazyReader should deserialize uint16 sample # highest: uint16 sample # 
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4220,7 +4220,7 @@ exports[`LazyReader should deserialize uint16 sample # lowest: uint16 sample # l
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4265,7 +4265,7 @@ exports[`LazyReader should deserialize uint16 sample # lowest: uint16 sample # l
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4279,7 +4279,7 @@ exports[`LazyReader should deserialize uint16 sample # lowest: uint16 sample # l
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4300,7 +4300,7 @@ exports[`LazyReader should deserialize uint32 sample # highest: uint32 sample # 
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4345,7 +4345,7 @@ exports[`LazyReader should deserialize uint32 sample # highest: uint32 sample # 
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4359,7 +4359,7 @@ exports[`LazyReader should deserialize uint32 sample # highest: uint32 sample # 
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4380,7 +4380,7 @@ exports[`LazyReader should deserialize uint32 sample # lowest: uint32 sample # l
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4425,7 +4425,7 @@ exports[`LazyReader should deserialize uint32 sample # lowest: uint32 sample # l
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4439,7 +4439,7 @@ exports[`LazyReader should deserialize uint32 sample # lowest: uint32 sample # l
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4460,7 +4460,7 @@ exports[`LazyReader should deserialize uint64 sample # highest: uint64 sample # 
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4505,7 +4505,7 @@ exports[`LazyReader should deserialize uint64 sample # highest: uint64 sample # 
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4519,7 +4519,7 @@ exports[`LazyReader should deserialize uint64 sample # highest: uint64 sample # 
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4540,7 +4540,7 @@ exports[`LazyReader should deserialize uint64 sample # lowest: uint64 sample # l
   deserializers,
   builtinSizes,
   typeReaders,
-  StandardTypeReader
+  StandardTypeReader,
 ) {
   class __RootMsg {
     static __sample$size(view /* dataview */, offset) {
@@ -4585,7 +4585,7 @@ exports[`LazyReader should deserialize uint64 sample # lowest: uint64 sample # l
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);
@@ -4599,7 +4599,7 @@ exports[`LazyReader should deserialize uint64 sample # lowest: uint64 sample # l
       const buffer = new Uint8Array(
         view.buffer,
         view.byteOffset + this.#offset,
-        view.byteLength - this.#offset
+        view.byteLength - this.#offset,
       );
       const reader = new StandardTypeReader(buffer);
       return new (typeReaders.get("__RootMsg"))(reader);

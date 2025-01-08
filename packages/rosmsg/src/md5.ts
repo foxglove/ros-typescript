@@ -48,6 +48,7 @@ function computeMessageMd5(
   subMsgDefs: Map<string, MessageDefinition>,
 ): string {
   let output = "";
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const constants = msgDef.definitions.filter(({ isConstant }) => isConstant);
   const variables = msgDef.definitions.filter(
     ({ isConstant }) => isConstant == undefined || !isConstant,

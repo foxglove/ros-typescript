@@ -125,6 +125,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
   async start(port?: number): Promise<void> {
     return await this.rosFollower
       .start(this.hostname, port)
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       .then(() => this._log?.debug?.(`rosfollower listening at ${this.rosFollower.url()}`));
   }
 
@@ -135,7 +136,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     this.rosFollower.close();
 
     if (this.parameters.size > 0) {
-      this.unsubscribeAllParams().catch((unk) => {
+      this.unsubscribeAllParams().catch((unk: unknown) => {
         const err = unk instanceof Error ? unk : new Error(unk as string);
         this._log?.warn?.(err.message, "shutdown");
         this.emit("error", err);
@@ -174,10 +175,10 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
 
     // Asynchronously register this subscription with rosmaster and connect to
     // each publisher
-    this._registerSubscriberAndConnect(subscription).catch((err) => {
+    this._registerSubscriberAndConnect(subscription).catch((err: unknown) => {
       // This should never be called, this._registerSubscriberAndConnect() is not expected to throw
       this._log?.warn?.(
-        `subscribe registration and connection unexpectedly failed: ${err}`,
+        `subscribe registration and connection unexpectedly failed: ${err as Error}`,
         "subscribe",
       );
     });
@@ -241,7 +242,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
       throw new Error(`Cannot publish to unadvertised topic "${topic}"`);
     }
 
-    return await this._tcpPublisher.publish(publication, message);
+    await this._tcpPublisher.publish(publication, message);
   }
 
   isSubscribedTo(topic: string): boolean {
@@ -258,9 +259,9 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
       return false;
     }
 
-    this._unregisterSubscriber(topic).catch((err) => {
+    this._unregisterSubscriber(topic).catch((err: unknown) => {
       // This should never happen
-      this._log?.warn?.(`unregisterSubscriber failed for ${topic}: ${err}`);
+      this._log?.warn?.(`unregisterSubscriber failed for ${topic}: ${err as Error}`);
     });
 
     subscription.close();
@@ -274,9 +275,9 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
       return false;
     }
 
-    this._unregisterPublisher(topic).catch((err) => {
+    this._unregisterPublisher(topic).catch((err: unknown) => {
       // This should never happen
-      this._log?.warn?.(`_unregisterPublisher failed for ${topic}: ${err}`);
+      this._log?.warn?.(`_unregisterPublisher failed for ${topic}: ${err as Error}`);
     });
 
     publication.close();
@@ -320,7 +321,10 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     const adjustedValue = isEmptyPlainObject(value) ? undefined : value;
     this.parameters.set(key, adjustedValue);
 
-    this._log?.debug?.(`subscribed ${callerApi} to param "${key}" (${String(adjustedValue)})`);
+    this._log?.debug?.(
+      // workaround for https://github.com/typescript-eslint/typescript-eslint/issues/10632
+      `subscribed ${callerApi} to param "${key}" (${String(adjustedValue as string)})`,
+    );
     return adjustedValue;
   }
 
@@ -338,6 +342,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     const didUnsubscribe = (value as number) === 1;
 
     this._log?.debug?.(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `unsubscribed ${callerApi} from param "${key}" (didUnsubscribe=${didUnsubscribe})`,
     );
     return didUnsubscribe;
@@ -374,14 +379,16 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
 
     // Update the local map of all subscribed parameters
     for (let i = 0; i < keys.length; i++) {
-      const key = keys[i] as string;
+      const key = keys[i]!;
       const entry = res[i];
       if (entry instanceof XmlRpcFault) {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
         this._log?.warn?.(`subscribeAllParams faulted on "${key}" (${entry})`);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
         this.emit("error", new Error(`subscribeAllParams faulted on "${key}" (${entry})`));
         continue;
       }
-      const [status, msg, value] = entry as RosXmlRpcResponse;
+      const [status, msg, value] = entry!;
       if (status !== OK) {
         this._log?.warn?.(`subscribeAllParams not ok for "${key}" (status=${status}): ${msg}`);
         this.emit(
@@ -395,6 +402,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
       this.parameters.set(key, adjustedValue);
     }
 
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     this._log?.debug?.(`subscribed ${callerApi} to parameters (${keys})`);
     return this.parameters;
   }
@@ -479,6 +487,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     try {
       res = await apiClient.requestTopic(name, topic, [["TCPROS"]]);
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`requestTopic("${topic}") from ${apiClient.url()} failed. err=${err}`);
     }
     const [status, msg, protocol] = res;
@@ -546,9 +555,9 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     // Add any new publishers that have appeared
     for (const addPub of added) {
       this._log?.info?.(`publisher ${addPub} for ${sub.name} came online, connecting`);
-      this._subscribeToPublisher(addPub, sub).catch((err) => {
+      this._subscribeToPublisher(addPub, sub).catch((err: unknown) => {
         // This should never be called, this._subscribeToPublisher() is not expected to throw
-        this._log?.warn?.(`subscribe to publisher unexpectedly failed: ${err}`);
+        this._log?.warn?.(`subscribe to publisher unexpectedly failed: ${err as Error}`);
       });
     }
 
@@ -568,7 +577,8 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
         "error",
         new Error(`${client.toString()} connected to non-published topic ${topic}`),
       );
-      return client.close();
+      client.close();
+      return;
     }
 
     this._log?.info?.(
@@ -602,6 +612,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
 
     if (!Array.isArray(publishers)) {
       throw new Error(
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
         `registerSubscriber() did not receive a list of publishers. value=${publishers}`,
       );
     }
@@ -631,6 +642,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     this._log?.debug?.(`registered publisher for ${publication.name} (${publication.dataType})`);
     if (!Array.isArray(subscribers)) {
       throw new Error(
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         `registerPublisher() did not receive a list of subscribers. value=${String(subscribers)}`,
       );
     }
@@ -702,7 +714,9 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     // Register with each publisher. Any failures communicating with individual node XML-RPC servers
     // or TCP sockets will be caught and retried
     await Promise.allSettled(
-      publishers.map(async (pubUrl) => await this._subscribeToPublisher(pubUrl, subscription)),
+      publishers.map(async (pubUrl) => {
+        await this._subscribeToPublisher(pubUrl, subscription);
+      }),
     );
   }
 
@@ -744,6 +758,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
         port,
         new Map<string, string>([
           ["topic", topic],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           ["md5sum", md5sum ?? "*"],
           ["callerid", this.name],
           ["type", dataType],
@@ -753,9 +768,9 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
       );
 
       if (!this.isSubscribedTo(topic)) {
-        socket.close().catch((err) => {
+        socket.close().catch((err: unknown) => {
           this._log?.warn?.(
-            `closing connection to ${address}:${port} for topic "${topic}" failed: ${err}`,
+            `closing connection to ${address}:${port} for topic "${topic}" failed: ${err as Error}`,
           );
         });
         return;
@@ -768,22 +783,22 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
       // Consider tracking failed RosFollower connections (node XML-RPC servers) and entering a
       // retry loop
       this._log?.warn?.(
-        `subscribing to ${topic} at ${pubUrl} failed (${err}), this connection will be dropped`,
+        `subscribing to ${topic} at ${pubUrl} failed (${err as Error}), this connection will be dropped`,
       );
       this.emit(
         "error",
         new Error(
-          `Subscribing to ${topic} at ${pubUrl} failed (${err}), this connection will be dropped`,
+          `Subscribing to ${topic} at ${pubUrl} failed (${err as Error}), this connection will be dropped`,
         ),
       );
       return;
     }
 
     // Asynchronously initiate the socket connection. This will enter a retry loop on failure
-    connection.connect().catch((err) => {
+    connection.connect().catch((err: unknown) => {
       // This should never happen, connect() is assumed not to throw
       this._log?.warn?.(
-        `connecting to ${address}:${port} for topic "${topic}" unexpectedly failed: ${err}`,
+        `connecting to ${address}:${port} for topic "${topic}" unexpectedly failed: ${err as Error}`,
       );
     });
   }
@@ -810,6 +825,7 @@ export class RosNode extends EventEmitter<RosNodeEvents> {
     const ifaces = getNetworkInterfaces();
     for (const iface of ifaces) {
       if (
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         (iface.family !== "IPv4" && iface.family !== "IPv6") ||
         iface.internal ||
         iface.address.length === 0

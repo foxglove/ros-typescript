@@ -27,7 +27,7 @@ export class XmlRpcClient {
     const body = serializeMethodCall(method, params, this.encoding);
     const headers = this.headers;
 
-    let res: fetch.Response;
+    let res: Awaited<ReturnType<typeof fetch>>;
     try {
       res = await fetch(this.url, { method: "POST", headers, body });
     } catch (err) {

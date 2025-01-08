@@ -57,10 +57,10 @@ export interface TcpServer {
   on(eventName: "error", listener: (err: Error) => void): this;
 }
 
-export interface TcpListen {
-  (options: { host?: string; port?: number; backlog?: number }): Promise<TcpServer>;
-}
+export type TcpListen = (options: {
+  host?: string;
+  port?: number;
+  backlog?: number;
+}) => Promise<TcpServer>;
 
-export interface TcpSocketCreate {
-  (options: { host: string; port: number }): Promise<TcpSocket>;
-}
+export type TcpSocketCreate = (options: { host: string; port: number }) => Promise<TcpSocket>;

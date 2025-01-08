@@ -12,7 +12,7 @@ function CheckArguments(args: XmlRpcValue[], expected: string[]): Error | undefi
 
   for (let i = 0; i < args.length; i++) {
     if (expected[i] !== "*" && typeof args[i] !== expected[i]) {
-      return new Error(`Expected "${expected[i]}" for arg ${i}, got "${typeof args[i]}"`);
+      return new Error(`Expected "${expected[i]!}" for arg ${i}, got "${typeof args[i]}"`);
     }
   }
 
@@ -44,6 +44,7 @@ export class RosMaster {
 
   async start(hostname: string, port?: number): Promise<void> {
     await this._server.listen(port, undefined, 10);
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     this._url = `http://${hostname}:${this._server.port()}/`;
 
     this._server.setHandler("registerService", this.registerService);
@@ -93,7 +94,7 @@ export class RosMaster {
     if (!this._services.has(service)) {
       this._services.set(service, new Map<string, string>());
     }
-    const serviceProviders = this._services.get(service) as Map<string, string>;
+    const serviceProviders = this._services.get(service)!;
 
     serviceProviders.set(callerId, serviceApi);
     this._nodes.set(callerId, callerApi);
@@ -145,15 +146,13 @@ export class RosMaster {
     if (!this._subscriptions.has(topic)) {
       this._subscriptions.set(topic, new Set<string>());
     }
-    const subscribers = this._subscriptions.get(topic) as Set<string>;
+    const subscribers = this._subscriptions.get(topic)!;
     subscribers.add(callerId);
 
     this._nodes.set(callerId, callerApi);
 
     const publishers = Array.from((this._publications.get(topic) ?? new Set<string>()).values());
-    const publisherApis = publishers
-      .map((p) => this._nodes.get(p))
-      .filter((a) => a != undefined) as string[];
+    const publisherApis = publishers.map((p) => this._nodes.get(p)).filter((a) => a != undefined);
     return [1, "", publisherApis];
   };
 
@@ -202,26 +201,26 @@ export class RosMaster {
     if (!this._publications.has(topic)) {
       this._publications.set(topic, new Set<string>());
     }
-    const publishers = this._publications.get(topic) as Set<string>;
+    const publishers = this._publications.get(topic)!;
     publishers.add(callerId);
 
     this._topics.set(topic, topicType);
     this._nodes.set(callerId, callerApi);
 
     const subscribers = Array.from((this._subscriptions.get(topic) ?? new Set<string>()).values());
-    const subscriberApis = subscribers
-      .map((s) => this._nodes.get(s))
-      .filter((a) => a != undefined) as string[];
+    const subscriberApis = subscribers.map((s) => this._nodes.get(s)).filter((a) => a != undefined);
 
     // Inform all subscribers of the new publisher
     const publisherApis = Array.from(publishers.values())
       .sort()
       .map((p) => this._nodes.get(p))
-      .filter((a) => a != undefined) as string[];
+      .filter((a) => a != undefined);
     for (const api of subscriberApis) {
       new RosFollowerClient(api)
         .publisherUpdate(callerId, topic, publisherApis)
-        .catch((apiErr) => this._log?.warn?.(`publisherUpdate call to ${api} failed: ${apiErr}`));
+        .catch((apiErr: unknown) =>
+          this._log?.warn?.(`publisherUpdate call to ${api} failed: ${apiErr as Error}`),
+        );
     }
 
     return [1, "", subscriberApis];
@@ -357,7 +356,7 @@ export class RosMaster {
       return [0, `no providers for service "${service}"`, ""];
     }
 
-    const serviceUrl = serviceProviders.values().next().value as string;
+    const serviceUrl = serviceProviders.values().next().value!;
     return [1, "", serviceUrl];
   };
 
@@ -398,7 +397,9 @@ export class RosMaster {
         for (const api of subscribers.values()) {
           new RosFollowerClient(api)
             .paramUpdate(callerId, curKey, curValue)
-            .catch((apiErr) => this._log?.warn?.(`paramUpdate call to ${api} failed: ${apiErr}`));
+            .catch((apiErr: unknown) =>
+              this._log?.warn?.(`paramUpdate call to ${api} failed: ${apiErr as Error}`),
+            );
         }
       }
     }
@@ -450,7 +451,7 @@ export class RosMaster {
     if (!this._paramSubscriptions.has(key)) {
       this._paramSubscriptions.set(key, new Map<string, string>());
     }
-    const subscriptions = this._paramSubscriptions.get(key) as Map<string, string>;
+    const subscriptions = this._paramSubscriptions.get(key)!;
 
     subscriptions.set(callerId, callerApi);
 
