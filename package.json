@@ -5,7 +5,7 @@
   ],
   "scripts": {
     "lint": "eslint --plugin file-progress --rule 'file-progress/activate: 1'",
-    "lint:ci": "eslint .",
+    "lint:ci": "eslint",
     "build": "yarn workspaces foreach -Ap --topological-dev run build",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },

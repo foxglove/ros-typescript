@@ -49,7 +49,7 @@ jobs:
       - run: yarn install --immutable
 
       - run: yarn workspaces foreach -Rp --topological-dev --from @foxglove/${{ matrix.package }} run build
-      - run: yarn lint packages/${{ matrix.package }}
+      - run: yarn lint:ci packages/${{ matrix.package }}
       - run: yarn workspace @foxglove/${{ matrix.package }} run test
 
       - name: build xmlrpc examples
