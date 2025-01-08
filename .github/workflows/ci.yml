@@ -7,9 +7,6 @@ on:
   pull_request:
     branches: "**"
 
-permissions:
-  contents: read
-
 jobs:
   build:
     name: ${{ matrix.package }}
@@ -32,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
       # https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions
       id-token: write
 
