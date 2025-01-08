@@ -48,7 +48,7 @@ jobs:
 
       - run: yarn install --immutable
 
-      - run: yarn workspaces foreach -Rpt --from ${{ matrix.package }} run build
+      - run: yarn workspaces foreach -Rpt --from @foxglove/${{ matrix.package }} run build
       - run: yarn lint packages/${{ matrix.package }}
       - run: yarn workspace @foxglove/${{ matrix.package }} run test
 
