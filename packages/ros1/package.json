@@ -41,7 +41,7 @@
     "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit",
     "roscore": "node -r esbuild-runner/register src/nodejs/roscore.ts"
   },
   "engines": {

@@ -37,7 +37,7 @@
     "build:web": "yarn run esbuild --bundle --outfile=dist/web.js bench/web.ts",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "bench": "ts-node --project tsconfig.cjs.json bench/index.ts",
     "bench:benny": "ts-node --project tsconfig.cjs.json bench/benny.ts",
     "bench:web": "yarn build:web && open bench/web.html"

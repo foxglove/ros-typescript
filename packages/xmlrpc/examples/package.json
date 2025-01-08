@@ -9,7 +9,7 @@
     "server": "ts-node server.ts"
   },
   "dependencies": {
-    "@foxglove/xmlrpc": "../"
+    "@foxglove/xmlrpc": "portal:../"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
