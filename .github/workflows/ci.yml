@@ -48,13 +48,13 @@ jobs:
 
       - run: yarn install --immutable
 
-      - run: yarn workspaces foreach -Rpt --from @foxglove/${{ matrix.package }} run build
+      - run: yarn workspaces foreach -Rp --topological-dev --from @foxglove/${{ matrix.package }} run build
       - run: yarn lint packages/${{ matrix.package }}
       - run: yarn workspace @foxglove/${{ matrix.package }} run test
 
       - name: build xmlrpc examples
         if: ${{ matrix.package == 'xmlrpc' }}
-        run: yarn tsc -b
+        run: yarn install --immutable && yarn tsc -b
         working-directory: packages/xmlrpc/examples
 
       - run: yarn workspace @foxglove/${{ matrix.package }} pack
@@ -90,7 +90,7 @@ jobs:
 
       - run: yarn install --immutable
 
-      - run: yarn workspaces foreach -Rpt --from @foxglove/rosbag run build
+      - run: yarn workspaces foreach -Rp --topological-dev --from @foxglove/rosbag run build
       - run: yarn workspace @foxglove/rosbag docs
 
       - name: Deploy to GitHub pages
@@ -115,5 +115,5 @@ jobs:
 
       - run: yarn install --immutable
 
-      - run: yarn workspaces foreach -Rpt --from @foxglove/rosmsg run build
+      - run: yarn workspaces foreach -Rp --topological-dev --from @foxglove/rosmsg run build
       - run: yarn workspace @foxglove/rosmsg bench:benny
