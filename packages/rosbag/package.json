@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/foxglove/rosbag.git"
+    "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
