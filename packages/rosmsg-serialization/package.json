@@ -48,8 +48,8 @@
   "devDependencies": {
     "@foxglove/rosmsg": "workspace:*",
     "@foxglove/tsconfig": "2.0.0",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.10.5",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.10.5",
     "benny": "3.7.1",
     "console-table-printer": "2.12.1",
     "esbuild": "0.17.11",

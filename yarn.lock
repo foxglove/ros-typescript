@@ -1042,8 +1042,8 @@ __metadata:
     "@foxglove/message-definition": "npm:^0.3.1"
     "@foxglove/rosmsg": "workspace:*"
     "@foxglove/tsconfig": "npm:2.0.0"
-    "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.10.5"
+    "@types/jest": "npm:29.5.14"
+    "@types/node": "npm:22.10.5"
     benny: "npm:3.7.1"
     console-table-printer: "npm:2.12.1"
     esbuild: "npm:0.17.11"
@@ -1080,15 +1080,15 @@ __metadata:
   resolution: "@foxglove/rosmsg@workspace:packages/rosmsg"
   dependencies:
     "@foxglove/message-definition": "npm:^0.3.1"
-    "@types/jest": "npm:^29.5.14"
-    "@types/nearley": "npm:^2.11.2"
+    "@types/jest": "npm:29.5.14"
+    "@types/nearley": "npm:2.11.2"
     jest: "npm:29.7.0"
     md5-typescript: "npm:^1.0.5"
     moo: "npm:0.5.1"
     nearley: "npm:2.20.1"
     nearley-loader: "npm:2.0.0"
     prettier: "npm:3.4.2"
-    ts-jest: "npm:^29.2.5"
+    ts-jest: "npm:29.2.5"
     ts-loader: "npm:9.5.1"
     typescript: "npm:5.7.2"
     webpack: "npm:5.74.0"
@@ -1975,10 +1975,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nearley@npm:^2.11.2":
-  version: 2.11.5
-  resolution: "@types/nearley@npm:2.11.5"
-  checksum: 10c0/f9144e7426681bc53a0958e2dbfbe4d85b69fab1ba9908edf22fb2949fd5844cd3816e341c23eb6fc5596a51706d25b7c99079fd2d0b41701aeec98dfe33303f
+"@types/nearley@npm:2.11.2":
+  version: 2.11.2
+  resolution: "@types/nearley@npm:2.11.2"
+  checksum: 10c0/b4c5b62c71e4cb881a7301f2dfae7b5df545debf06c9dd964683dd728dacce0a65dd1cba58d682088b4bfb773b37a12488cc3a95914451598e4c8d78727daf43
   languageName: node
   linkType: hard
 
@@ -9686,7 +9686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:29.2.5, ts-jest@npm:^29.2.5":
+"ts-jest@npm:29.2.5":
   version: 29.2.5
   resolution: "ts-jest@npm:29.2.5"
   dependencies:
