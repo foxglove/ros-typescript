@@ -24,7 +24,7 @@ This repository is home to several TypeScript-based NPM packages for ROS 1 and R
 
 ## Publishing
 
-Packages are automatically published a tag named `packagename/vX.Y.Z` is pushed. You can use the [GitHub Releases UI](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) to create a release and tag.
+Packages are automatically published when a tag named `packagename/vX.Y.Z` is pushed. You can use the [GitHub Releases UI](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) to create a release and tag.
 
 ## Stay in touch
 
