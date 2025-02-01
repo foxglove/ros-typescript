@@ -724,20 +724,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@foxglove/message-definition@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@foxglove/message-definition@npm:0.2.0"
-  checksum: 10c0/d9b873ae2b358882a58abab5d081fd37cb63e8c9005f333f5b635019eebe2b73e5d805797c79c2e3aef5acf6c80efd585c8be212c9a8527c121d5fd5b61f100d
-  languageName: node
-  linkType: hard
-
-"@foxglove/message-definition@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@foxglove/message-definition@npm:0.3.1"
-  checksum: 10c0/521fadfadcdb9bbde7d28908e429b93a387ded524f8abeb361f27ae5a6f36b8d5dc29cf23dbf0791cc366de59c48dc03aede861faa59df1c64d030b6c659981a
-  languageName: node
-  linkType: hard
-
 "@foxglove/message-definition@npm:^0.4.0":
   version: 0.4.0
   resolution: "@foxglove/message-definition@npm:0.4.0"
@@ -758,7 +744,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@foxglove/ros1@workspace:packages/ros1"
   dependencies:
-    "@foxglove/message-definition": "npm:^0.2.0"
+    "@foxglove/message-definition": "npm:^0.4.0"
     "@foxglove/rosmsg": "workspace:^"
     "@foxglove/rosmsg-serialization": "workspace:^"
     "@foxglove/xmlrpc": "workspace:^"
@@ -868,7 +854,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@foxglove/rosmsg-msgs-common@workspace:packages/rosmsg-msgs-common"
   dependencies:
-    "@foxglove/message-definition": "npm:^0.3.1"
+    "@foxglove/message-definition": "npm:^0.4.0"
     "@foxglove/rosmsg": "workspace:^"
     "@types/node": "npm:^22.10.5"
     esbuild: "npm:0.24.2"
@@ -882,7 +868,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@foxglove/rosmsg-serialization@workspace:packages/rosmsg-serialization"
   dependencies:
-    "@foxglove/message-definition": "npm:^0.3.1"
+    "@foxglove/message-definition": "npm:^0.4.0"
     "@foxglove/rosmsg": "workspace:*"
     "@foxglove/tsconfig": "npm:2.0.0"
     "@types/jest": "npm:29.5.14"
@@ -922,7 +908,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@foxglove/rosmsg@workspace:packages/rosmsg"
   dependencies:
-    "@foxglove/message-definition": "npm:^0.3.1"
+    "@foxglove/message-definition": "npm:^0.4.0"
     "@types/jest": "npm:29.5.14"
     "@types/nearley": "npm:2.11.2"
     jest: "npm:29.7.0"

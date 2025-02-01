@@ -57,7 +57,7 @@
     "typescript": "5.7.2"
   },
   "dependencies": {
-    "@foxglove/message-definition": "^0.2.0",
+    "@foxglove/message-definition": "^0.4.0",
     "@foxglove/rosmsg": "workspace:^",
     "@foxglove/rosmsg-serialization": "workspace:^",
     "@foxglove/xmlrpc": "workspace:^",
