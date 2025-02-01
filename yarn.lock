@@ -794,7 +794,7 @@ __metadata:
     "@foxglove/rosbag2": "workspace:^"
     "@types/better-sqlite3": "npm:^7.6.12"
     "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.10.5"
+    "@types/node": "npm:^22.13.0"
     better-sqlite3: "npm:^11.6.0"
     jest: "npm:29.7.0"
     prettier: "npm:3.4.2"
@@ -848,7 +848,7 @@ __metadata:
     "@foxglove/rostime": "workspace:^"
     "@foxglove/tsconfig": "npm:1.1.0"
     "@types/jest": "npm:29.5.14"
-    "@types/node": "npm:22.10.5"
+    "@types/node": "npm:22.13.0"
     compressjs: "npm:1.0.3"
     cross-env: "npm:7.0.3"
     heap: "npm:^0.2.7"
@@ -870,7 +870,7 @@ __metadata:
   dependencies:
     "@foxglove/message-definition": "npm:^0.3.1"
     "@foxglove/rosmsg": "workspace:^"
-    "@types/node": "npm:^22.10.5"
+    "@types/node": "npm:^22.13.0"
     esbuild: "npm:0.24.2"
     esbuild-runner: "npm:2.2.2"
     prettier: "npm:3.4.2"
@@ -886,7 +886,7 @@ __metadata:
     "@foxglove/rosmsg": "workspace:*"
     "@foxglove/tsconfig": "npm:2.0.0"
     "@types/jest": "npm:29.5.14"
-    "@types/node": "npm:22.10.5"
+    "@types/node": "npm:22.13.0"
     benny: "npm:3.7.1"
     console-table-printer: "npm:2.12.1"
     esbuild: "npm:0.24.2"
@@ -988,7 +988,7 @@ __metadata:
   dependencies:
     "@foxglove/just-fetch": "npm:^1.2.4"
     "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.10.5"
+    "@types/node": "npm:^22.13.0"
     "@types/sax": "npm:^1.2.3"
     byte-base64: "npm:^1.1.0"
     jest: "npm:29.7.0"
@@ -1760,12 +1760,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:22.10.5, @types/node@npm:^22.10.5":
+"@types/node@npm:*":
   version: 22.10.5
   resolution: "@types/node@npm:22.10.5"
   dependencies:
     undici-types: "npm:~6.20.0"
   checksum: 10c0/6a0e7d1fe6a86ef6ee19c3c6af4c15542e61aea2f4cee655b6252efb356795f1f228bc8299921e82924e80ff8eca29b74d9dd0dd5cc1a90983f892f740b480df
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:22.13.0, @types/node@npm:^22.13.0":
+  version: 22.13.0
+  resolution: "@types/node@npm:22.13.0"
+  dependencies:
+    undici-types: "npm:~6.20.0"
+  checksum: 10c0/9cf6358b2863ae7bf9588ca1cc3d87f6a6289c3880e95a046a188760666870e2c12502df8b0a473bec8aa8ffee85e025d60382a6104b10f197120793235b2c22
   languageName: node
   linkType: hard
 
