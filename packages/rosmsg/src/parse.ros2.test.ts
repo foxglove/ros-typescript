@@ -1443,5 +1443,24 @@ string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
         // no enums inferred as the first type after constants doesn't match constant type
       ]);
     });
+
+    it("skips enums if requested", () => {
+      expect(
+        parse("uint8 OFF=0\nuint8 ON=1\nuint8 state", {
+          ros2: true,
+          topLevelTypeName: "Dummy",
+          skipEnums: true,
+        }),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint8", name: "state", isArray: false, isComplex: false },
+          ],
+        },
+      ]);
+    });
   });
 });
