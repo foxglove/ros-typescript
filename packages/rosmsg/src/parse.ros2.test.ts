@@ -7,13 +7,21 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-import { parse } from "./parse";
+import { ParseOptions, parse as parseRos1OrRos2 } from "./parse";
+import { NamedMessageDefinition } from "./types";
+
+// Make it a type error to omit {ros2: true} in this ros2 test file
+const parse: (
+  messageDefinition: string,
+  options: ParseOptions & { ros2: true },
+) => NamedMessageDefinition[] = parseRos1OrRos2;
 
 describe("parseMessageDefinition", () => {
   it("parses a single field from a single message", () => {
-    const types = parse("string name", { ros2: true });
+    const types = parse("string name", { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -23,7 +31,6 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -36,8 +43,9 @@ describe("parseMessageDefinition", () => {
     [`#comment`, undefined],
     [` #comment`, undefined],
   ])("parses string array default value %s", (literal, value) => {
-    expect(parse(`string[] name ${literal}`, { ros2: true })).toEqual([
+    expect(parse(`string[] name ${literal}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -48,7 +56,6 @@ describe("parseMessageDefinition", () => {
             defaultValue: value,
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -56,12 +63,15 @@ describe("parseMessageDefinition", () => {
   it.each([`[,]`, `[,a]`, `[a,']`, `[`, `]`, `[a,b]x`])(
     "rejects invalid string array literal %s, but accepts it as a string literal",
     (literal) => {
-      expect(() => parse(`string[] name ${literal}`, { ros2: true })).toThrow(
+      expect(() =>
+        parse(`string[] name ${literal}`, { ros2: true, topLevelTypeName: "Dummy" }),
+      ).toThrow(
         /Expected comma or end of array|Expected array element before comma|Array must start with \[ and end with \]/,
       );
 
-      expect(parse(`string name ${literal}`, { ros2: true })).toEqual([
+      expect(parse(`string name ${literal}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
         {
+          name: "Dummy",
           definitions: [
             {
               arrayLength: undefined,
@@ -72,12 +82,14 @@ describe("parseMessageDefinition", () => {
               defaultValue: literal,
             },
           ],
-          name: undefined,
         },
       ]);
 
-      expect(parse(`string name ${literal}#comment`, { ros2: true })).toEqual([
+      expect(
+        parse(`string name ${literal}#comment`, { ros2: true, topLevelTypeName: "Dummy" }),
+      ).toEqual([
         {
+          name: "Dummy",
           definitions: [
             {
               arrayLength: undefined,
@@ -88,12 +100,14 @@ describe("parseMessageDefinition", () => {
               defaultValue: literal,
             },
           ],
-          name: undefined,
         },
       ]);
 
-      expect(parse(`string name ${literal} #comment`, { ros2: true })).toEqual([
+      expect(
+        parse(`string name ${literal} #comment`, { ros2: true, topLevelTypeName: "Dummy" }),
+      ).toEqual([
         {
+          name: "Dummy",
           definitions: [
             {
               arrayLength: undefined,
@@ -104,36 +118,39 @@ describe("parseMessageDefinition", () => {
               defaultValue: literal,
             },
           ],
-          name: undefined,
         },
       ]);
     },
   );
   it("rejects valid tokens that don't fully match a parser rule", () => {
-    expect(() => parse("abc", { ros2: true })).toThrow("Could not parse line: 'abc'");
+    expect(() => parse("abc", { ros2: true, topLevelTypeName: "Dummy" })).toThrow(
+      "Could not parse line: 'abc'",
+    );
   });
 
   it.each(["A", "aB", "a_", "_a", "a__b", "3a"])("rejects invalid field name %s", (name) => {
-    expect(() => parse(`string ${name}`, { ros2: true })).toThrow();
+    expect(() => parse(`string ${name}`, { ros2: true, topLevelTypeName: "Dummy" })).toThrow();
   });
   it.each(["a", "aB", "A_", "_A", "A__B", "3A"])("rejects invalid constant name %s", (name) => {
-    expect(() => parse(`string ${name} = 'x'`, { ros2: true })).toThrow();
+    expect(() =>
+      parse(`string ${name} = 'x'`, { ros2: true, topLevelTypeName: "Dummy" }),
+    ).toThrow();
   });
   it.each(["a", "foo_bar", "foo1_2bar"])("accepts valid field name %s", (name) => {
-    expect(parse(`string ${name}`, { ros2: true })).toEqual([
+    expect(parse(`string ${name}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           { arrayLength: undefined, isArray: false, isComplex: false, name, type: "string" },
         ],
-        name: undefined,
       },
     ]);
   });
   it.each(["A", "A_B", "FOO1_2BAR"])("accepts valid constant name %s", (name) => {
-    expect(parse(`string ${name} = 'x'`, { ros2: true })).toEqual([
+    expect(parse(`string ${name} = 'x'`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [{ name, type: "string", isConstant: true, value: "x", valueText: "'x'" }],
-        name: undefined,
       },
     ]);
   });
@@ -145,9 +162,10 @@ describe("parseMessageDefinition", () => {
       MSG: geometry_msgs/Point
       float64 x
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: true,
@@ -156,7 +174,6 @@ describe("parseMessageDefinition", () => {
             type: "geometry_msgs/Point",
           },
         ],
-        name: undefined,
       },
       {
         definitions: [
@@ -173,9 +190,10 @@ describe("parseMessageDefinition", () => {
   });
 
   it("normalizes aliases", () => {
-    const types = parse("char x\nbyte y", { ros2: true });
+    const types = parse("char x\nbyte y", { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: false,
@@ -190,7 +208,6 @@ describe("parseMessageDefinition", () => {
             type: "uint8",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -204,9 +221,10 @@ describe("parseMessageDefinition", () => {
     ### foo bar baz?
     string last_name
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: false,
@@ -221,15 +239,15 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("parses variable length string array", () => {
-    const types = parse("string[] names", { ros2: true });
+    const types = parse("string[] names", { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: true,
@@ -238,15 +256,15 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("parses fixed length string array", () => {
-    const types = parse("string[3] names", { ros2: true });
+    const types = parse("string[3] names", { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: 3,
@@ -256,7 +274,6 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -270,9 +287,10 @@ describe("parseMessageDefinition", () => {
     string name
     uint16 id
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: false,
@@ -287,9 +305,9 @@ describe("parseMessageDefinition", () => {
             type: "custom_type/Account",
           },
         ],
-        name: undefined,
       },
       {
+        name: "custom_type/Account",
         definitions: [
           {
             isArray: false,
@@ -304,7 +322,6 @@ describe("parseMessageDefinition", () => {
             type: "uint16",
           },
         ],
-        name: "custom_type/Account",
       },
     ]);
   });
@@ -326,9 +343,10 @@ describe("parseMessageDefinition", () => {
       string BLANKSPACECOMMENT= # Blank with comment after space
       string ESCAPED_QUOTE = \\'a#comment
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "FOO",
@@ -429,7 +447,6 @@ describe("parseMessageDefinition", () => {
             valueText: "\\'a",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -439,9 +456,10 @@ describe("parseMessageDefinition", () => {
       bool ALIVE=True
       bool DEAD=False
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "ALIVE",
@@ -458,14 +476,14 @@ describe("parseMessageDefinition", () => {
             valueText: "False",
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("handles type names for fields", () => {
-    expect(parse(`time time`)).toEqual([
+    expect(parse(`time time`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "time",
@@ -474,12 +492,12 @@ describe("parseMessageDefinition", () => {
             isComplex: false,
           },
         ],
-        name: undefined,
       },
     ]);
 
-    expect(parse(`time time_ref`)).toEqual([
+    expect(parse(`time time_ref`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "time_ref",
@@ -488,19 +506,22 @@ describe("parseMessageDefinition", () => {
             isComplex: false,
           },
         ],
-        name: undefined,
       },
     ]);
 
     expect(
-      parse(`
+      parse(
+        `
     true true
     ============
     MSG: custom/true
     bool false
-    `),
+    `,
+        { ros2: true, topLevelTypeName: "Dummy" },
+      ),
     ).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "true",
@@ -509,9 +530,9 @@ describe("parseMessageDefinition", () => {
             isComplex: true,
           },
         ],
-        name: undefined,
       },
       {
+        name: "custom/true",
         definitions: [
           {
             name: "false",
@@ -520,7 +541,6 @@ describe("parseMessageDefinition", () => {
             isComplex: false,
           },
         ],
-        name: "custom/true",
       },
     ]);
   });
@@ -534,26 +554,28 @@ describe("parseMessageDefinition", () => {
     MSG: abc1/Foo2
     int32 data
     `,
-        { ros2: true },
+        { ros2: true, topLevelTypeName: "Dummy" },
       ),
     ).toEqual([
       {
+        name: "Dummy",
         definitions: [{ isArray: false, isComplex: true, name: "value0", type: "abc1/Foo2" }],
-        name: undefined,
       },
       {
-        definitions: [{ isArray: false, isComplex: false, name: "data", type: "int32" }],
         name: "abc1/Foo2",
+        definitions: [{ isArray: false, isComplex: false, name: "data", type: "int32" }],
       },
     ]);
   });
 
   it.each(["\\", "hi\\", String.raw`'abc\'`])("rejects invalid string literal %s", (str) => {
-    expect(() => parse(`string x ${str}`, { ros2: true })).toThrow("Could not parse line");
+    expect(() => parse(`string x ${str}`, { ros2: true, topLevelTypeName: "Dummy" })).toThrow(
+      "Could not parse line",
+    );
     // "Invalid field name" is not an ideal error message but that's ok. It just means the = parsed
     // as potentially part of a default value, but the name is a constant name (uppercase) rather
     // than a field name.
-    expect(() => parse(`string X = ${str}`, { ros2: true })).toThrow(
+    expect(() => parse(`string X = ${str}`, { ros2: true, topLevelTypeName: "Dummy" })).toThrow(
       /Invalid field name|Could not parse line/,
     );
   });
@@ -565,18 +587,18 @@ describe("parseMessageDefinition", () => {
     [`\\foo`, `\foo`],
     [`[a\\,b]`, `[a\\,b]`],
   ])("parses unquoted string default/constant value %s", (literal, value) => {
-    expect(parse(`string x ${literal}`, { ros2: true })).toEqual([
+    expect(parse(`string x ${literal}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           { isArray: false, isComplex: false, name: "x", type: "string", defaultValue: value },
         ],
-        name: undefined,
       },
     ]);
-    expect(parse(`string X = ${literal}`, { ros2: true })).toEqual([
+    expect(parse(`string X = ${literal}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [{ isConstant: true, name: "X", type: "string", valueText: literal, value }],
-        name: undefined,
       },
     ]);
   });
@@ -592,29 +614,33 @@ describe("parseMessageDefinition", () => {
     const expected = `hello'"\x07\b\f\n\r\t\v\\${String.fromCodePoint(
       0o12,
     )}\x019\x10\u1010${String.fromCodePoint(0x2f804)}`;
-    expect(parse(`string x ${str}`, { ros2: true })).toEqual([
+    expect(parse(`string x ${str}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           { name: "x", type: "string", defaultValue: expected, isArray: false, isComplex: false },
         ],
       },
     ]);
-    expect(parse(`string X = ${str} #comment`, { ros2: true })).toEqual([
+    expect(parse(`string X = ${str} #comment`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           { name: "X", type: "string", isConstant: true, value: expected, valueText: str },
         ],
       },
     ]);
-    expect(parse(`string X =${str}`, { ros2: true })).toEqual([
+    expect(parse(`string X =${str}`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           { name: "X", type: "string", isConstant: true, value: expected, valueText: str },
         ],
       },
     ]);
-    expect(parse(`string X =${str}#comment`, { ros2: true })).toEqual([
+    expect(parse(`string X =${str}#comment`, { ros2: true, topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           { name: "X", type: "string", isConstant: true, value: expected, valueText: str },
         ],
@@ -623,7 +649,7 @@ describe("parseMessageDefinition", () => {
   });
 
   it.each(["int32 x abc", "bool x abc"])("rejects literals of incorrect type: %s", (line) => {
-    expect(() => parse(line, { ros2: true })).toThrow();
+    expect(() => parse(line, { ros2: true, topLevelTypeName: "Dummy" })).toThrow();
   });
 
   it("parses default values", () => {
@@ -642,9 +668,10 @@ describe("parseMessageDefinition", () => {
       string l '\\'hello\\''
       string m \\foo
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "a",
@@ -738,7 +765,6 @@ describe("parseMessageDefinition", () => {
             isComplex: false,
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -798,9 +824,10 @@ string function
 
 # The line in the file the message came from.
 uint32 line`;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             type: "uint8",
@@ -901,10 +928,11 @@ MSG: std_msgs/msg/Header
 builtin_interfaces/msg/Time stamp
 string frame_id
     `,
-        { ros2: true },
+        { ros2: true, topLevelTypeName: "Dummy" },
       ),
     ).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: false,
@@ -919,9 +947,9 @@ string frame_id
             type: "rosbridge_msgs/msg/ConnectedClient",
           },
         ],
-        name: undefined,
       },
       {
+        name: "rosbridge_msgs/msg/ConnectedClient",
         definitions: [
           {
             isArray: false,
@@ -937,9 +965,9 @@ string frame_id
             type: "time",
           },
         ],
-        name: "rosbridge_msgs/msg/ConnectedClient",
       },
       {
+        name: "std_msgs/msg/Header",
         definitions: [
           {
             isArray: false,
@@ -955,7 +983,6 @@ string frame_id
             upperBound: undefined,
           },
         ],
-        name: "std_msgs/msg/Header",
       },
     ]);
   });
@@ -976,10 +1003,11 @@ string[<=5] up_to_five_unbounded_strings
 string<=10[] unbounded_array_of_string_up_to_ten_characters_each
 string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
 `,
-        { ros2: true },
+        { ros2: true, topLevelTypeName: "Dummy" },
       ),
     ).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             isArray: true,
@@ -1039,13 +1067,15 @@ string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
             upperBound: 10,
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("does not mixup types with same name but different namespace", () => {
     const messageDefinition = `
+      int32 dummy
+
+      ===
       MSG: visualization_msgs/msg/Marker
       int32 a
 
@@ -1061,8 +1091,19 @@ string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
       MSG: aruco_msgs/msg/MarkerArray
       Marker[] b
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
+      {
+        name: "Dummy",
+        definitions: [
+          {
+            type: "int32",
+            isArray: false,
+            name: "dummy",
+            isComplex: false,
+          },
+        ],
+      },
       {
         name: "visualization_msgs/msg/Marker",
         definitions: [
@@ -1128,9 +1169,10 @@ string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
 
     uint64 u
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             type: "foo_msgs/msg/TypeA",
@@ -1182,9 +1224,10 @@ string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
     const messageDefinition = `
     byte[<=3] byte_values_default [0, 1, 255]
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             type: "uint8",
@@ -1197,5 +1240,208 @@ string<=10[<=5] up_to_five_strings_up_to_ten_characters_each
         ],
       },
     ]);
+  });
+
+  describe("enum inference", () => {
+    it("handles various constant types", () => {
+      expect(
+        parse(
+          `
+          uint32 OFF=0
+          uint32 ON=1
+          uint32 state
+          uint8 RED=0
+          uint8 YELLOW=1
+          uint8 GREEN=2
+          uint8 color
+          uint64 ONE=1
+          uint64 TWO=2
+          uint64 large_number
+
+          ===
+          MSG: my_msgs/NestedMsg
+          string FOO=foo
+          string BAR=bar
+          string str
+          bool YEP=True
+          bool NOPE=False
+          bool maybe
+          `,
+          { ros2: true, topLevelTypeName: "Dummy" },
+        ),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint32", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint32", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            {
+              type: "uint32",
+              name: "state",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.state",
+            },
+            { type: "uint8", name: "RED", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "YELLOW", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint8", name: "GREEN", isConstant: true, value: 2, valueText: "2" },
+            {
+              type: "uint8",
+              name: "color",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.color",
+            },
+            { type: "uint64", name: "ONE", isConstant: true, value: 1n, valueText: "1" },
+            { type: "uint64", name: "TWO", isConstant: true, value: 2n, valueText: "2" },
+            {
+              type: "uint64",
+              name: "large_number",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.large_number",
+            },
+          ],
+        },
+        {
+          name: "my_msgs/NestedMsg",
+          definitions: [
+            { type: "string", name: "FOO", isConstant: true, value: "foo", valueText: "foo" },
+            { type: "string", name: "BAR", isConstant: true, value: "bar", valueText: "bar" },
+            {
+              type: "string",
+              name: "str",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for my_msgs/NestedMsg.str",
+            },
+            { type: "bool", name: "YEP", isConstant: true, value: true, valueText: "True" },
+            { type: "bool", name: "NOPE", isConstant: true, value: false, valueText: "False" },
+            {
+              type: "bool",
+              name: "maybe",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for my_msgs/NestedMsg.maybe",
+            },
+          ],
+        },
+        {
+          name: "enum for Dummy.state",
+          definitions: [
+            { type: "uint32", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint32", name: "ON", isConstant: true, value: 1, valueText: "1" },
+          ],
+        },
+        {
+          name: "enum for Dummy.color",
+          definitions: [
+            { type: "uint8", name: "RED", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "YELLOW", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint8", name: "GREEN", isConstant: true, value: 2, valueText: "2" },
+          ],
+        },
+        {
+          name: "enum for Dummy.large_number",
+          definitions: [
+            { type: "uint64", name: "ONE", isConstant: true, value: 1n, valueText: "1" },
+            { type: "uint64", name: "TWO", isConstant: true, value: 2n, valueText: "2" },
+          ],
+        },
+        {
+          name: "enum for my_msgs/NestedMsg.str",
+          definitions: [
+            { type: "string", name: "FOO", isConstant: true, value: "foo", valueText: "foo" },
+            { type: "string", name: "BAR", isConstant: true, value: "bar", valueText: "bar" },
+          ],
+        },
+        {
+          name: "enum for my_msgs/NestedMsg.maybe",
+          definitions: [
+            { type: "bool", name: "YEP", isConstant: true, value: true, valueText: "True" },
+            { type: "bool", name: "NOPE", isConstant: true, value: false, valueText: "False" },
+          ],
+        },
+      ]);
+    });
+
+    it("handles multiple blocks of constants of the same type", () => {
+      expect(
+        parse(
+          `
+          uint8 OFF=0
+          uint8 ON=1
+          uint8 state1
+          uint8 FOO=0
+          uint8 BAR=1
+          uint8 state2
+          `,
+          { ros2: true, topLevelTypeName: "Dummy" },
+        ),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            {
+              type: "uint8",
+              name: "state1",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.state1",
+            },
+            { type: "uint8", name: "FOO", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "BAR", isConstant: true, value: 1, valueText: "1" },
+            {
+              type: "uint8",
+              name: "state2",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.state2",
+            },
+          ],
+        },
+        {
+          name: "enum for Dummy.state1",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+          ],
+        },
+        {
+          name: "enum for Dummy.state2",
+          definitions: [
+            { type: "uint8", name: "FOO", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "BAR", isConstant: true, value: 1, valueText: "1" },
+          ],
+        },
+      ]);
+    });
+
+    it("only assigns constants to matching types", () => {
+      expect(
+        parse(
+          `
+          uint8 OFF=0
+          uint8 ON=1
+          uint32 state32
+          uint8 state8
+          `,
+          { ros2: true, topLevelTypeName: "Dummy" },
+        ),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint32", name: "state32", isArray: false, isComplex: false },
+            { type: "uint8", name: "state8", isArray: false, isComplex: false },
+          ],
+        },
+        // no enums inferred as the first type after constants doesn't match constant type
+      ]);
+    });
   });
 });

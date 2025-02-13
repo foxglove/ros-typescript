@@ -13,9 +13,10 @@ import { fixupTypes, parse } from "./parse";
 
 describe("parseMessageDefinition", () => {
   it("parses a single field from a single message", () => {
-    const types = parse("string name");
+    const types = parse("string name", { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -25,30 +26,29 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("rejects valid tokens that don't fully match a parser rule", () => {
-    expect(() => parse("abc")).toThrow("Could not parse line: 'abc'");
+    expect(() => parse("abc", { topLevelTypeName: "x" })).toThrow("Could not parse line: 'abc'");
   });
 
   it.each(["_a", "3a"])("rejects invalid field name %s", (name) => {
-    expect(() => parse(`string ${name}`)).toThrow();
+    expect(() => parse(`string ${name}`, { topLevelTypeName: "x" })).toThrow();
   });
   it.each(["3a"])("rejects invalid constant name %s", (name) => {
-    expect(() => parse(`string ${name} = 'x'`)).toThrow();
+    expect(() => parse(`string ${name} = 'x'`, { topLevelTypeName: "x" })).toThrow();
   });
   it.each(["a", "a_", "foo_bar", "foo__bar", "foo1_2bar"])(
     "accepts valid field name %s",
     (name) => {
-      expect(parse(`string ${name}`)).toEqual([
+      expect(parse(`string ${name}`, { topLevelTypeName: "Dummy" })).toEqual([
         {
+          name: "Dummy",
           definitions: [
             { arrayLength: undefined, isArray: false, isComplex: false, name, type: "string" },
           ],
-          name: undefined,
         },
       ]);
     },
@@ -56,10 +56,10 @@ describe("parseMessageDefinition", () => {
   it.each(["a", "_a", "a_", "foo_bar", "foo__Bar", "FOO1_2BAR"])(
     "accepts valid constant name %s",
     (name) => {
-      expect(parse(`string ${name} = x`)).toEqual([
+      expect(parse(`string ${name} = x`, { topLevelTypeName: "Dummy" })).toEqual([
         {
+          name: "Dummy",
           definitions: [{ name, type: "string", isConstant: true, value: "x", valueText: "x" }],
-          name: undefined,
         },
       ]);
     },
@@ -72,9 +72,10 @@ describe("parseMessageDefinition", () => {
       MSG: geometry_msgs/Point
       float64 x
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -84,9 +85,9 @@ describe("parseMessageDefinition", () => {
             type: "geometry_msgs/Point",
           },
         ],
-        name: undefined,
       },
       {
+        name: "geometry_msgs/Point",
         definitions: [
           {
             arrayLength: undefined,
@@ -96,15 +97,15 @@ describe("parseMessageDefinition", () => {
             type: "float64",
           },
         ],
-        name: "geometry_msgs/Point",
       },
     ]);
   });
 
   it("normalizes aliases", () => {
-    const types = parse("char x\nbyte y");
+    const types = parse("char x\nbyte y", { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -121,7 +122,6 @@ describe("parseMessageDefinition", () => {
             type: "int8",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -135,9 +135,10 @@ describe("parseMessageDefinition", () => {
     ### foo bar baz?
     string lastName
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -154,15 +155,15 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it.each(["string", "int32", "int64"])("parses variable length %s array", (type) => {
-    const types = parse(`${type}[] names`);
+    const types = parse(`${type}[] names`, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -172,15 +173,15 @@ describe("parseMessageDefinition", () => {
             type,
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("parses fixed length string array", () => {
-    const types = parse("string[3] names");
+    const types = parse("string[3] names", { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: 3,
@@ -190,7 +191,6 @@ describe("parseMessageDefinition", () => {
             type: "string",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -204,9 +204,10 @@ describe("parseMessageDefinition", () => {
     string name
     uint16 id
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             arrayLength: undefined,
@@ -223,9 +224,9 @@ describe("parseMessageDefinition", () => {
             type: "custom_type/Account",
           },
         ],
-        name: undefined,
       },
       {
+        name: "custom_type/Account",
         definitions: [
           {
             arrayLength: undefined,
@@ -242,7 +243,6 @@ describe("parseMessageDefinition", () => {
             type: "uint16",
           },
         ],
-        name: "custom_type/Account",
       },
     ]);
   });
@@ -261,9 +261,10 @@ describe("parseMessageDefinition", () => {
       uint64 SMOOTH_MOVE_START    = 0000000000000001 # e.g. kobuki_msgs/VersionInfo
       int64 LARGE_VALUE = -9223372036854775807
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "foo",
@@ -343,7 +344,6 @@ describe("parseMessageDefinition", () => {
             valueText: "-9223372036854775807",
           },
         ],
-        name: undefined,
       },
     ]);
   });
@@ -353,9 +353,10 @@ describe("parseMessageDefinition", () => {
       bool Alive=True
       bool Dead=False
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "Alive",
@@ -372,14 +373,14 @@ describe("parseMessageDefinition", () => {
             valueText: "False",
           },
         ],
-        name: undefined,
       },
     ]);
   });
 
   it("handles type names for fields", () => {
-    expect(parse(`time time`)).toEqual([
+    expect(parse(`time time`, { topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "time",
@@ -388,12 +389,12 @@ describe("parseMessageDefinition", () => {
             isComplex: false,
           },
         ],
-        name: undefined,
       },
     ]);
 
-    expect(parse(`time time_ref`)).toEqual([
+    expect(parse(`time time_ref`, { topLevelTypeName: "Dummy" })).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "time_ref",
@@ -402,19 +403,22 @@ describe("parseMessageDefinition", () => {
             isComplex: false,
           },
         ],
-        name: undefined,
       },
     ]);
 
     expect(
-      parse(`
+      parse(
+        `
     true true
     ============
     MSG: custom/true
     bool false
-    `),
+    `,
+        { topLevelTypeName: "Dummy" },
+      ),
     ).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             name: "true",
@@ -423,7 +427,6 @@ describe("parseMessageDefinition", () => {
             isComplex: true,
           },
         ],
-        name: undefined,
       },
       {
         definitions: [
@@ -441,20 +444,23 @@ describe("parseMessageDefinition", () => {
 
   it("allows numbers in package names", () => {
     expect(
-      parse(`
+      parse(
+        `
     abc1/Foo2 value0
     ==========
     MSG: abc1/Foo2
     int32 data
-    `),
+    `,
+        { topLevelTypeName: "Dummy" },
+      ),
     ).toEqual([
       {
+        name: "Dummy",
         definitions: [{ isArray: false, isComplex: true, name: "value0", type: "abc1/Foo2" }],
-        name: undefined,
       },
       {
-        definitions: [{ isArray: false, isComplex: false, name: "data", type: "int32" }],
         name: "abc1/Foo2",
+        definitions: [{ isArray: false, isComplex: false, name: "data", type: "int32" }],
       },
     ]);
   });
@@ -474,25 +480,66 @@ describe("fixupTypes", () => {
       MSG: geometry_msgs/Point
       float64 x
     `;
-    const types = parse(messageDefinition, { skipTypeFixup: true });
+    const types = parse(messageDefinition, { skipTypeFixup: true, topLevelTypeName: "Points" });
 
-    expect(types).toHaveLength(2);
-    expect(types[0]!.definitions).toHaveLength(1);
-    expect(types[0]!.definitions[0]!.type).toEqual("Point");
-    expect(types[1]!.definitions).toHaveLength(1);
-    expect(types[1]!.definitions[0]!.type).toEqual("float64");
+    expect(types).toEqual([
+      {
+        name: "Points",
+        definitions: [
+          {
+            isArray: true,
+            isComplex: true,
+            name: "points",
+            type: "Point",
+          },
+        ],
+      },
+      {
+        name: "geometry_msgs/Point",
+        definitions: [
+          {
+            isArray: false,
+            isComplex: false,
+            name: "x",
+            type: "float64",
+          },
+        ],
+      },
+    ]);
 
     fixupTypes(types);
 
-    expect(types).toHaveLength(2);
-    expect(types[0]!.definitions).toHaveLength(1);
-    expect(types[0]!.definitions[0]!.type).toEqual("geometry_msgs/Point");
-    expect(types[1]!.definitions).toHaveLength(1);
-    expect(types[1]!.definitions[0]!.type).toEqual("float64");
+    expect(types).toEqual([
+      {
+        name: "Points",
+        definitions: [
+          {
+            isArray: true,
+            isComplex: true,
+            name: "points",
+            type: "geometry_msgs/Point",
+          },
+        ],
+      },
+      {
+        name: "geometry_msgs/Point",
+        definitions: [
+          {
+            isArray: false,
+            isComplex: false,
+            name: "x",
+            type: "float64",
+          },
+        ],
+      },
+    ]);
   });
 
   it("does not mixup types with same name but different namespace", () => {
     const messageDefinition = `
+      int32 dummy
+
+      ===
       MSG: visualization_msgs/Marker
       int32 a
 
@@ -508,8 +555,19 @@ describe("fixupTypes", () => {
       MSG: aruco_msgs/MarkerArray
       Marker[] b
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
+      {
+        name: "Dummy",
+        definitions: [
+          {
+            type: "int32",
+            isArray: false,
+            name: "dummy",
+            isComplex: false,
+          },
+        ],
+      },
       {
         name: "visualization_msgs/Marker",
         definitions: [
@@ -569,9 +627,10 @@ describe("fixupTypes", () => {
       uint32 seq
       time stamp
       string frame_id`;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             type: "custom_msg/StampedBool",
@@ -642,9 +701,10 @@ describe("fixupTypes", () => {
 
     uint64 u
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
     expect(types).toEqual([
       {
+        name: "Dummy",
         definitions: [
           {
             type: "foo_msgs/TypeA",
@@ -689,5 +749,208 @@ describe("fixupTypes", () => {
         ],
       },
     ]);
+  });
+
+  describe("enum inference", () => {
+    it("handles various constant types", () => {
+      expect(
+        parse(
+          `
+          uint32 OFF=0
+          uint32 ON=1
+          uint32 state
+          uint8 RED=0
+          uint8 YELLOW=1
+          uint8 GREEN=2
+          uint8 color
+          uint64 ONE=1
+          uint64 TWO=2
+          uint64 large_number
+
+          ===
+          MSG: my_msgs/NestedMsg
+          string FOO=foo
+          string BAR=bar
+          string str
+          bool YEP=True
+          bool NOPE=False
+          bool maybe
+          `,
+          { topLevelTypeName: "Dummy" },
+        ),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint32", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint32", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            {
+              type: "uint32",
+              name: "state",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.state",
+            },
+            { type: "uint8", name: "RED", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "YELLOW", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint8", name: "GREEN", isConstant: true, value: 2, valueText: "2" },
+            {
+              type: "uint8",
+              name: "color",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.color",
+            },
+            { type: "uint64", name: "ONE", isConstant: true, value: 1n, valueText: "1" },
+            { type: "uint64", name: "TWO", isConstant: true, value: 2n, valueText: "2" },
+            {
+              type: "uint64",
+              name: "large_number",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.large_number",
+            },
+          ],
+        },
+        {
+          name: "my_msgs/NestedMsg",
+          definitions: [
+            { type: "string", name: "FOO", isConstant: true, value: "foo", valueText: "foo" },
+            { type: "string", name: "BAR", isConstant: true, value: "bar", valueText: "bar" },
+            {
+              type: "string",
+              name: "str",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for my_msgs/NestedMsg.str",
+            },
+            { type: "bool", name: "YEP", isConstant: true, value: true, valueText: "True" },
+            { type: "bool", name: "NOPE", isConstant: true, value: false, valueText: "False" },
+            {
+              type: "bool",
+              name: "maybe",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for my_msgs/NestedMsg.maybe",
+            },
+          ],
+        },
+        {
+          name: "enum for Dummy.state",
+          definitions: [
+            { type: "uint32", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint32", name: "ON", isConstant: true, value: 1, valueText: "1" },
+          ],
+        },
+        {
+          name: "enum for Dummy.color",
+          definitions: [
+            { type: "uint8", name: "RED", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "YELLOW", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint8", name: "GREEN", isConstant: true, value: 2, valueText: "2" },
+          ],
+        },
+        {
+          name: "enum for Dummy.large_number",
+          definitions: [
+            { type: "uint64", name: "ONE", isConstant: true, value: 1n, valueText: "1" },
+            { type: "uint64", name: "TWO", isConstant: true, value: 2n, valueText: "2" },
+          ],
+        },
+        {
+          name: "enum for my_msgs/NestedMsg.str",
+          definitions: [
+            { type: "string", name: "FOO", isConstant: true, value: "foo", valueText: "foo" },
+            { type: "string", name: "BAR", isConstant: true, value: "bar", valueText: "bar" },
+          ],
+        },
+        {
+          name: "enum for my_msgs/NestedMsg.maybe",
+          definitions: [
+            { type: "bool", name: "YEP", isConstant: true, value: true, valueText: "True" },
+            { type: "bool", name: "NOPE", isConstant: true, value: false, valueText: "False" },
+          ],
+        },
+      ]);
+    });
+
+    it("handles multiple blocks of constants of the same type", () => {
+      expect(
+        parse(
+          `
+          uint8 OFF=0
+          uint8 ON=1
+          uint8 state1
+          uint8 FOO=0
+          uint8 BAR=1
+          uint8 state2
+          `,
+          { topLevelTypeName: "Dummy" },
+        ),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            {
+              type: "uint8",
+              name: "state1",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.state1",
+            },
+            { type: "uint8", name: "FOO", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "BAR", isConstant: true, value: 1, valueText: "1" },
+            {
+              type: "uint8",
+              name: "state2",
+              isArray: false,
+              isComplex: false,
+              enumType: "enum for Dummy.state2",
+            },
+          ],
+        },
+        {
+          name: "enum for Dummy.state1",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+          ],
+        },
+        {
+          name: "enum for Dummy.state2",
+          definitions: [
+            { type: "uint8", name: "FOO", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "BAR", isConstant: true, value: 1, valueText: "1" },
+          ],
+        },
+      ]);
+    });
+
+    it("only assigns constants to matching types", () => {
+      expect(
+        parse(
+          `
+          uint8 OFF=0
+          uint8 ON=1
+          uint32 state32
+          uint8 state8
+          `,
+          { topLevelTypeName: "Dummy" },
+        ),
+      ).toEqual([
+        {
+          name: "Dummy",
+          definitions: [
+            { type: "uint8", name: "OFF", isConstant: true, value: 0, valueText: "0" },
+            { type: "uint8", name: "ON", isConstant: true, value: 1, valueText: "1" },
+            { type: "uint32", name: "state32", isArray: false, isComplex: false },
+            { type: "uint8", name: "state8", isArray: false, isComplex: false },
+          ],
+        },
+        // no enums inferred as the first type after constants doesn't match constant type
+      ]);
+    });
   });
 });
