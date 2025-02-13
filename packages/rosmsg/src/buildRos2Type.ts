@@ -1,4 +1,6 @@
-import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
+import { MessageDefinitionField } from "@foxglove/message-definition";
+
+import { NamedMessageDefinition } from "./types";
 
 /**
  * Parser for ROS 2 type definition lines.
@@ -211,14 +213,24 @@ function normalizeType(type: string): string {
   }
   return type;
 }
-export function buildRos2Type(lines: { line: string }[]): MessageDefinition {
+
+/**
+ * @param topLevelTypeName Required if this is a top-level type that does not contain a "MSG:" line.
+ */
+export function buildRos2Type(
+  lines: { line: string }[],
+  topLevelTypeName?: string,
+): NamedMessageDefinition {
   const definitions: MessageDefinitionField[] = [];
-  let complexTypeName: string | undefined;
+  let complexTypeName = topLevelTypeName;
   for (const { line } of lines) {
     let match;
     if (line.startsWith("#")) {
       continue;
     } else if ((match = /^MSG: ([^ ]+)\s*(?:#.+)?$/.exec(line))) {
+      if (complexTypeName != undefined) {
+        throw new Error(`Unexpected MSG name in top-level type: ${complexTypeName}, ${match[1]!}`);
+      }
       complexTypeName = match[1];
       continue;
     } else if ((match = DEFINITION_LINE_REGEX.exec(line))) {
@@ -273,6 +285,9 @@ export function buildRos2Type(lines: { line: string }[]): MessageDefinition {
     } else {
       throw new Error(`Could not parse line: '${line}'`);
     }
+  }
+  if (complexTypeName == undefined) {
+    throw new Error("Missing name for top-level type definition");
   }
   return { name: complexTypeName, definitions };
 }
