@@ -942,7 +942,7 @@ __metadata:
     "@types/nearley": "npm:2.11.5"
     jest: "npm:29.7.0"
     md5-typescript: "npm:^1.0.5"
-    moo: "npm:0.5.1"
+    moo: "npm:0.5.2"
     nearley: "npm:2.20.1"
     nearley-loader: "npm:2.0.0"
     prettier: "npm:3.4.2"
@@ -6648,14 +6648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moo@npm:0.5.1":
-  version: 0.5.1
-  resolution: "moo@npm:0.5.1"
-  checksum: 10c0/2a4f2557463c3a71cf5bf06362d13ed3de065fa366e72dbc8ae1af500b7077a3d66e5c893ce24d643a81dcbf46f966f45e749ab303ccc0c56fbce3c15e941b34
-  languageName: node
-  linkType: hard
-
-"moo@npm:^0.5.0":
+"moo@npm:0.5.2, moo@npm:^0.5.0":
   version: 0.5.2
   resolution: "moo@npm:0.5.2"
   checksum: 10c0/a9d9ad8198a51fe35d297f6e9fdd718298ca0b39a412e868a0ebd92286379ab4533cfc1f1f34516177f5129988ab25fe598f78e77c84e3bfe0d4a877b56525a8
