@@ -939,7 +939,7 @@ __metadata:
   dependencies:
     "@foxglove/message-definition": "npm:^0.3.1"
     "@types/jest": "npm:29.5.14"
-    "@types/nearley": "npm:2.11.2"
+    "@types/nearley": "npm:2.11.5"
     jest: "npm:29.7.0"
     md5-typescript: "npm:^1.0.5"
     moo: "npm:0.5.1"
@@ -1795,10 +1795,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nearley@npm:2.11.2":
-  version: 2.11.2
-  resolution: "@types/nearley@npm:2.11.2"
-  checksum: 10c0/b4c5b62c71e4cb881a7301f2dfae7b5df545debf06c9dd964683dd728dacce0a65dd1cba58d682088b4bfb773b37a12488cc3a95914451598e4c8d78727daf43
+"@types/nearley@npm:2.11.5":
+  version: 2.11.5
+  resolution: "@types/nearley@npm:2.11.5"
+  checksum: 10c0/f9144e7426681bc53a0958e2dbfbe4d85b69fab1ba9908edf22fb2949fd5844cd3816e341c23eb6fc5596a51706d25b7c99079fd2d0b41701aeec98dfe33303f
   languageName: node
   linkType: hard
 
