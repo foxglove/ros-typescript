@@ -809,7 +809,7 @@ __metadata:
     "@foxglove/rosbag2": "workspace:^"
     "@types/better-sqlite3": "npm:^7.6.12"
     "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.13.14"
+    "@types/node": "npm:^22.13.16"
     better-sqlite3: "npm:^11.6.0"
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
@@ -863,7 +863,7 @@ __metadata:
     "@foxglove/rostime": "workspace:^"
     "@foxglove/tsconfig": "npm:1.1.0"
     "@types/jest": "npm:29.5.14"
-    "@types/node": "npm:22.13.14"
+    "@types/node": "npm:22.13.16"
     compressjs: "npm:1.0.3"
     cross-env: "npm:7.0.3"
     heap: "npm:^0.2.7"
@@ -885,7 +885,7 @@ __metadata:
   dependencies:
     "@foxglove/message-definition": "npm:^0.3.1"
     "@foxglove/rosmsg": "workspace:^"
-    "@types/node": "npm:^22.13.14"
+    "@types/node": "npm:^22.13.16"
     esbuild: "npm:0.25.0"
     esbuild-runner: "npm:2.2.2"
     prettier: "npm:3.5.3"
@@ -901,7 +901,7 @@ __metadata:
     "@foxglove/rosmsg": "workspace:*"
     "@foxglove/tsconfig": "npm:2.0.0"
     "@types/jest": "npm:29.5.14"
-    "@types/node": "npm:22.13.14"
+    "@types/node": "npm:22.13.16"
     benny: "npm:3.7.1"
     console-table-printer: "npm:2.12.1"
     esbuild: "npm:0.25.0"
@@ -1003,7 +1003,7 @@ __metadata:
   dependencies:
     "@foxglove/just-fetch": "npm:^1.2.4"
     "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.13.14"
+    "@types/node": "npm:^22.13.16"
     "@types/sax": "npm:^1.2.3"
     byte-base64: "npm:^1.1.0"
     jest: "npm:29.7.0"
@@ -1811,12 +1811,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.13.14, @types/node@npm:^22.13.14":
-  version: 22.13.14
-  resolution: "@types/node@npm:22.13.14"
+"@types/node@npm:22.13.16, @types/node@npm:^22.13.16":
+  version: 22.13.16
+  resolution: "@types/node@npm:22.13.16"
   dependencies:
     undici-types: "npm:~6.20.0"
-  checksum: 10c0/fa2ab5b8277bfbcc86c42e46a3ea9871b0d559894cc9d955685d17178c9499f0b1bf03d1d1ea8d92ef2dda818988f4035acb8abf9dc15423a998fa56173ab804
+  checksum: 10c0/06a33975e0a55d84841e584544cf943cd31d1bea31152a1fd755391540f57059fee9257b3342ad6e424b316c67166df707087fcf6f95d95dd05a9cd9ccd7d99b
   languageName: node
   linkType: hard
 
