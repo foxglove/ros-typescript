@@ -16,17 +16,30 @@ import { Grammar, Parser } from "nearley";
 
 import { buildRos2Type } from "./buildRos2Type";
 import ros1Rules from "./ros1.ne";
+import { NamedMessageDefinition } from "./types";
 
 const ROS1_GRAMMAR = Grammar.fromCompiled(ros1Rules);
 
 export type ParseOptions = {
-  /** Parse message definitions as ROS 2. Otherwise, parse as ROS1 */
+  /** The name for the message definition being parsed. */
+  topLevelTypeName: string;
+  /**
+   * Parse message definitions as ROS 2. Otherwise, parse as ROS1
+   * @default false
+   */
   ros2?: boolean;
   /**
    * Return the original type names used in the file, without normalizing to
    * fully qualified type names
+   * @default false
    */
   skipTypeFixup?: boolean;
+  /**
+   * Disable pseudo-definitions for auto-detected enums, based on matching constant
+   * fields with non-constant fields.
+   * @default false
+   */
+  skipEnums?: boolean;
 };
 
 // Given a raw message definition string, parse it into an object representation.
@@ -46,7 +59,7 @@ export type ParseOptions = {
 // }, ... ]
 //
 // See unit tests for more examples.
-export function parse(messageDefinition: string, options: ParseOptions = {}): MessageDefinition[] {
+export function parse(messageDefinition: string, options: ParseOptions): NamedMessageDefinition[] {
   // read all the lines and remove empties
   const allLines = messageDefinition
     .split("\n")
@@ -55,30 +68,34 @@ export function parse(messageDefinition: string, options: ParseOptions = {}): Me
     .filter((line) => line);
 
   let definitionLines: { line: string }[] = [];
-  const types: MessageDefinition[] = [];
+  const types: NamedMessageDefinition[] = [];
+  let isTopLevelType = true;
+
   // group lines into individual definitions
-  allLines.forEach((line) => {
+  for (const line of allLines) {
     // ignore comment lines
     if (line.startsWith("#")) {
-      return;
+      continue;
     }
 
     // definitions are split by equal signs
     if (line.startsWith("==")) {
       types.push(
         options.ros2 === true
-          ? buildRos2Type(definitionLines)
-          : buildType(definitionLines, ROS1_GRAMMAR),
+          ? buildRos2Type(definitionLines, isTopLevelType ? options.topLevelTypeName : undefined)
+          : buildRos1Type(definitionLines, isTopLevelType ? options.topLevelTypeName : undefined),
       );
+      isTopLevelType = false;
       definitionLines = [];
     } else {
       definitionLines.push({ line });
     }
-  });
+  }
+
   types.push(
     options.ros2 === true
-      ? buildRos2Type(definitionLines)
-      : buildType(definitionLines, ROS1_GRAMMAR),
+      ? buildRos2Type(definitionLines, isTopLevelType ? options.topLevelTypeName : undefined)
+      : buildRos1Type(definitionLines, isTopLevelType ? options.topLevelTypeName : undefined),
   );
 
   // Filter out duplicate types to handle the case where schemas are erroneously duplicated
@@ -97,6 +114,10 @@ export function parse(messageDefinition: string, options: ParseOptions = {}): Me
     fixupTypes(uniqueTypes);
   }
 
+  if (options.skipEnums !== true) {
+    inferEnums(uniqueTypes);
+  }
+
   return uniqueTypes;
 }
 
@@ -105,8 +126,8 @@ export function parse(messageDefinition: string, options: ParseOptions = {}): Me
  * Example: `Marker` (defined in `visualization_msgs/MarkerArray` message) becomes `visualization_msgs/Marker`.
  */
 export function fixupTypes(types: MessageDefinition[]): void {
-  types.forEach(({ definitions, name }) => {
-    definitions.forEach((definition) => {
+  for (const { definitions, name } of types) {
+    for (const definition of definitions) {
       if (definition.isComplex === true) {
         // The type might be under a namespace (e.g. std_msgs or std_msgs/msg) which is required
         // to uniquely retrieve the type by its name.
@@ -117,21 +138,32 @@ export function fixupTypes(types: MessageDefinition[]): void {
         }
         definition.type = foundName;
       }
-    });
-  });
+    }
+  }
 }
 
-function buildType(lines: { line: string }[], grammar: Grammar): MessageDefinition {
+/**
+ * @param topLevelTypeName Required if this is a top-level type that does not contain a "MSG:" line.
+ */
+function buildRos1Type(
+  lines: { line: string }[],
+  topLevelTypeName?: string,
+): NamedMessageDefinition {
   const definitions: MessageDefinitionField[] = [];
-  let complexTypeName: string | undefined;
-  lines.forEach(({ line }) => {
+  let complexTypeName = topLevelTypeName;
+  for (const { line } of lines) {
     if (line.startsWith("MSG:")) {
       const [_, name] = simpleTokenization(line);
+      if (complexTypeName != undefined) {
+        throw new Error(
+          `Unexpected MSG name in top-level type: ${complexTypeName}, ${name ?? "(could not parse name)"}`,
+        );
+      }
       complexTypeName = name?.trim();
-      return;
+      continue;
     }
 
-    const parser = new Parser(grammar);
+    const parser = new Parser(ROS1_GRAMMAR);
     parser.feed(line);
     const results = parser.finish() as MessageDefinitionField[];
     if (results.length === 0) {
@@ -144,7 +176,10 @@ function buildType(lines: { line: string }[], grammar: Grammar): MessageDefiniti
       result.type = normalizeType(result.type);
       definitions.push(result);
     }
-  });
+  }
+  if (complexTypeName == undefined) {
+    throw new Error("Missing name for top-level type definition");
+  }
   return { name: complexTypeName, definitions };
 }
 
@@ -204,4 +239,48 @@ export function normalizeType(type: string): string {
     return "int8";
   }
   return type;
+}
+
+/**
+ * Although ROS does not natively support enums, we can infer them by looking at constant fields in
+ * the message definitions. We treat constants preceding a field with a matching type as though they
+ * defined an enum for that field.
+ */
+function inferEnums(types: NamedMessageDefinition[]) {
+  const existingTypeNames = new Set(types.map((type) => type.name));
+  for (const { name: typeName, definitions } of types) {
+    let currentConstants: MessageDefinitionField[] = [];
+    let currentType: string | undefined;
+
+    for (const field of definitions) {
+      if (currentType != undefined && field.type !== currentType) {
+        // encountering new type resets the accumulated constants
+        currentConstants = [];
+        currentType = undefined;
+      }
+
+      if (field.isConstant === true && field.value != undefined) {
+        currentType = field.type;
+        currentConstants.push(field);
+        continue;
+      }
+
+      // otherwise assign accumulated constants for that field
+      if (currentConstants.length > 0) {
+        const enumName = `enum for ${typeName}.${field.name}`;
+        if (existingTypeNames.has(enumName)) {
+          throw new Error(`Unable to infer "${enumName}" due to existing type with this name`);
+        }
+        if (field.enumType != undefined) {
+          throw new Error(`Invariant: expected field not to have an enumType yet`);
+        }
+        field.enumType = enumName;
+        types.push({ name: enumName, definitions: currentConstants });
+        existingTypeNames.add(enumName);
+      }
+
+      // and start over - reset constants
+      currentConstants = [];
+    }
+  }
 }
