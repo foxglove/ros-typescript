@@ -827,7 +827,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     "@types/sql.js": "npm:^1.4.9"
     "@types/wicg-entries-api": "npm:^2020.8.5"
-    "@types/wicg-file-system-access": "npm:^2023.10.5"
+    "@types/wicg-file-system-access": "npm:^2023.10.6"
     jest: "npm:29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
     prettier: "npm:3.5.3"
@@ -1887,10 +1887,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/wicg-file-system-access@npm:^2023.10.5":
-  version: 2023.10.5
-  resolution: "@types/wicg-file-system-access@npm:2023.10.5"
-  checksum: 10c0/3c6099320a2517ab405bd65712eb19ba2c1f7f0c30f952744102b76809ed9ad5205f881c79ebe6f92ac7af7a13667df8c23dd59b0a5182119c74afa17335bfd3
+"@types/wicg-file-system-access@npm:^2023.10.6":
+  version: 2023.10.6
+  resolution: "@types/wicg-file-system-access@npm:2023.10.6"
+  checksum: 10c0/6d1086450b28351ea5c8c6078411930984a16588b40d999f9abdc42c9bff63de93101bd7b1edcaba5c5c9ea83acdeb277bcaff913f39f6dac12091459974631f
   languageName: node
   linkType: hard
 
