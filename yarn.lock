@@ -782,7 +782,7 @@ __metadata:
     ipaddr.js: "npm:^2.0.1"
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
   bin:
     roscore: ./dist/nodejs/roscore.js
@@ -811,7 +811,7 @@ __metadata:
     better-sqlite3: "npm:^11.6.0"
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
@@ -829,7 +829,7 @@ __metadata:
     jest: "npm:29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
@@ -847,7 +847,7 @@ __metadata:
     jest: "npm:29.7.0"
     js-yaml: "npm:^4.1.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
@@ -871,7 +871,7 @@ __metadata:
     lz4js: "npm:0.2.0"
     prettier: "npm:3.5.3"
     rimraf: "npm:6.0.1"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typedoc: "npm:0.28.2"
     typescript: "npm:5.8.2"
   languageName: unknown
@@ -907,7 +907,7 @@ __metadata:
     kelonio: "npm:0.10.0"
     percentile: "npm:1.6.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.8.2"
   languageName: unknown
@@ -926,7 +926,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
@@ -944,7 +944,7 @@ __metadata:
     nearley: "npm:2.20.1"
     nearley-loader: "npm:2.0.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     ts-loader: "npm:9.5.2"
     typescript: "npm:5.8.2"
     webpack: "npm:5.99.7"
@@ -959,7 +959,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
   languageName: unknown
   linkType: soft
@@ -1007,7 +1007,7 @@ __metadata:
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
     sax: "npm:^1.2.4"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
     xmlbuilder2: "npm:^3.0.2"
   languageName: unknown
@@ -7581,7 +7581,7 @@ __metadata:
     jest: "npm:29.7.0"
     prettier: "npm:3.5.3"
     rimraf: "npm:6.0.1"
-    ts-jest: "npm:29.3.1"
+    ts-jest: "npm:29.3.2"
     typescript: "npm:5.8.2"
     typescript-eslint: "npm:8.31.1"
   languageName: unknown
@@ -8355,9 +8355,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:29.3.1":
-  version: 29.3.1
-  resolution: "ts-jest@npm:29.3.1"
+"ts-jest@npm:29.3.2":
+  version: 29.3.2
+  resolution: "ts-jest@npm:29.3.2"
   dependencies:
     bs-logger: "npm:^0.2.6"
     ejs: "npm:^3.1.10"
@@ -8367,7 +8367,7 @@ __metadata:
     lodash.memoize: "npm:^4.1.2"
     make-error: "npm:^1.3.6"
     semver: "npm:^7.7.1"
-    type-fest: "npm:^4.38.0"
+    type-fest: "npm:^4.39.1"
     yargs-parser: "npm:^21.1.1"
   peerDependencies:
     "@babel/core": ">=7.0.0-beta.0 <8"
@@ -8389,7 +8389,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 10c0/5df9239223b974fc61bbe018d4e72bbdbea530c4b624fab0936a152438a58e97ce0d0cee2258d10e7ecebbf0ab699ab41d0a52fc5b5f13201cdac4419ab0fe04
+  checksum: 10c0/84762720dbef45c1644348d67d0dcb8b7ad6369a16628c4752aceeb47f0ccdad63ae14485048b641c20ce096337a160ab816881361ef5517325bac6a5b3756e0
   languageName: node
   linkType: hard
 
@@ -8523,10 +8523,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.38.0":
-  version: 4.39.1
-  resolution: "type-fest@npm:4.39.1"
-  checksum: 10c0/f5bf302eb2e2f70658be1757aa578f4a09da3f65699b0b12b7ae5502ccea76e5124521a6e6b69540f442c3dc924c394202a2ab58718d0582725c7ac23c072594
+"type-fest@npm:^4.39.1":
+  version: 4.40.1
+  resolution: "type-fest@npm:4.40.1"
+  checksum: 10c0/590cb7d4dcd3da83efe49b5b52cd041661f6fa29f18cb76650fe1fdeb4090688e92955656e9d981e606abb13d25c0418be8c6c6504d80e87fe18dc9ca0888392
   languageName: node
   linkType: hard
 
