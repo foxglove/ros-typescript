@@ -841,7 +841,7 @@ __metadata:
     "@foxglove/rosmsg-msgs-common": "workspace:^"
     "@foxglove/rosmsg2-serialization": "workspace:^"
     "@foxglove/rostime": "workspace:^"
-    "@foxglove/schemas": "npm:^1.7.0"
+    "@foxglove/schemas": "npm:^1.7.1"
     "@types/jest": "npm:29.5.14"
     "@types/js-yaml": "npm:4.0.9"
     jest: "npm:29.7.0"
@@ -877,7 +877,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@foxglove/rosmsg-msgs-common@workspace:^, @foxglove/rosmsg-msgs-common@workspace:packages/rosmsg-msgs-common":
+"@foxglove/rosmsg-msgs-common@npm:^3.0.0, @foxglove/rosmsg-msgs-common@workspace:^, @foxglove/rosmsg-msgs-common@workspace:packages/rosmsg-msgs-common":
   version: 0.0.0-use.local
   resolution: "@foxglove/rosmsg-msgs-common@workspace:packages/rosmsg-msgs-common"
   dependencies:
@@ -964,12 +964,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@foxglove/schemas@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "@foxglove/schemas@npm:1.7.0"
+"@foxglove/schemas@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "@foxglove/schemas@npm:1.7.1"
   dependencies:
+    "@foxglove/rosmsg-msgs-common": "npm:^3.0.0"
     tslib: "npm:^2"
-  checksum: 10c0/40754a7acc581f89d225e4d499739204e985d6c73e804e5ffb02732c328d4fd8c2afb1f01d8d7669949d115f23277ec1f147bee44db6426d82cef41607cfc07a
+  checksum: 10c0/b0fcda0825c039b2b19a35b84b1d21e284c5e4b2bfee070feca346929a908232279eaa7787446b2feacbc29bb25e9231149d61967d962a4c60fd2133ed1a0c9a
   languageName: node
   linkType: hard
 

@@ -48,7 +48,7 @@
     "@foxglove/rosmsg-msgs-common": "workspace:^",
     "@foxglove/rosmsg2-serialization": "workspace:^",
     "@foxglove/rostime": "workspace:^",
-    "@foxglove/schemas": "^1.7.0",
+    "@foxglove/schemas": "^1.7.1",
     "js-yaml": "^4.1.0"
   },
   "packageManager": "yarn@4.5.3"
