@@ -805,7 +805,7 @@ __metadata:
   resolution: "@foxglove/rosbag2-node@workspace:packages/rosbag2-node"
   dependencies:
     "@foxglove/rosbag2": "workspace:^"
-    "@types/better-sqlite3": "npm:^7.6.12"
+    "@types/better-sqlite3": "npm:^7.6.13"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^22.13.16"
     better-sqlite3: "npm:^11.10.0"
@@ -1677,12 +1677,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/better-sqlite3@npm:^7.6.12":
-  version: 7.6.12
-  resolution: "@types/better-sqlite3@npm:7.6.12"
+"@types/better-sqlite3@npm:^7.6.13":
+  version: 7.6.13
+  resolution: "@types/better-sqlite3@npm:7.6.13"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10c0/5367de7492e2c697aa20cc4024ba26210971d15f60c01ef691eddfbbfd39ccf9f80d5129fd7fd6c76c98804739325e23d2b156b0eac8f5a7665ba374a08ac1e7
+  checksum: 10c0/c4336e7b92343eb0e988ded007c53fa9887b98a38d61175226e86124a1a2c28b1a4e3892873c5041e350b7bfa2901f85c82db1542c4f0eed1d3a899682c92106
   languageName: node
   linkType: hard
 
