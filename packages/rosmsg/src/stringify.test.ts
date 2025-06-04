@@ -17,7 +17,7 @@ describe("stringify", () => {
       MSG: geometry_msgs/Point
       float64 x
     `;
-    const types = parse(messageDefinition);
+    const types = parse(messageDefinition, { topLevelTypeName: "Dummy" });
 
     const output = stringify(types);
     expect(output).toEqual(`uint32 foo = 55
@@ -59,7 +59,7 @@ float64 x`);
       string my_string3 'I heard \\'Hello\\''  # is valid
       string my_string4 'I heard "Hello"'   # is valid
     `;
-    const types = parse(messageDefinition, { ros2: true });
+    const types = parse(messageDefinition, { ros2: true, topLevelTypeName: "Dummy" });
 
     const output = stringify(types);
     expect(output).toEqual(`string<=5 str1 "abc"

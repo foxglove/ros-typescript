@@ -111,6 +111,6 @@ string frame_id`,
 
 describe("md5", () => {
   it.each(md5Tests)("should checksum %s", (_name, msgDef, expected) => {
-    expect(md5(parse(msgDef))).toBe(expected);
+    expect(md5(parse(msgDef, { topLevelTypeName: "Ignored" }))).toBe(expected);
   });
 });
