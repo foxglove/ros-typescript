@@ -901,7 +901,7 @@ __metadata:
     "@types/jest": "npm:29.5.14"
     "@types/node": "npm:22.15.29"
     benny: "npm:3.7.1"
-    console-table-printer: "npm:2.12.1"
+    console-table-printer: "npm:2.14.6"
     esbuild: "npm:0.25.4"
     jest: "npm:29.7.0"
     kelonio: "npm:0.10.0"
@@ -3196,12 +3196,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"console-table-printer@npm:2.12.1":
-  version: 2.12.1
-  resolution: "console-table-printer@npm:2.12.1"
+"console-table-printer@npm:2.14.6":
+  version: 2.14.6
+  resolution: "console-table-printer@npm:2.14.6"
   dependencies:
     simple-wcswidth: "npm:^1.0.1"
-  checksum: 10c0/8f28e9c0ae5df77f5d60da3da002ecd95ebe1812b0b9e0a6d2795c81b5121b39774f32506bccf68830a838ca4d8fbb2ab8824e729dba2c5e30cdeb9df4dd5f2b
+  checksum: 10c0/af4f7f18d2a70130ea9fd76ffd9c56351329665fe3bec96cfab26d71dd2de6b983b09ec163c9346c72fa6fb7fdce350e09ee132b1c89db83ac50b23742cdb10f
   languageName: node
   linkType: hard
 
