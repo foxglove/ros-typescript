@@ -43,7 +43,7 @@
     "test": "yarn test:commonjs && yarn test:esm && yarn test:types"
   },
   "devDependencies": {
-    "@types/node": "^22.15.29",
+    "@types/node": "^24.0.8",
     "esbuild": "0.25.4",
     "esbuild-runner": "2.2.2",
     "prettier": "3.5.3",
