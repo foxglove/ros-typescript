@@ -766,9 +766,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@foxglove/eslint-plugin@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@foxglove/eslint-plugin@npm:2.0.0"
+"@foxglove/eslint-plugin@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@foxglove/eslint-plugin@npm:2.1.0"
   dependencies:
     "@eslint/compat": "npm:^1"
     "@eslint/js": "npm:^9"
@@ -784,8 +784,8 @@ __metadata:
     tsutils: "npm:^3"
     typescript-eslint: "npm:^8"
   peerDependencies:
-    eslint: ^9
-  checksum: 10c0/970c39cb820bab664e806f7d155b0de01cb626915b700f07d83ca1f7b2aa30f387f6d5d094c607e59a7ab63cefa4e70716b44b930adb74f7b043f9755b89506b
+    eslint: ^9.27.0
+  checksum: 10c0/f6a8645947748b38081c199f6da64e07a59ff73ceec2a132801424c1f0328809f30c503ddea6334bb093eafb062f1335f8603ffd7a8e44ccf54246daebefeb24
   languageName: node
   linkType: hard
 
@@ -8525,7 +8525,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@foxglove/eslint-plugin": "npm:2.0.0"
+    "@foxglove/eslint-plugin": "npm:2.1.0"
     "@foxglove/tsconfig": "npm:2.0.0"
     "@types/jest": "npm:30.0.0"
     eslint: "npm:9.23.0"
