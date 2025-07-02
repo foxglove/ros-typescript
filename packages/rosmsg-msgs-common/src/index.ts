@@ -84,7 +84,6 @@ async function loadDefinitions(
     const schema = parse(msgdef, parseOptions);
     schema[0]!.name = typeName;
     for (const entry of schema) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (entry.name == undefined) {
         throw new Error(`Failed to parse ${dataType} from ${filename}`);
       }
