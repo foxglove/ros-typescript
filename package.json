@@ -10,7 +10,7 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "devDependencies": {
-    "@foxglove/eslint-plugin": "2.0.0",
+    "@foxglove/eslint-plugin": "2.1.0",
     "@foxglove/tsconfig": "2.0.0",
     "@types/jest": "30.0.0",
     "eslint": "9.23.0",
