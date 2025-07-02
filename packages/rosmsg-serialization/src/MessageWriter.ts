@@ -127,9 +127,7 @@ class StandardTypeWriter {
   }
 
   string(value: string): void {
-    if (this.textEncoder == undefined) {
-      this.textEncoder = new TextEncoder();
-    }
+    this.textEncoder ??= new TextEncoder();
     const stringOffset = this.offsetCalculator.string(value);
     const stringLength = this.offsetCalculator.offset - stringOffset - 4;
     this.view.setUint32(stringOffset, stringLength, true);

@@ -51,7 +51,6 @@ export function parse(messageDefinition: string, options: ParseOptions = {}): Me
   const allLines = messageDefinition
     .split("\n")
     .map((line) => line.trim())
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     .filter((line) => line);
 
   let definitionLines: { line: string }[] = [];
@@ -149,13 +148,10 @@ function buildType(lines: { line: string }[], grammar: Grammar): MessageDefiniti
 }
 
 function simpleTokenization(line: string): string[] {
-  return (
-    line
-      .replace(/#.*/gi, "")
-      .split(" ")
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      .filter((word) => word)
-  );
+  return line
+    .replace(/#.*/gi, "")
+    .split(" ")
+    .filter((word) => word);
 }
 
 function findTypeByName(

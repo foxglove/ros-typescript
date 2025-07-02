@@ -15,6 +15,7 @@ export class HttpServerNodejs implements HttpServer {
       req.on("data", (chunk: Uint8Array) => chunks.push(chunk));
       req.on("end", () => {
         const body = Buffer.concat(chunks).toString();
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread
         const input = { ...req, body };
 
         // Handle this request
