@@ -47,7 +47,6 @@ export abstract class BaseIterator implements MessageIterator {
 
       // When filtering to topics, limit the chunkInfos to the chunks containing
       // the topic. We can do this filter once during construction
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       this.chunkInfos = args.chunkInfos.filter((info) => {
         return info.connections.find((conn) => {
           return connectionIds.has(conn.conn);

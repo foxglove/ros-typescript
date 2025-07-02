@@ -84,10 +84,9 @@ export class ReverseIterator extends BaseIterator {
     const heap = this.heap;
     const newCache = new Map<number, ChunkReadResult>();
     for (const chunkInfo of chunksToLoad) {
-      let result = this.cachedChunkReadResults.get(chunkInfo.chunkPosition);
-      if (!result) {
-        result = await this.reader.readChunk(chunkInfo, this.decompress);
-      }
+      const result =
+        this.cachedChunkReadResults.get(chunkInfo.chunkPosition) ??
+        (await this.reader.readChunk(chunkInfo, this.decompress));
 
       // Keep chunk read results for chunks where end is in the chunk
       // End is the next position we will read so we don't need to re-read the chunk
