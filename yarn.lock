@@ -818,7 +818,7 @@ __metadata:
     "@foxglove/rosbag2": "workspace:^"
     "@types/better-sqlite3": "npm:^7.6.12"
     "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.15.29"
+    "@types/node": "npm:^24.0.8"
     better-sqlite3: "npm:^11.10.0"
     jest: "npm:29.7.0"
     prettier: "npm:3.6.2"
@@ -872,7 +872,7 @@ __metadata:
     "@foxglove/rostime": "workspace:^"
     "@foxglove/tsconfig": "npm:1.1.0"
     "@types/jest": "npm:29.5.14"
-    "@types/node": "npm:22.15.29"
+    "@types/node": "npm:24.0.8"
     compressjs: "npm:1.0.3"
     cross-env: "npm:7.0.3"
     heap: "npm:^0.2.7"
@@ -894,7 +894,7 @@ __metadata:
   dependencies:
     "@foxglove/message-definition": "npm:^0.3.1"
     "@foxglove/rosmsg": "workspace:^"
-    "@types/node": "npm:^22.15.29"
+    "@types/node": "npm:^24.0.8"
     esbuild: "npm:0.25.4"
     esbuild-runner: "npm:2.2.2"
     prettier: "npm:3.6.2"
@@ -910,7 +910,7 @@ __metadata:
     "@foxglove/rosmsg": "workspace:*"
     "@foxglove/tsconfig": "npm:2.0.0"
     "@types/jest": "npm:29.5.14"
-    "@types/node": "npm:22.15.29"
+    "@types/node": "npm:24.0.8"
     benny: "npm:3.7.1"
     console-table-printer: "npm:2.12.1"
     esbuild: "npm:0.25.4"
@@ -1012,7 +1012,7 @@ __metadata:
   dependencies:
     "@foxglove/just-fetch": "npm:^1.2.4"
     "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.15.29"
+    "@types/node": "npm:^24.0.8"
     "@types/sax": "npm:^1.2.3"
     byte-base64: "npm:^1.1.0"
     jest: "npm:29.7.0"
@@ -1840,12 +1840,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.15.29, @types/node@npm:^22.15.29":
-  version: 22.15.29
-  resolution: "@types/node@npm:22.15.29"
+"@types/node@npm:24.0.8, @types/node@npm:^24.0.8":
+  version: 24.0.8
+  resolution: "@types/node@npm:24.0.8"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10c0/602cc88c6150780cd9b5b44604754e0ce13983ae876a538861d6ecfb1511dff289e5576fffd26c841cde2142418d4bb76e2a72a382b81c04557ccb17cff29e1d
+    undici-types: "npm:~7.8.0"
+  checksum: 10c0/afc014193a1a58f545be023bd63a47639f09fddcaaf1ce271ae1b0f700d422aae425f453a8f428d98f772e08cc9bc54815da2b46ace2d1d4362f657c4172065f
   languageName: node
   linkType: hard
 
@@ -8730,10 +8730,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
+"undici-types@npm:~7.8.0":
+  version: 7.8.0
+  resolution: "undici-types@npm:7.8.0"
+  checksum: 10c0/9d9d246d1dc32f318d46116efe3cfca5a72d4f16828febc1918d94e58f6ffcf39c158aa28bf5b4fc52f410446bc7858f35151367bd7a49f21746cab6497b709b
   languageName: node
   linkType: hard
 

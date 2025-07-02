@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.15.29",
+    "@types/node": "^24.0.8",
     "@types/sax": "^1.2.3",
     "jest": "29.7.0",
     "prettier": "3.6.2",
