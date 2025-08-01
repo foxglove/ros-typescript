@@ -35,7 +35,7 @@
     "@types/jest": "30.0.0",
     "@types/node": "24.0.8",
     "compressjs": "1.0.3",
-    "cross-env": "7.0.3",
+    "cross-env": "10.0.0",
     "jest": "30.0.3",
     "jest-cli": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
