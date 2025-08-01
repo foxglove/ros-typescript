@@ -52,7 +52,7 @@
     "typescript": "5.8.3"
   },
   "dependencies": {
-    "@foxglove/cdr": "^3.3.0",
+    "@foxglove/cdr": "^3.4.0",
     "@foxglove/message-definition": "^0.4.0",
     "@foxglove/rostime": "workspace:^"
   },
