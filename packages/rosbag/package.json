@@ -42,7 +42,7 @@
     "lz4js": "0.2.0",
     "prettier": "3.6.2",
     "rimraf": "6.0.1",
-    "ts-jest": "29.3.4",
+    "ts-jest": "29.4.0",
     "typedoc": "0.28.7",
     "typescript": "5.8.3"
   }
