@@ -46,7 +46,7 @@
     "@foxglove/rosmsg": "workspace:*",
     "@sounisi5011/jest-binary-data-matchers": "1.2.1",
     "@types/jest": "^30.0.0",
-    "jest": "30.0.3",
+    "jest": "30.0.5",
     "prettier": "3.6.2",
     "ts-jest": "29.4.0",
     "typescript": "5.8.3"
