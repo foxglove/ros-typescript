@@ -53,7 +53,7 @@
     "benny": "3.7.1",
     "console-table-printer": "2.14.6",
     "esbuild": "0.25.4",
-    "jest": "30.0.3",
+    "jest": "30.0.5",
     "kelonio": "0.10.0",
     "percentile": "1.6.0",
     "prettier": "3.6.2",
