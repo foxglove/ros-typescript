@@ -1,12 +1,11 @@
-# See the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    # Bump the constraint only if the original constraint is not compatible (i.e. new major version)
+    # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference#versioning-strategy--
     versioning-strategy: increase-if-necessary
 
   - package-ecosystem: github-actions
