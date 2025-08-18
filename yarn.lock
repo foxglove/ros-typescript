@@ -7816,6 +7816,7 @@ __metadata:
   resolution: "ros1-chatter@workspace:packages/ros1/examples/ros1-chatter"
   dependencies:
     "@foxglove/ros1": "workspace:^"
+    "@types/node": "npm:^24.0.8"
     ts-node: "npm:^10.7.0"
     tslib: "npm:^2.1.0"
     typescript: "npm:^5.8.3"
@@ -7827,6 +7828,7 @@ __metadata:
   resolution: "ros1-turtlesim-test@workspace:packages/ros1/examples/ros1-turtlesim-test"
   dependencies:
     "@foxglove/ros1": "workspace:^"
+    "@types/node": "npm:^24.0.8"
     ts-node: "npm:^10.7.0"
     tslib: "npm:^2.1.0"
     typescript: "npm:^5.8.3"
