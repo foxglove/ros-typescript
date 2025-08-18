@@ -49,12 +49,12 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "esbuild": "0.25.4",
-    "esbuild-runner": "2.2.2",
-    "jest": "30.0.3",
-    "prettier": "3.6.2",
-    "ts-jest": "29.4.0",
-    "typescript": "5.8.3"
+    "esbuild": "^0.25.4",
+    "esbuild-runner": "^2.2.2",
+    "jest": "^30.0.3",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@foxglove/message-definition": "^0.2.0",
