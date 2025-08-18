@@ -1,7 +1,9 @@
 {
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/ros1/examples/*",
+    "packages/xmlrpc/examples"
   ],
   "scripts": {
     "lint": "eslint --plugin file-progress --rule 'file-progress/activate: 1'",

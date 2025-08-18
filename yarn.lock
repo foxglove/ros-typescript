@@ -842,6 +842,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@foxglove/ros1@file:../..::locator=ros1-chatter%40workspace%3Apackages%2Fros1%2Fexamples%2Fros1-chatter":
+  version: 3.0.0
+  resolution: "@foxglove/ros1@file:../..#../..::hash=c4ffc5&locator=ros1-chatter%40workspace%3Apackages%2Fros1%2Fexamples%2Fros1-chatter"
+  dependencies:
+    "@foxglove/message-definition": "npm:^0.2.0"
+    "@foxglove/rosmsg": "workspace:^"
+    "@foxglove/rosmsg-serialization": "workspace:^"
+    "@foxglove/xmlrpc": "workspace:^"
+    eventemitter3: "npm:^5.0.0"
+    ipaddr.js: "npm:^2.0.1"
+  bin:
+    roscore: ./dist/nodejs/roscore.js
+  checksum: 10c0/cb93f6eae85676a1a6f0f03173855108fb6feca83e59c375d11b3bb31a264d3a36650b9411e24bf6ce11c5e7a74b0ed87a067d64371f707834413a9d5b138677
+  languageName: node
+  linkType: hard
+
+"@foxglove/ros1@file:../..::locator=ros1-turtlesim-test%40workspace%3Apackages%2Fros1%2Fexamples%2Fros1-turtlesim-test":
+  version: 3.0.0
+  resolution: "@foxglove/ros1@file:../..#../..::hash=c4ffc5&locator=ros1-turtlesim-test%40workspace%3Apackages%2Fros1%2Fexamples%2Fros1-turtlesim-test"
+  dependencies:
+    "@foxglove/message-definition": "npm:^0.2.0"
+    "@foxglove/rosmsg": "workspace:^"
+    "@foxglove/rosmsg-serialization": "workspace:^"
+    "@foxglove/xmlrpc": "workspace:^"
+    eventemitter3: "npm:^5.0.0"
+    ipaddr.js: "npm:^2.0.1"
+  bin:
+    roscore: ./dist/nodejs/roscore.js
+  checksum: 10c0/cb93f6eae85676a1a6f0f03173855108fb6feca83e59c375d11b3bb31a264d3a36650b9411e24bf6ce11c5e7a74b0ed87a067d64371f707834413a9d5b138677
+  languageName: node
+  linkType: hard
+
 "@foxglove/ros1@workspace:packages/ros1":
   version: 0.0.0-use.local
   resolution: "@foxglove/ros1@workspace:packages/ros1"
@@ -1069,6 +1101,17 @@ __metadata:
   checksum: 10c0/fccd3d2a67b85cc4532653930f6e0c311628458b489ee2e1e0aa0aa60d11b57bc2567b65344ff4007e238f42037eff22ec83f41d948e3be1a1d856ef207ac3d8
   languageName: node
   linkType: hard
+
+"@foxglove/xmlrpc@portal:../::locator=xmlrpc-examples%40workspace%3Apackages%2Fxmlrpc%2Fexamples":
+  version: 0.0.0-use.local
+  resolution: "@foxglove/xmlrpc@portal:../::locator=xmlrpc-examples%40workspace%3Apackages%2Fxmlrpc%2Fexamples"
+  dependencies:
+    "@foxglove/just-fetch": "npm:^1.2.4"
+    byte-base64: "npm:^1.1.0"
+    sax: "npm:^1.2.4"
+    xmlbuilder2: "npm:^3.0.2"
+  languageName: node
+  linkType: soft
 
 "@foxglove/xmlrpc@workspace:^, @foxglove/xmlrpc@workspace:packages/xmlrpc":
   version: 0.0.0-use.local
@@ -7821,6 +7864,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"ros1-chatter@workspace:packages/ros1/examples/ros1-chatter":
+  version: 0.0.0-use.local
+  resolution: "ros1-chatter@workspace:packages/ros1/examples/ros1-chatter"
+  dependencies:
+    "@foxglove/ros1": "file:../.."
+    ts-node: "npm:^10.7.0"
+    tslib: "npm:^2.1.0"
+    typescript: "npm:^5.8.3"
+  languageName: unknown
+  linkType: soft
+
+"ros1-turtlesim-test@workspace:packages/ros1/examples/ros1-turtlesim-test":
+  version: 0.0.0-use.local
+  resolution: "ros1-turtlesim-test@workspace:packages/ros1/examples/ros1-turtlesim-test"
+  dependencies:
+    "@foxglove/ros1": "file:../.."
+    ts-node: "npm:^10.7.0"
+    tslib: "npm:^2.1.0"
+    typescript: "npm:^5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
@@ -8617,7 +8682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.2":
+"ts-node@npm:^10.7.0, ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:
@@ -8681,7 +8746,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2, tslib@npm:^2.4.0, tslib@npm:^2.6.2":
+"tslib@npm:^2, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.6.2":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -8831,22 +8896,22 @@ __metadata:
   linkType: hard
 
 "typescript@npm:^5.8.3":
-  version: 5.9.2
-  resolution: "typescript@npm:5.9.2"
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/cd635d50f02d6cf98ed42de2f76289701c1ec587a363369255f01ed15aaf22be0813226bff3c53e99d971f9b540e0b3cc7583dbe05faded49b1b0bed2f638a18
+  checksum: 10c0/5f8bb01196e542e64d44db3d16ee0e4063ce4f3e3966df6005f2588e86d91c03e1fb131c2581baf0fb65ee79669eea6e161cd448178986587e9f6844446dbb48
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
-  version: 5.9.2
-  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/34d2a8e23eb8e0d1875072064d5e1d9c102e0bdce56a10a25c0b917b8aa9001a9cf5c225df12497e99da107dc379360bc138163c66b55b95f5b105b50578067e
+  checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
   languageName: node
   linkType: hard
 
@@ -9389,6 +9454,18 @@ __metadata:
   checksum: 10c0/b64b535861a6f310c5d9bfa10834cf49127c71922c297da9d4d1b45eeaae40bf9b4363275876088fbe2667e5db028d2cd4f8ee72eed9bede840a67d57dab7593
   languageName: node
   linkType: hard
+
+"xmlrpc-examples@workspace:packages/xmlrpc/examples":
+  version: 0.0.0-use.local
+  resolution: "xmlrpc-examples@workspace:packages/xmlrpc/examples"
+  dependencies:
+    "@foxglove/xmlrpc": "portal:../"
+    "@types/node": "npm:^24.0.8"
+    ts-node: "npm:^10.9.2"
+    tslib: "npm:^2.3.1"
+    typescript: "npm:^5.8.3"
+  languageName: unknown
+  linkType: soft
 
 "y18n@npm:^5.0.5":
   version: 5.0.8
