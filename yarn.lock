@@ -913,7 +913,7 @@ __metadata:
     "@foxglove/rosmsg": "workspace:^"
     "@foxglove/rosmsg-serialization": "workspace:^"
     "@foxglove/rostime": "workspace:^"
-    "@foxglove/tsconfig": "npm:1.1.0"
+    "@foxglove/tsconfig": "npm:2.0.0"
     "@types/jest": "npm:30.0.0"
     "@types/node": "npm:24.0.8"
     compressjs: "npm:1.0.3"
@@ -1032,13 +1032,6 @@ __metadata:
   version: 0.0.4
   resolution: "@foxglove/sql.js@npm:0.0.4"
   checksum: 10c0/d2b3668587e0dc6e1b885f9f9b1814432c3edf321af36dd50f5b436aa154fb29bbc6ebe30bd917cf9fbd7326bb969dc546896ad18f27f6419d9dd14dca788065
-  languageName: node
-  linkType: hard
-
-"@foxglove/tsconfig@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@foxglove/tsconfig@npm:1.1.0"
-  checksum: 10c0/e4386d68520fa9dcc191f499f1beedcedbafd7a77dfaa3a9294694e3e557dd2863dcf656d97d3425edca2921d977be7aefcbdfcb86d5885b9c9e55cf716d4159
   languageName: node
   linkType: hard
 
