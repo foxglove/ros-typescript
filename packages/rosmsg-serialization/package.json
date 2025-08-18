@@ -62,6 +62,6 @@
     "typescript": "5.8.3"
   },
   "dependencies": {
-    "@foxglove/message-definition": "^0.3.1"
+    "@foxglove/message-definition": "^0.4.0"
   }
 }
