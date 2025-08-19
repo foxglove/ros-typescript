@@ -965,7 +965,7 @@ __metadata:
     console-table-printer: "npm:^2.14.6"
     esbuild: "npm:^0.25.4"
     jest: "npm:^30.0.3"
-    kelonio: "npm:^0.10.0"
+    kelonio: "npm:^0.11.0"
     percentile: "npm:^1.6.0"
     prettier: "npm:^3.6.2"
     ts-jest: "npm:^29.4.0"
@@ -6384,14 +6384,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kelonio@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "kelonio@npm:0.10.0"
+"kelonio@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "kelonio@npm:0.11.0"
   dependencies:
     browser-hrtime: "npm:^1.0.0"
     eventemitter3: "npm:^5.0.0"
     mathjs: "npm:^10.5.2"
-  checksum: 10c0/c00c1866bdfe117cfbb27cb6532a705ecd6d4a8687dd576007a057c60ba195156d527dde5e31cabff77e4bbbba0667689bf1a7a7b97d458db30d6a06b277d335
+  checksum: 10c0/f7167165fa0bf9b1afd926d364e69c81be3f0b46ea3e35773799f4336142498e24950d7c77026dd81e3cea83f0ece16cb9bed651a20f0a1616fa09918519cb21
   languageName: node
   linkType: hard
 
