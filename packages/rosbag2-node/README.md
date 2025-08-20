@@ -2,7 +2,8 @@
 
 > _ROS 2 (Robot Operating System) bag reader and writer for node.js 👜_
 
-[![npm version](https://img.shields.io/npm/v/@foxglove/rosbag2-node.svg?style=flat)](https://www.npmjs.com/package/@foxglove/rosbag2-node)
+> [!WARNING]
+> This package is no longer used or supported by Foxglove. Source code is available for historical reference.
 
 ## Introduction
 
@@ -11,13 +12,3 @@
 ## License
 
 @foxglove/rosbag2-node is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
-## Releasing
-
-1. Run `yarn version --[major|minor|patch]` to bump version
-2. Run `git push && git push --tags` to push new tag
-3. GitHub Actions will take care of the rest
-
-## Stay in touch
-
-Join our [Discord community](https://foxglove.dev/chat) to ask questions, share feedback, and stay up to date on what our team is working on.

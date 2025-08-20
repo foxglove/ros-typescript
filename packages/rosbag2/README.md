@@ -2,7 +2,8 @@
 
 > _ROS2 (Robot Operating System) legacy SQLite bag reader abstract implementation_
 
-[![npm version](https://img.shields.io/npm/v/@foxglove/rosbag2.svg?style=flat)](https://www.npmjs.com/package/@foxglove/rosbag2)
+> [!WARNING]
+> This package is no longer used or supported by Foxglove. Source code is available for historical reference.
 
 **NOTICE**: The SQLite rosbag2 recording format has been replaced by [MCAP](https://mcap.dev/). This package is only useful for reading legacy rosbag2 `.db3` files.
 
@@ -13,13 +14,3 @@ This package contains the subset of the full rosbag2 SQLite implementation that 
 ## License
 
 @foxglove/rosbag2 is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
-## Releasing
-
-1. Run `yarn version --[major|minor|patch]` to bump version
-2. Run `git push && git push --tags` to push new tag
-3. GitHub Actions will take care of the rest
-
-## Stay in touch
-
-Join our [Discord community](https://foxglove.dev/chat) to ask questions, share feedback, and stay up to date on what our team is working on.
