@@ -4,9 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    # Bump the constraint only if the original constraint is not compatible (i.e. new major version)
-    # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference#versioning-strategy--
     versioning-strategy: increase-if-necessary
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
 
   - package-ecosystem: github-actions
     directory: /
