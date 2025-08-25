@@ -1,9 +1,9 @@
 {
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
   "compilerOptions": {
     "target": "es2020",
     "lib": ["dom", "es2020"],
-    "rootDir": "./src",
+    "rootDir": ".",
     "noEmit": true,
 
     "moduleResolution": "node",

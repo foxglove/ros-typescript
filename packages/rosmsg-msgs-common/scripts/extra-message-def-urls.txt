@@ -1,0 +1,2 @@
+https://raw.githubusercontent.com/ANYbotics/grid_map/refs/heads/master/grid_map_msgs/msg/GridMapInfo.msg
+https://raw.githubusercontent.com/ANYbotics/grid_map/refs/heads/master/grid_map_msgs/msg/GridMap.msg

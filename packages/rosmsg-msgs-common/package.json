@@ -40,13 +40,15 @@
     "test:commonjs": "node -e \"require('./dist/index.js')\"",
     "test:esm": "test/testEsmImport.sh",
     "test:types": "tsc --noEmit ./dist/index.d.ts",
-    "test": "yarn test:commonjs && yarn test:esm && yarn test:types"
+    "test": "yarn test:commonjs && yarn test:esm && yarn test:types",
+    "update:msgdefs:urls": "tsx scripts/update-msgdefs-from-urls.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.8",
     "esbuild": "^0.25.4",
     "esbuild-runner": "^2.2.2",
     "prettier": "^3.6.2",
+    "tsx": "^4.19.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
