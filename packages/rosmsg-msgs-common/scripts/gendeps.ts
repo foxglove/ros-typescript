@@ -8,33 +8,39 @@ type TypeInformation = {
   msgDefinitionString: string;
 };
 
-async function main() {
-  if (process.argv.length !== 4) {
-    console.error("Usage: gendeps <msgdefs-dir> <msg-file>");
-    process.exit(1);
-  }
-
-  const inputRootPath = process.argv[2]!;
-  const inputFilename = process.argv[3]!;
-  // Resolve paths relative to current working directory
-  const rootPath = resolve(process.cwd(), inputRootPath);
-  const filename = resolve(process.cwd(), inputFilename);
+/**
+ * Generates a flattened ROS 2 message definition that includes the target message
+ * and all transitive complex-type dependencies.
+ *
+ * The output is a single string containing the primary message definition followed by
+ * dependent definitions, separated by a delimiter and an "MSG: <package/type>" header
+ * for each dependency (similar to `rosmsg show --raw`).
+ *
+ * @param msgdefsRoot Path to the root directory containing package folders with .msg files.
+ * @param msgFile Path to the specific .msg file under `msgdefsRoot` to resolve (absolute or relative).
+ * @returns Concatenated message definitions for the target type and its dependencies.
+ */
+export async function generateMsgDeps(msgdefsRoot: string, msgFile: string): Promise<string> {
+  const rootPath = resolve(msgdefsRoot);
+  const filename = resolve(msgFile);
   const fullTypeName = getFullTypeFromFilename(filename, rootPath);
 
-  const res = await loadType(fullTypeName, rootPath, getPackageName(fullTypeName));
-  console.log(res.msgDefinitionString);
+  const initial = await loadType(fullTypeName, rootPath, getPackageName(fullTypeName));
+  let output = "";
+  output += initial.msgDefinitionString;
 
-  const complexTypes = res.complexTypes;
+  const complexTypes = initial.complexTypes.slice();
   const seenTypes = new Set<string>();
-  seenTypes.add(res.fullType);
+  seenTypes.add(initial.fullType);
 
   while (complexTypes.length > 0) {
     const complexType = complexTypes.shift()!;
     const curRes = await loadType(complexType, rootPath, getPackageName(complexType));
 
-    console.log("================================================================================");
-    console.log(`MSG: ${curRes.fullType}`);
-    console.log(curRes.msgDefinitionString);
+    output +=
+      `\n================================================================================\n` +
+      `MSG: ${curRes.fullType}\n` +
+      curRes.msgDefinitionString;
 
     for (const complexSubType of curRes.complexTypes) {
       if (!seenTypes.has(complexSubType)) {
@@ -43,6 +49,8 @@ async function main() {
       }
     }
   }
+
+  return output;
 }
 function getFullType(typeName: string, currentPackage: string | undefined): string {
   if (typeName.includes("/")) {
@@ -131,5 +139,3 @@ async function readFileFromBaseDir(filename: string, baseDir: string): Promise<s
   }
   return undefined;
 }
-
-void main();

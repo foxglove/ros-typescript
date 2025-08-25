@@ -1,10 +1,11 @@
-import { spawn } from "child_process";
 import { createWriteStream, existsSync } from "fs";
 import { mkdir, readFile, readdir, writeFile } from "fs/promises";
 import * as http from "http";
 import * as https from "https";
 import { tmpdir } from "os";
 import { join, resolve, dirname } from "path";
+
+import { generateMsgDeps } from "./gendeps";
 
 type DownloadedMsg = {
   url: string;
@@ -74,7 +75,7 @@ async function main() {
       await writeFile(targetMsgPath, downloadedContent, { encoding: "utf8" });
 
       try {
-        const unrolled = await runGendeps(repoRoot, ros2Root, targetMsgPath);
+        const unrolled = await runGendeps(ros2Root, targetMsgPath);
         await writeFile(targetMsgPath, unrolled, { encoding: "utf8" });
         process.stdout.write(
           `Updated ${pathFromRepo(repoRoot, targetMsgPath)} (from ${item.url})\n`,
@@ -143,28 +144,8 @@ async function downloadToFile(url: string, destPath: string): Promise<void> {
   });
 }
 
-async function runGendeps(repoRoot: string, msgdefsRoot: string, msgFile: string): Promise<string> {
-  return await new Promise<string>((resolvePromise, rejectPromise) => {
-    const proc = spawn(
-      "node",
-      ["-r", "esbuild-runner/register", "scripts/gendeps.ts", msgdefsRoot, msgFile],
-      { cwd: resolve(repoRoot, "packages/rosmsg-msgs-common"), stdio: ["ignore", "pipe", "pipe"] },
-    );
-    let stdout = "";
-    let stderr = "";
-    proc.stdout.on("data", (d) => (stdout += String(d)));
-    proc.stderr.on("data", (d) => (stderr += String(d)));
-    proc.on("close", (code) => {
-      if (code === 0) {
-        resolvePromise(stdout);
-      } else {
-        rejectPromise(new Error(stderr || `gendeps exited with code ${code ?? "unknown"}`));
-      }
-    });
-    proc.on("error", (err) => {
-      rejectPromise(err);
-    });
-  });
+async function runGendeps(msgdefsRoot: string, msgFile: string): Promise<string> {
+  return await generateMsgDeps(msgdefsRoot, msgFile);
 }
 
 void main();

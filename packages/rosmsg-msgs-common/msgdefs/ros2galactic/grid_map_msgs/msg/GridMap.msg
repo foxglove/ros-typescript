@@ -89,7 +89,6 @@ float64 z 0
 float64 w 1
 
 
-
 ================================================================================
 MSG: std_msgs/Float32MultiArray
 # This was originally provided as an example message.
@@ -260,5 +259,4 @@ MSG: std_msgs/MultiArrayDimension
 string label   # label of given dimension
 uint32 size    # size of given dimension (in type units)
 uint32 stride  # stride of given dimension
-
 
