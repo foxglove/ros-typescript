@@ -42,7 +42,7 @@
     "node": ">= 20"
   },
   "devDependencies": {
-    "@foxglove/ros2idl-parser": "^0.3.5",
+    "@foxglove/ros2idl-parser": "^0.3.6",
     "@foxglove/rosmsg": "workspace:*",
     "@sounisi5011/jest-binary-data-matchers": "^1.2.1",
     "@types/jest": "^30.0.0",
@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@foxglove/cdr": "^3.4.0",
-    "@foxglove/message-definition": "^0.4.0",
+    "@foxglove/message-definition": "0.5.0",
     "@foxglove/rostime": "workspace:^"
   },
   "packageManager": "yarn@4.5.3"
