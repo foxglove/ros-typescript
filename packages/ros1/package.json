@@ -1,6 +1,6 @@
 {
   "name": "@foxglove/ros1",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Standalone TypeScript implementation of the ROS 1 (Robot Operating System) protocol with a pluggable transport layer",
   "license": "MIT",
   "keywords": [

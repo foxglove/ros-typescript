@@ -1,6 +1,6 @@
 {
   "name": "@foxglove/rosmsg-serialization",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "ROS 1 message serialization, for reading and writing bags and network messages",
   "license": "MIT",
   "keywords": [
