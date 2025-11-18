@@ -42,7 +42,7 @@
     "@foxglove/just-fetch": "^1.2.4",
     "byte-base64": "^1.1.0",
     "sax": "^1.2.4",
-    "xmlbuilder2": "^3.0.2"
+    "xmlbuilder2": "^4.0.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

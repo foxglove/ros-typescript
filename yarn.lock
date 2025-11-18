@@ -1115,7 +1115,7 @@ __metadata:
     "@foxglove/just-fetch": "npm:^1.2.4"
     byte-base64: "npm:^1.1.0"
     sax: "npm:^1.2.4"
-    xmlbuilder2: "npm:^3.0.2"
+    xmlbuilder2: "npm:^4.0.0"
   languageName: node
   linkType: soft
 
@@ -1133,7 +1133,7 @@ __metadata:
     sax: "npm:^1.2.4"
     ts-jest: "npm:^29.4.0"
     typescript: "npm:^5.8.3"
-    xmlbuilder2: "npm:^3.0.2"
+    xmlbuilder2: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -1863,40 +1863,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oozcitak/dom@npm:1.15.10":
-  version: 1.15.10
-  resolution: "@oozcitak/dom@npm:1.15.10"
+"@oozcitak/dom@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@oozcitak/dom@npm:2.0.1"
   dependencies:
-    "@oozcitak/infra": "npm:1.0.8"
-    "@oozcitak/url": "npm:1.0.4"
-    "@oozcitak/util": "npm:8.3.8"
-  checksum: 10c0/128162dd35fd21976e7589a4b50e980d8fb72e1f90e5675a3baca70b23cfdd87c0df57bff1ec708e7927671247a7233f240a27a4546bb904e069be1b4d4d7a05
+    "@oozcitak/infra": "npm:^2.0.1"
+    "@oozcitak/url": "npm:^2.0.1"
+    "@oozcitak/util": "npm:^9.0.2"
+  checksum: 10c0/3fdcac3ee9bd2e25b809d74b9ad06bdb12598f8928610b841a63b8d7ff84b19a02babedfe0ea1bb2c23b7f147a79f9592176ace76e5b8a649adcd6dcaab77c51
   languageName: node
   linkType: hard
 
-"@oozcitak/infra@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@oozcitak/infra@npm:1.0.8"
+"@oozcitak/infra@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@oozcitak/infra@npm:2.0.1"
   dependencies:
-    "@oozcitak/util": "npm:8.3.8"
-  checksum: 10c0/5fa44f02abbad453f5b26b38e2934978c177ef3a1baf8bf53919991135268f55bc89e23f8f3edebf0973c6a7d72d98fededb666c04a8b22ee4ca3048d0d42d25
+    "@oozcitak/util": "npm:~9.0.2"
+  checksum: 10c0/c7f142941acd72953458b43f2dad7cf18f21fbcdcdf98c998eadf4cec87402f75d00ddaada8c34448b5a2a5f80f11dc5c560a038a9caa9fc78a7bbd9903df526
   languageName: node
   linkType: hard
 
-"@oozcitak/url@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@oozcitak/url@npm:1.0.4"
+"@oozcitak/url@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@oozcitak/url@npm:2.0.1"
   dependencies:
-    "@oozcitak/infra": "npm:1.0.8"
-    "@oozcitak/util": "npm:8.3.8"
-  checksum: 10c0/49824e30219b1e3bd0133c7302e79ead18dbfff91bc1ebb2f05b3c2cd670ed07b36af0f933faba2bc3221f65ef068fb7fca7d6c3cb8053fbca45f8cdf5670147
+    "@oozcitak/infra": "npm:^2.0.1"
+    "@oozcitak/util": "npm:^9.0.2"
+  checksum: 10c0/f533103c55af59713780fe97106b6a99d45bfc562d89a6f430795b9ef7ffbff3616254897fab1e1a4962a842bd1e7f1c3cb9b4cd11d2522aef35390c324302af
   languageName: node
   linkType: hard
 
-"@oozcitak/util@npm:8.3.8":
-  version: 8.3.8
-  resolution: "@oozcitak/util@npm:8.3.8"
-  checksum: 10c0/1c492abcba79f5dd9bd7709331a614114706e6936a899cac6ac90b63bbe8e98da288e664c13c6acb2a38e3c5ffd47b93f824075ba81384d6192cc364bf126775
+"@oozcitak/util@npm:^9.0.2, @oozcitak/util@npm:^9.0.4, @oozcitak/util@npm:~9.0.2":
+  version: 9.0.4
+  resolution: "@oozcitak/util@npm:9.0.4"
+  checksum: 10c0/b8d36039071407ec3de0ad2d035e7118e7377608cb38f1a63d432806fc243a8ee25f6681608c13c1470696c57a28f8e8c14de260b4f817ede4623e5ba5578dac
   languageName: node
   linkType: hard
 
@@ -9884,15 +9884,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xmlbuilder2@npm:^3.0.2":
-  version: 3.1.1
-  resolution: "xmlbuilder2@npm:3.1.1"
+"xmlbuilder2@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "xmlbuilder2@npm:4.0.0"
   dependencies:
-    "@oozcitak/dom": "npm:1.15.10"
-    "@oozcitak/infra": "npm:1.0.8"
-    "@oozcitak/util": "npm:8.3.8"
-    js-yaml: "npm:3.14.1"
-  checksum: 10c0/a3e7dd5cbc052f6b53773a4a9d5efb26b0647aa8868bc1a597478d534e78184263b5b3e495e82613f21d0bf016a24145bb793f6e197e8911139dddba9cd831cc
+    "@oozcitak/dom": "npm:^2.0.1"
+    "@oozcitak/infra": "npm:^2.0.1"
+    "@oozcitak/util": "npm:^9.0.4"
+    js-yaml: "npm:^4.1.0"
+  checksum: 10c0/a9a5d59d1d8e42b1450c970ad9a88b91af477e28361707c3b76c5b7596f11ca9f59a541bf4845c9530746b3c19fa370caa5885a10ea482e936acd79b93a67f72
   languageName: node
   linkType: hard
 
