@@ -34,7 +34,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
         with:
           lfs: true
 
@@ -78,7 +78,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
 
       - run: corepack enable
 
@@ -104,7 +104,7 @@ jobs:
     name: rosmsg-serialization benchmark
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v5.0.1
 
       - run: corepack enable
 
