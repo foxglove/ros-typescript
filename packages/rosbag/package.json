@@ -33,7 +33,7 @@
   "devDependencies": {
     "@foxglove/tsconfig": "^2.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.8",
+    "@types/node": "^25.0.2",
     "compressjs": "^1.0.3",
     "cross-env": "^10.0.0",
     "jest": "^30.0.3",
