@@ -94,7 +94,7 @@ jobs:
       - run: yarn workspace @foxglove/rosbag docs
 
       - name: Deploy to GitHub pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           branch: gh-pages
           folder: packages/rosbag/docs
