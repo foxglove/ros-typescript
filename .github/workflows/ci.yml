@@ -34,13 +34,13 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
       - run: corepack enable
 
-      - uses: actions/setup-node@v6.1.0
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
@@ -58,17 +58,9 @@ jobs:
         working-directory: packages/xmlrpc/examples
 
       - run: yarn workspace @foxglove/${{ matrix.package }} pack
-      - name: Publish to NPM (dry run)
-        # `yarn npm publish` does not currently support --provenance: https://github.com/yarnpkg/berry/issues/5430
-        run: npm publish packages/${{ matrix.package }}/package.tgz --provenance --access public --dry-run
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Publish to NPM
         if: ${{ startsWith(github.ref, format('refs/tags/{0}/v', matrix.package)) }}
-        # `yarn npm publish` does not currently support --provenance: https://github.com/yarnpkg/berry/issues/5430
-        run: npm publish packages/${{ matrix.package }}/package.tgz --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: npx npm@latest publish packages/${{ matrix.package }}/package.tgz --provenance --access public
 
   rosbag-docs:
     name: rosbag docs
@@ -78,11 +70,11 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v6
 
       - run: corepack enable
 
-      - uses: actions/setup-node@v6.1.0
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
@@ -104,11 +96,11 @@ jobs:
     name: rosmsg-serialization benchmark
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v6
 
       - run: corepack enable
 
-      - uses: actions/setup-node@v6.1.0
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
