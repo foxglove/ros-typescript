@@ -58,9 +58,11 @@ jobs:
         working-directory: packages/xmlrpc/examples
 
       - run: yarn workspace @foxglove/${{ matrix.package }} pack
+      - name: Publish to NPM (dry run)
+        run: npx npm@11.7.0 publish packages/${{ matrix.package }}/package.tgz --provenance --access public --dry-run
       - name: Publish to NPM
         if: ${{ startsWith(github.ref, format('refs/tags/{0}/v', matrix.package)) }}
-        run: npx npm@latest publish packages/${{ matrix.package }}/package.tgz --provenance --access public
+        run: npx npm@11.7.0 publish packages/${{ matrix.package }}/package.tgz --provenance --access public
 
   rosbag-docs:
     name: rosbag docs
