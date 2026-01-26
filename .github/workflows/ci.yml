@@ -57,12 +57,11 @@ jobs:
         run: yarn install --immutable && yarn tsc -b
         working-directory: packages/xmlrpc/examples
 
-      - run: yarn workspace @foxglove/${{ matrix.package }} pack
       - name: Publish to NPM (dry run)
-        run: npx npm@11.7.0 publish packages/${{ matrix.package }}/package.tgz --provenance --access public --dry-run
+        run: yarn workspace @foxglove/${{ matrix.package }} npm publish --provenance --access public --dry-run
       - name: Publish to NPM
         if: ${{ startsWith(github.ref, format('refs/tags/{0}/v', matrix.package)) }}
-        run: npx npm@11.7.0 publish packages/${{ matrix.package }}/package.tgz --provenance --access public
+        run: yarn workspace @foxglove/${{ matrix.package }} npm publish --provenance --access public
 
   rosbag-docs:
     name: rosbag docs
