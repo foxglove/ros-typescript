@@ -15,7 +15,7 @@ import {
 import nearley, { type Grammar as GrammarType } from "nearley";
 
 import { buildRos2Type } from "./buildRos2Type.js";
-import ros1Rules from "./ros1.ne";
+import ros1Rules from "./ros1Grammar.js";
 
 const { Grammar, Parser } = nearley;
 

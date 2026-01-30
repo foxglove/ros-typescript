@@ -12,6 +12,7 @@ module.exports = tseslint.config(
       "**/*.d.ts",
       "packages/rosmsg-serialization/bench/**",
       "packages/rosbag/typings/**",
+      "packages/rosmsg/src/ros1Grammar.js",
     ],
   },
   ...foxglove.configs.base,
