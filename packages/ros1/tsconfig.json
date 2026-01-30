@@ -4,9 +4,9 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
+    "rewriteRelativeImportExtensions": false,
     "verbatimModuleSyntax": false,
     "isolatedDeclarations": false,
-    "erasableSyntaxOnly": false,
-    "rewriteRelativeImportExtensions": false
+    "erasableSyntaxOnly": false
   }
 }

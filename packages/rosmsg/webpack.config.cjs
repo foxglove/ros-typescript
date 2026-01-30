@@ -2,22 +2,16 @@ module.exports = {
   target: "web",
   mode: "production",
   entry: "./src/index.ts",
-  experiments: {
-    outputModule: true,
-  },
   output: {
     path: require("path").resolve(__dirname, "dist"),
     filename: "index.js",
-    library: {
-      type: "module",
-    },
+    libraryTarget: "commonjs2",
   },
   devtool: "source-map",
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx", ".ne"],
     extensionAlias: {
       ".js": [".ts", ".js"],
-      ".mjs": [".mts", ".mjs"],
     },
   },
   optimization: {
@@ -34,6 +28,7 @@ module.exports = {
             loader: "ts-loader",
             options: {
               configFile: "tsconfig.webpack.json",
+              transpileOnly: true,
             },
           },
         ],

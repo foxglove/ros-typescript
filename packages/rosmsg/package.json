@@ -3,7 +3,6 @@
   "version": "6.0.0",
   "description": "Parser for ROS and ROS 2 .msg definitions",
   "license": "MIT",
-  "type": "module",
   "keywords": [
     "ros",
     "ros1",

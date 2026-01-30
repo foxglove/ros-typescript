@@ -5,9 +5,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "types": ["@sounisi5011/jest-binary-data-matchers"],
+    "rewriteRelativeImportExtensions": false,
     "verbatimModuleSyntax": false,
     "isolatedDeclarations": false,
-    "erasableSyntaxOnly": false,
-    "rewriteRelativeImportExtensions": false
+    "erasableSyntaxOnly": false
   }
 }
