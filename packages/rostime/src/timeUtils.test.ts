@@ -1,5 +1,5 @@
-import * as rostime from ".";
-import { Time } from ".";
+import * as rostime from "./index.js";
+import { Time } from "./index.js";
 
 describe("isTime", () => {
   it("works", () => {

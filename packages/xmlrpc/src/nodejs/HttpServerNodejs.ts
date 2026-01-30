@@ -1,6 +1,6 @@
 import http from "http";
 
-import { HttpHandler, HttpServer } from "../HttpTypes";
+import { HttpHandler, HttpServer } from "../HttpTypes.js";
 
 export class HttpServerNodejs implements HttpServer {
   handler: HttpHandler;

@@ -1,4 +1,4 @@
-import decodeString from "./decodeString";
+import decodeString from "./decodeString.js";
 
 interface Indexable {
   [index: number]: unknown;

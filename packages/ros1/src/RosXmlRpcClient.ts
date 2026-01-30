@@ -1,6 +1,6 @@
 import { XmlRpcClient, XmlRpcFault, XmlRpcValue } from "@foxglove/xmlrpc";
 
-import { RosXmlRpcResponse, RosXmlRpcResponseOrFault } from "./XmlRpcTypes";
+import { RosXmlRpcResponse, RosXmlRpcResponseOrFault } from "./XmlRpcTypes.js";
 
 export class RosXmlRpcClient {
   private _client: XmlRpcClient;

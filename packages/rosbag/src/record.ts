@@ -8,7 +8,7 @@
 import { MessageReader } from "@foxglove/rosmsg-serialization";
 import { Time } from "@foxglove/rostime";
 
-import { extractFields, extractTime } from "./fields";
+import { extractFields, extractTime } from "./fields.js";
 
 function readUint32(buff: Uint8Array): number {
   const view = new DataView(buff.buffer, buff.byteOffset, buff.byteLength);

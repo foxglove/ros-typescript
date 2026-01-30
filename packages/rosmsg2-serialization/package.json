@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosmsg2-serialization",
-  "version": "3.0.3",
+  "version": "4.0.0",
   "description": "ROS 2 message serialization, for reading and writing bags and network messages",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros2",
@@ -24,8 +25,12 @@
     "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -55,6 +60,5 @@
     "@foxglove/cdr": "^3.4.0",
     "@foxglove/message-definition": "0.5.0",
     "@foxglove/rostime": "workspace:^"
-  },
-  "packageManager": "yarn@4.5.3"
+  }
 }

@@ -7,7 +7,7 @@ import {
 import { Time, add as addTimes, isTimeInRangeInclusive } from "@foxglove/rostime";
 import path from "path";
 
-import { SqliteNodejs } from "./SqliteNodejs";
+import { SqliteNodejs } from "./SqliteNodejs.js";
 
 const TALKER_DB = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
 const BAG_START: Time = { sec: 1585866235, nsec: 112411371 };

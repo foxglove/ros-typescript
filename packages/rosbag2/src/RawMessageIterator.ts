@@ -1,6 +1,6 @@
 import { fromNanoSec } from "@foxglove/rostime";
 
-import type { RawMessage, TopicDefinition } from "./types";
+import type { RawMessage, TopicDefinition } from "./types.js";
 
 export type MessageRow = {
   topic_id: bigint;

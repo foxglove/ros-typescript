@@ -9,8 +9,8 @@
 
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
-import { MessageReader } from "./MessageReader";
-import { MessageWriter } from "./MessageWriter";
+import { MessageReader } from "./MessageReader.js";
+import { MessageWriter } from "./MessageWriter.js";
 
 const getStringBytes = (str: string): Uint8Array => {
   const textData = new TextEncoder().encode(str);

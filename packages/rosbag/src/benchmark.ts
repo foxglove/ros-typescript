@@ -1,7 +1,7 @@
 import lz4 from "lz4js";
 
-import { Bag } from "./index";
-import { FileReader } from "./node";
+import { Bag } from "./index.js";
+import { FileReader } from "./node/index.js";
 
 const bagFilePath = "/Users/roman/Downloads/nuScenes-v1.0-mini-scene-0061.bag";
 

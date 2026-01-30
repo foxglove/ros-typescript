@@ -1,8 +1,8 @@
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 import * as prettier from "prettier";
 
-import { LazyMessageReader } from "./LazyMessageReader";
-import messageReaderTests from "./fixtures/messageReaderTests";
+import { LazyMessageReader } from "./LazyMessageReader.js";
+import messageReaderTests from "./fixtures/messageReaderTests.js";
 
 describe("LazyReader", () => {
   it.each(messageReaderTests)(

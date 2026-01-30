@@ -3,7 +3,7 @@ import { MessageReaderOptions } from "@foxglove/rosmsg2-serialization";
 import { readdir } from "fs/promises";
 import path from "path";
 
-import { SqliteNodejs } from "./SqliteNodejs";
+import { SqliteNodejs } from "./SqliteNodejs.js";
 
 export async function openNodejsFile(
   filename: string,

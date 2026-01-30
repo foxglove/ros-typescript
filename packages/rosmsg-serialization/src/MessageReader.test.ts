@@ -9,8 +9,8 @@
 
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
-import { MessageReader } from "./MessageReader";
-import messageReaderTests from "./fixtures/messageReaderTests";
+import { MessageReader } from "./MessageReader.js";
+import messageReaderTests from "./fixtures/messageReaderTests.js";
 
 const getStringBuffer = (str: string) => {
   const data = Buffer.from(str, "utf8");

@@ -1,6 +1,6 @@
 import os from "os";
 
-import { NetworkInterface } from "../TcpTypes";
+import { NetworkInterface } from "../TcpTypes.js";
 
 export function getPid(): number {
   return process.pid;

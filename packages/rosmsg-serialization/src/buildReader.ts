@@ -1,7 +1,7 @@
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
-import { createParsers, StandardTypeReader } from ".";
-import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
+import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize.js";
+import { createParsers, StandardTypeReader } from "./MessageReader.js";
 
 const builtinSizes = {
   // strings are the only builtin type that are variable size

@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosbag2-node",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "ROS 2 bag reader and writer for node.js",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros2",
@@ -26,8 +27,12 @@
     "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -53,6 +58,5 @@
   "dependencies": {
     "@foxglove/rosbag2": "workspace:^",
     "better-sqlite3": "^12.2.0"
-  },
-  "packageManager": "yarn@4.5.3"
+  }
 }

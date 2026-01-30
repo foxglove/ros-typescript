@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosmsg",
-  "version": "5.0.5",
+  "version": "6.0.0",
   "description": "Parser for ROS and ROS 2 .msg definitions",
   "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/foxglove/ros-typescript.git"
@@ -24,13 +25,17 @@
     "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --config webpack.config.cjs",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
     "test": "jest"

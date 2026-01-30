@@ -6,7 +6,13 @@ const tseslint = require("typescript-eslint");
 
 module.exports = tseslint.config(
   {
-    ignores: ["**/dist", "packages/rosbag/docs"],
+    ignores: [
+      "**/dist",
+      "packages/rosbag/docs",
+      "**/*.d.ts",
+      "packages/rosmsg-serialization/bench/**",
+      "packages/rosbag/typings/**",
+    ],
   },
   ...foxglove.configs.base,
   ...foxglove.configs.jest,
@@ -45,43 +51,6 @@ module.exports = tseslint.config(
     files: ["packages/xmlrpc/**"],
     rules: {
       "@foxglove/prefer-hash-private": "off",
-    },
-    languageOptions: {
-      parserOptions: {
-        project: ["packages/xmlrpc/tsconfig.json", "packages/xmlrpc/tsconfig.dts.json"],
-      },
-    },
-  },
-  {
-    files: ["packages/xmlrpc/examples/**"],
-    languageOptions: {
-      parserOptions: {
-        project: true,
-      },
-    },
-  },
-  {
-    files: ["packages/ros1/**"],
-    languageOptions: {
-      parserOptions: {
-        project: ["packages/ros1/tsconfig.json", "packages/ros1/tsconfig.dts.json"],
-      },
-    },
-  },
-  {
-    files: ["packages/ros1/examples/**"],
-    languageOptions: {
-      parserOptions: {
-        project: true,
-      },
-    },
-  },
-  {
-    files: ["packages/rosmsg-serialization/**"],
-    languageOptions: {
-      parserOptions: {
-        project: "packages/rosmsg-serialization/tsconfig.eslint.json",
-      },
     },
   },
 );

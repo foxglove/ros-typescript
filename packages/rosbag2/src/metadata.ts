@@ -6,8 +6,8 @@ import {
   QosPolicyLiveliness,
   QosPolicyReliability,
   QosProfile,
-} from "./types";
-import { parseYaml } from "./yaml";
+} from "./types.js";
+import { parseYaml } from "./yaml.js";
 
 type Obj = Record<string, unknown>;
 

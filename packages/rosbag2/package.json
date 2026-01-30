@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosbag2",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "ROS 2 bag reader and writer abstract implementation",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros2",
@@ -24,8 +25,12 @@
     "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -50,6 +55,5 @@
     "@foxglove/rostime": "workspace:^",
     "@foxglove/schemas": "^1.7.2",
     "js-yaml": "^4.1.1"
-  },
-  "packageManager": "yarn@4.5.3"
+  }
 }

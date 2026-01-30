@@ -7,10 +7,18 @@
 
 import { compare, isGreaterThan, Time } from "@foxglove/rostime";
 
-import { extractFields } from "./fields";
-import nmerge from "./nmerge";
-import { Record, BagHeader, Chunk, ChunkInfo, Connection, IndexData, MessageData } from "./record";
-import type { Filelike, Constructor, Decompress, ChunkReadResult } from "./types";
+import { extractFields } from "./fields.js";
+import nmerge from "./nmerge.js";
+import {
+  Record,
+  BagHeader,
+  Chunk,
+  ChunkInfo,
+  Connection,
+  IndexData,
+  MessageData,
+} from "./record.js";
+import type { Filelike, Constructor, Decompress, ChunkReadResult } from "./types.js";
 
 // Use little endian to read values in dataview
 const LITTLE_ENDIAN = true;

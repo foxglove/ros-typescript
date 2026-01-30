@@ -5,7 +5,7 @@
 // found in the LICENSE file in the root directory of this source tree.
 // You may not use this file except in compliance with the License.
 
-import { Filelike } from "../types";
+import { Filelike } from "../types.js";
 
 // browser reader for Blob|File objects
 export default class BlobReader implements Filelike {

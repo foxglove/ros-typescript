@@ -1,33 +1,13 @@
 {
-  "include": ["./src/**/*.ts"],
+  "extends": "@foxglove/tsconfig/node.json",
+  "include": ["src"],
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2020",
-    "lib": ["dom", "es2020"],
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "dist",
+    "rootDir": "src",
     "types": ["@sounisi5011/jest-binary-data-matchers"],
-
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "allowJs": false,
-    "newLine": "lf",
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-
-    // be as strict as possible, but no stricter
-    "strict": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "forceConsistentCasingInFileNames": true
+    "verbatimModuleSyntax": false,
+    "isolatedDeclarations": false,
+    "erasableSyntaxOnly": false,
+    "rewriteRelativeImportExtensions": false
   }
 }

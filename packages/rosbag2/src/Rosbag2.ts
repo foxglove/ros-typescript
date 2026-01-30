@@ -4,8 +4,8 @@ import { MessageReader, MessageReaderOptions } from "@foxglove/rosmsg2-serializa
 import { Time, isLessThan as isTimeLessThan } from "@foxglove/rostime";
 import { foxgloveMessageSchemas, generateRosMsgDefinition } from "@foxglove/schemas/internal";
 
-import { MessageIterator } from "./MessageIterator";
-import { Message, MessageReadOptions, RawMessage, SqliteDb, TopicDefinition } from "./types";
+import { MessageIterator } from "./MessageIterator.js";
+import { Message, MessageReadOptions, RawMessage, SqliteDb, TopicDefinition } from "./types.js";
 
 export const ROS2_TO_DEFINITIONS = new Map<string, MessageDefinition>();
 export const ROS2_DEFINITIONS_ARRAY: MessageDefinition[] = [];

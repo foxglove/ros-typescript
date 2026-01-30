@@ -12,7 +12,7 @@
 //   You may not use this file except in compliance with the License.
 
 // No time functions that require `moment` should live in this file.
-import { Time } from "./Time";
+import { Time } from "./Time.js";
 
 /**
  * Test if a given object matches the signature of { sec: number; nsec: number }

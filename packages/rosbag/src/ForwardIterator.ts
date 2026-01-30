@@ -1,9 +1,9 @@
 import { compare, add as addTime } from "@foxglove/rostime";
 import Heap from "heap";
 
-import { BaseIterator } from "./BaseIterator";
-import { ChunkInfo } from "./record";
-import { IteratorConstructorArgs, ChunkReadResult } from "./types";
+import { BaseIterator } from "./BaseIterator.js";
+import { ChunkInfo } from "./record.js";
+import { IteratorConstructorArgs, ChunkReadResult } from "./types.js";
 
 export class ForwardIterator extends BaseIterator {
   private remainingChunkInfos: (ChunkInfo | undefined)[];

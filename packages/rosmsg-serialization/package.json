@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosmsg-serialization",
-  "version": "2.0.4",
+  "version": "3.0.0",
   "description": "ROS 1 message serialization, for reading and writing bags and network messages",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros1",
@@ -23,24 +24,21 @@
     "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "module": "dist/esm/index.js",
-  "main": "dist/cjs/index.js",
-  "typings": "dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "build": "yarn build:cjs && yarn build:esm",
-    "build:esm": "tsc -b tsconfig.json",
-    "build:cjs": "tsc -b tsconfig.cjs.json",
-    "build:web": "yarn run esbuild --bundle --outfile=dist/web.js bench/web.ts",
+    "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
-    "bench": "ts-node --project tsconfig.cjs.json bench/index.ts",
-    "bench:benny": "ts-node --project tsconfig.cjs.json bench/benny.ts",
-    "bench:web": "yarn build:web && open bench/web.html"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "engines": {
     "node": ">= 14"
@@ -50,15 +48,9 @@
     "@foxglove/tsconfig": "^3.1.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.8",
-    "benny": "^3.7.1",
-    "console-table-printer": "^2.14.6",
-    "esbuild": "^0.25.4",
     "jest": "^30.0.3",
-    "kelonio": "^0.11.0",
-    "percentile": "^1.6.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {

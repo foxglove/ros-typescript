@@ -1,6 +1,6 @@
-import { Connection } from "./Connection";
-import { RosFollowerClient } from "./RosFollowerClient";
-import { Subscription } from "./Subscription";
+import { Connection } from "./Connection.js";
+import { RosFollowerClient } from "./RosFollowerClient.js";
+import { Subscription } from "./Subscription.js";
 
 // Handles a connection to a single publisher on a given topic.
 export class PublisherLink {

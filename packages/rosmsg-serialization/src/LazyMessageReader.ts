@@ -1,6 +1,6 @@
 import { MessageDefinition } from "@foxglove/message-definition";
 
-import buildReader from "./buildReader";
+import buildReader from "./buildReader.js";
 
 function isBigEndian() {
   const array = new Uint8Array(4);

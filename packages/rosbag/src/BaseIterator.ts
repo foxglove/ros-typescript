@@ -1,15 +1,15 @@
 import type { Time } from "@foxglove/rostime";
 import Heap from "heap";
 
-import { IBagReader } from "./IBagReader";
-import { ChunkInfo, Connection, MessageData } from "./record";
+import { IBagReader } from "./IBagReader.js";
+import { ChunkInfo, Connection, MessageData } from "./record.js";
 import type {
   ChunkReadResult,
   Decompress,
   IteratorConstructorArgs,
   MessageEvent,
   MessageIterator,
-} from "./types";
+} from "./types.js";
 
 type HeapItem = { time: Time; offset: number; chunkReadResult: ChunkReadResult };
 

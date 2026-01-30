@@ -1,7 +1,7 @@
 import { XmlRpcValue } from "@foxglove/xmlrpc";
 
-import { RosXmlRpcClient } from "./RosXmlRpcClient";
-import { RosXmlRpcResponse, RosXmlRpcResponseOrFault } from "./XmlRpcTypes";
+import { RosXmlRpcClient } from "./RosXmlRpcClient.js";
+import { RosXmlRpcResponse, RosXmlRpcResponseOrFault } from "./XmlRpcTypes.js";
 
 export class RosParamClient extends RosXmlRpcClient {
   async deleteParam(callerId: string, key: string): Promise<RosXmlRpcResponse> {

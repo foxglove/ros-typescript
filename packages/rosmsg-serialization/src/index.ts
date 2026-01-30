@@ -1,3 +1,3 @@
-export * from "./LazyMessageReader";
-export * from "./MessageReader";
-export * from "./MessageWriter";
+export * from "./LazyMessageReader.js";
+export * from "./MessageReader.js";
+export * from "./MessageWriter.js";

@@ -1,26 +1,26 @@
 {
   "name": "@foxglove/rosbag",
-  "version": "0.4.1",
+  "version": "1.0.0",
   "license": "Apache-2.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "browser": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
-    "src",
-    "node.d.ts",
-    "node.js",
-    "web.d.ts",
-    "web.js"
+    "src"
   ],
   "scripts": {
     "clean": "rimraf dist && rimraf *.tsbuildinfo || true",
-    "prepack": "tsc -b tsconfig.json tsconfig.cjs.json",
-    "build": "yarn clean && tsc -b tsconfig.json tsconfig.cjs.json",
+    "prepack": "tsc -b",
+    "build": "yarn clean && tsc -b",
     "test": "jest",
     "docs": "typedoc"
   },

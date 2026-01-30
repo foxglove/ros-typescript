@@ -1,5 +1,5 @@
-import { RosMaster } from "./RosMaster";
-import { MockHttpServer } from "./mock/MockHttpServer";
+import { RosMaster } from "./RosMaster.js";
+import { MockHttpServer } from "./mock/MockHttpServer.js";
 
 const CALLER_ID1 = "/test1";
 const CALLER_API1 = "http://127.0.0.1:1111/";

@@ -8,7 +8,7 @@
 import fs from "fs";
 import path from "path";
 
-import FileReader from "./FileReader";
+import FileReader from "./FileReader.js";
 
 describe("node entrypoint", () => {
   describe("Reader", () => {

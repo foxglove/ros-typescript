@@ -1,11 +1,11 @@
 import { EventEmitter } from "eventemitter3";
 
-import { Client } from "./Client";
-import { LoggerService } from "./LoggerService";
-import { Publication } from "./Publication";
-import { Publisher } from "./Publisher";
-import { PublicationLookup, TcpClient } from "./TcpClient";
-import type { TcpAddress, TcpServer, TcpSocket } from "./TcpTypes";
+import { Client } from "./Client.js";
+import { LoggerService } from "./LoggerService.js";
+import { Publication } from "./Publication.js";
+import { Publisher } from "./Publisher.js";
+import { PublicationLookup, TcpClient } from "./TcpClient.js";
+import type { TcpAddress, TcpServer, TcpSocket } from "./TcpTypes.js";
 
 type TcpPublisherOpts = {
   server: TcpServer;

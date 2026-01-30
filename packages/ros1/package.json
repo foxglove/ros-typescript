@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/ros1",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Standalone TypeScript implementation of the ROS 1 (Robot Operating System) protocol with a pluggable transport layer",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros1",
@@ -22,17 +23,19 @@
     "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./nodejs": "./dist/nodejs/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./nodejs": {
+      "types": "./dist/nodejs/index.d.ts",
+      "default": "./dist/nodejs/index.js"
+    }
   },
   "files": [
     "dist",
-    "src",
-    "nodejs.d.ts",
-    "nodejs.js"
+    "src"
   ],
   "bin": {
     "roscore": "./dist/nodejs/roscore.js"
@@ -42,7 +45,7 @@
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit",
-    "roscore": "node -r esbuild-runner/register src/nodejs/roscore.ts"
+    "roscore": "node --import esbuild-runner/register src/nodejs/roscore.ts"
   },
   "engines": {
     "node": ">= 14"

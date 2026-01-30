@@ -5,7 +5,7 @@ import {
   MessageDefinitionField,
 } from "@foxglove/message-definition";
 
-import { messageDefinitionHasDataFields } from "./messageDefinitionHasDataFields";
+import { messageDefinitionHasDataFields } from "./messageDefinitionHasDataFields.js";
 
 type PrimitiveWriter = (
   value: unknown,
@@ -110,7 +110,7 @@ export class MessageWriter {
    */
   public writeMessage(message: unknown, output?: Uint8Array): Uint8Array {
     const writer = new CdrWriter({
-      buffer: output,
+      buffer: output?.buffer as ArrayBuffer | undefined,
       size: output ? undefined : this.calculateByteSize(message),
     });
     this.#write(this.#rootDefinition, message, writer);

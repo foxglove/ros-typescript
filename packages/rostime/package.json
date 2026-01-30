@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rostime",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "description": "ROS Time and Duration primitives and helper methods",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "rostime",
     "ros",
@@ -23,8 +24,12 @@
     "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"

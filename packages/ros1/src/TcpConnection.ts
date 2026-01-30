@@ -3,11 +3,11 @@ import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 import { MessageReader } from "@foxglove/rosmsg-serialization";
 import { EventEmitter } from "eventemitter3";
 
-import { Connection, ConnectionStats } from "./Connection";
-import { LoggerService } from "./LoggerService";
-import { RosTcpMessageStream } from "./RosTcpMessageStream";
-import { TcpAddress, TcpSocket } from "./TcpTypes";
-import { backoff } from "./backoff";
+import { Connection, ConnectionStats } from "./Connection.js";
+import { LoggerService } from "./LoggerService.js";
+import { RosTcpMessageStream } from "./RosTcpMessageStream.js";
+import { TcpAddress, TcpSocket } from "./TcpTypes.js";
+import { backoff } from "./backoff.js";
 
 export interface TcpConnectionEvents {
   header: (

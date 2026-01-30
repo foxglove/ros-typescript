@@ -1,5 +1,5 @@
-import { Client } from "./Client";
-import { Publication } from "./Publication";
+import { Client } from "./Client.js";
+import { Publication } from "./Publication.js";
 
 export interface Publisher {
   on(

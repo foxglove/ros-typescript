@@ -1,5 +1,5 @@
-import { parse } from "./parse";
-import { stringify } from "./stringify";
+import { parse } from "./parse.js";
+import { stringify } from "./stringify.js";
 
 describe("stringify", () => {
   it("round trips a definition into canonical format", () => {

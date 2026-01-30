@@ -1,1 +1,1 @@
-export { default as FileReader } from "./dist/cjs/node/FileReader";
+export { default as FileReader } from "./dist/node/FileReader.js";

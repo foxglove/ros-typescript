@@ -3,7 +3,7 @@ import { Rosbag2 } from "@foxglove/rosbag2";
 import { Time, isGreaterThan, isTimeInRangeInclusive } from "@foxglove/rostime";
 import path from "path";
 
-import { openNodejsFile, openNodejsDirectory } from "./open";
+import { openNodejsFile, openNodejsDirectory } from "./open.js";
 
 const BAG_START: Time = { sec: 1585866235, nsec: 112411371 };
 const BAG_END: Time = { sec: 1585866239, nsec: 643508139 };

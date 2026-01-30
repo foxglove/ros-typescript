@@ -12,9 +12,9 @@ import compress from "compressjs";
 import fs from "fs";
 import lz4 from "lz4js";
 
-import Bag, { ReadOptions } from "./Bag";
-import ReadResult from "./ReadResult";
-import FileReader from "./node/FileReader";
+import Bag, { ReadOptions } from "./Bag.js";
+import ReadResult from "./ReadResult.js";
+import FileReader from "./node/FileReader.js";
 
 const FILENAME = "example";
 

@@ -1,6 +1,6 @@
 import { EventEmitter } from "eventemitter3";
 
-import { concatData } from "./concatData";
+import { concatData } from "./concatData.js";
 
 // This is the maximum message length allowed by ros_comm. See
 // <https://github.com/strawlab/ros_comm/blob/master/clients/cpp/roscpp/src/libros/transport_publisher_link.cpp#L164-L167>

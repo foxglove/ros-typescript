@@ -9,7 +9,11 @@ module.exports = {
   },
   devtool: "source-map",
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".ne"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".ne"],
+    extensionAlias: {
+      ".js": [".ts", ".js"],
+      ".mjs": [".mts", ".mjs"],
+    },
   },
   optimization: {
     minimize: false,

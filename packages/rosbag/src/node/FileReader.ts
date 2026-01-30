@@ -7,7 +7,7 @@
 
 import * as fs from "fs/promises";
 
-import { Filelike } from "../types";
+import { Filelike } from "../types.js";
 
 // reader using nodejs fs api
 export default class FileReader implements Filelike {

@@ -1,4 +1,4 @@
-import { bench } from "./bench";
+import { bench } from "./bench.js";
 
 async function main() {
   await bench({

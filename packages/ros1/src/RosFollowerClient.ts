@@ -1,7 +1,7 @@
 import { XmlRpcValue } from "@foxglove/xmlrpc";
 
-import { RosXmlRpcClient } from "./RosXmlRpcClient";
-import { RosXmlRpcResponse } from "./XmlRpcTypes";
+import { RosXmlRpcClient } from "./RosXmlRpcClient.js";
+import { RosXmlRpcResponse } from "./XmlRpcTypes.js";
 
 export type ProtocolParams = [string, ...XmlRpcValue[]];
 

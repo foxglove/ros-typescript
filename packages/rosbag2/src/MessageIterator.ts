@@ -1,4 +1,4 @@
-import type { Message, RawMessage } from "./types";
+import type { Message, RawMessage } from "./types.js";
 
 type MessageDecoder = (rawMessage: RawMessage) => unknown;
 

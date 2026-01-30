@@ -1,4 +1,7 @@
-import type { XMLBuilder } from "xmlbuilder2/lib/interfaces";
+import { create as createXml } from "xmlbuilder2";
+
+// Derive XMLBuilder type from createXml return type
+type XMLBuilder = ReturnType<typeof createXml>;
 
 export class CustomType {
   tagName = "customType";
