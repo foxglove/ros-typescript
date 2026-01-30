@@ -46,6 +46,9 @@
   "engines": {
     "node": ">= 14"
   },
+  "dependencies": {
+    "@foxglove/message-definition": "0.5.0"
+  },
   "devDependencies": {
     "@foxglove/rosmsg": "workspace:*",
     "@foxglove/tsconfig": "^3.1.0",
@@ -61,8 +64,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/message-definition": "0.5.0"
   }
 }

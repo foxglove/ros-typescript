@@ -1,12 +1,27 @@
 {
   "name": "@foxglove/rosbag",
   "version": "1.0.0",
+  "description": "ROS 1 bag reader library",
   "license": "Apache-2.0",
   "type": "module",
+  "keywords": [
+    "ros",
+    "ros1",
+    "robot",
+    "operating",
+    "system",
+    "rosbag",
+    "bag"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
+  "author": {
+    "name": "Foxglove Technologies Inc",
+    "email": "contact@foxglove.dev"
+  },
+  "homepage": "https://github.com/foxglove/ros-typescript",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -18,11 +33,11 @@
     "src"
   ],
   "scripts": {
-    "clean": "rimraf dist && rimraf *.tsbuildinfo || true",
-    "prepack": "tsc -b",
     "build": "yarn clean && tsc -b",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
-    "docs": "typedoc"
+    "clean": "rimraf dist && rimraf *.tsbuildinfo || true",
+    "docs": "typedoc",
+    "prepack": "tsc -b",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "dependencies": {
     "@foxglove/rosmsg": "workspace:^",

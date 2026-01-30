@@ -35,8 +35,8 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "lint:ci": "eslint --report-unused-disable-directives .",
     "lint": "eslint --report-unused-disable-directives --fix .",
+    "lint:ci": "eslint --report-unused-disable-directives .",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest"

@@ -23,8 +23,8 @@
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
-    "name": "Foxglove Technologies",
-    "email": "support@foxglove.dev"
+    "name": "Foxglove Technologies Inc",
+    "email": "contact@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
   "exports": {
@@ -46,6 +46,10 @@
   "engines": {
     "node": ">= 22"
   },
+  "dependencies": {
+    "@foxglove/rosbag2": "workspace:^",
+    "better-sqlite3": "^12.2.0"
+  },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
     "@types/jest": "^30.0.0",
@@ -54,9 +58,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/rosbag2": "workspace:^",
-    "better-sqlite3": "^12.2.0"
   }
 }

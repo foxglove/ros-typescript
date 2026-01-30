@@ -43,6 +43,10 @@
     "prepublishOnly": "yarn lint:ci && yarn test",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
+  "dependencies": {
+    "@foxglove/rosbag2": "workspace:^",
+    "@foxglove/sql.js": "^0.0.4"
+  },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/sql.js": "^1.4.9",
@@ -53,9 +57,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/rosbag2": "workspace:^",
-    "@foxglove/sql.js": "^0.0.4"
   }
 }

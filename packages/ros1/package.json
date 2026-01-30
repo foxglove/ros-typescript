@@ -44,11 +44,19 @@
     "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit",
-    "roscore": "node --import esbuild-runner/register src/nodejs/roscore.ts"
+    "roscore": "node --import esbuild-runner/register src/nodejs/roscore.ts",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit"
   },
   "engines": {
     "node": ">= 14"
+  },
+  "dependencies": {
+    "@foxglove/message-definition": "0.5.0",
+    "@foxglove/rosmsg": "workspace:^",
+    "@foxglove/rosmsg-serialization": "workspace:^",
+    "@foxglove/xmlrpc": "workspace:^",
+    "eventemitter3": "^5.0.0",
+    "ipaddr.js": "^2.0.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -58,13 +66,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/message-definition": "0.5.0",
-    "@foxglove/rosmsg": "workspace:^",
-    "@foxglove/rosmsg-serialization": "workspace:^",
-    "@foxglove/xmlrpc": "workspace:^",
-    "eventemitter3": "^5.0.0",
-    "ipaddr.js": "^2.0.1"
   }
 }

@@ -4,10 +4,6 @@
   "description": "Parser for ROS and ROS 2 .msg definitions",
   "license": "MIT",
   "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/foxglove/ros-typescript.git"
-  },
   "keywords": [
     "ros",
     "ros1",
@@ -20,6 +16,10 @@
     "parser",
     "grammar"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foxglove/ros-typescript.git"
+  },
   "author": {
     "name": "Foxglove Technologies Inc",
     "email": "contact@foxglove.dev"

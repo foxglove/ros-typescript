@@ -46,6 +46,11 @@
   "engines": {
     "node": ">= 20"
   },
+  "dependencies": {
+    "@foxglove/cdr": "^3.4.0",
+    "@foxglove/message-definition": "0.5.0",
+    "@foxglove/rostime": "workspace:^"
+  },
   "devDependencies": {
     "@foxglove/ros2idl-parser": "^0.3.6",
     "@foxglove/rosmsg": "workspace:*",
@@ -55,10 +60,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/cdr": "^3.4.0",
-    "@foxglove/message-definition": "0.5.0",
-    "@foxglove/rostime": "workspace:^"
   }
 }
