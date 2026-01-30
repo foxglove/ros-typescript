@@ -5,7 +5,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "lib": ["ESNext", "DOM"],
-    "rewriteRelativeImportExtensions": false,
     "verbatimModuleSyntax": false,
     "isolatedDeclarations": false,
     "erasableSyntaxOnly": false
