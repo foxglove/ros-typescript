@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "@foxglove/xmlrpc example code",
   "license": "MIT",
+  "type": "module",
   "private": true,
   "scripts": {
     "client": "ts-node client.ts",

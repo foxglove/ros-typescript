@@ -7,12 +7,15 @@
 
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import FileReader from "./FileReader.js";
 
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
 describe("node entrypoint", () => {
   describe("Reader", () => {
-    const fixture = path.join(__dirname, "..", "..", "fixtures", "asci-file.txt");
+    const fixture = path.join(currentDir, "..", "..", "fixtures", "asci-file.txt");
 
     it("should read bytes from a file", async () => {
       const reader = new FileReader(fixture);

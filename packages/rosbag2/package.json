@@ -39,7 +39,7 @@
     "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

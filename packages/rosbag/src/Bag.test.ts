@@ -11,17 +11,21 @@ import { compare, fromDate } from "@foxglove/rostime";
 import compress from "compressjs";
 import fs from "fs";
 import lz4 from "lz4js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import Bag, { ReadOptions } from "./Bag.js";
 import ReadResult from "./ReadResult.js";
 import FileReader from "./node/FileReader.js";
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 const FILENAME = "example";
 
 type LinearMessage = { linear: { x: number; y: number; z: number } };
 
 function getFixture(filename = FILENAME): string {
-  return `${__dirname}/../fixtures/${filename}.bag`;
+  return `${currentDir}/../fixtures/${filename}.bag`;
 }
 
 async function open(reader: FileReader): Promise<Bag> {

@@ -38,7 +38,10 @@
     "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "bench": "npx tsx bench/index.ts",
+    "bench:benny": "npx tsx bench/benny.ts",
+    "bench:web": "esbuild --bundle --outfile=dist/web.js bench/web.ts && open bench/web.html"
   },
   "engines": {
     "node": ">= 14"
@@ -46,9 +49,15 @@
   "devDependencies": {
     "@foxglove/rosmsg": "workspace:*",
     "@foxglove/tsconfig": "^3.1.0",
+    "@sounisi5011/jest-binary-data-matchers": "^1.2.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.8",
+    "benny": "^3.7.1",
+    "console-table-printer": "^2.14.6",
+    "esbuild": "^0.25.4",
     "jest": "^30.0.3",
+    "kelonio": "^0.11.0",
+    "percentile": "^1.6.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"

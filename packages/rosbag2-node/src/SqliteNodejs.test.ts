@@ -6,10 +6,13 @@ import {
 } from "@foxglove/rosbag2";
 import { Time, add as addTimes, isTimeInRangeInclusive } from "@foxglove/rostime";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import { SqliteNodejs } from "./SqliteNodejs.js";
 
-const TALKER_DB = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
+const TALKER_DB = path.join(currentDir, "..", "tests", "bags", "talker", "talker.db3");
 const BAG_START: Time = { sec: 1585866235, nsec: 112411371 };
 const BAG_END: Time = { sec: 1585866239, nsec: 643508139 };
 

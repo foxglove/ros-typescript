@@ -21,7 +21,7 @@
     "clean": "rimraf dist && rimraf *.tsbuildinfo || true",
     "prepack": "tsc -b",
     "build": "yarn clean && tsc -b",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "docs": "typedoc"
   },
   "dependencies": {

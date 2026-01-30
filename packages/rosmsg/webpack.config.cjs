@@ -2,10 +2,15 @@ module.exports = {
   target: "web",
   mode: "production",
   entry: "./src/index.ts",
+  experiments: {
+    outputModule: true,
+  },
   output: {
     path: require("path").resolve(__dirname, "dist"),
     filename: "index.js",
-    libraryTarget: "commonjs2",
+    library: {
+      type: "module",
+    },
   },
   devtool: "source-map",
   resolve: {

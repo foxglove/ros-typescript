@@ -2,6 +2,10 @@
   "extends": "@foxglove/tsconfig/node.json",
   "include": ["."],
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "verbatimModuleSyntax": false,
+    "isolatedDeclarations": false,
+    "erasableSyntaxOnly": false,
+    "rewriteRelativeImportExtensions": false
   }
 }

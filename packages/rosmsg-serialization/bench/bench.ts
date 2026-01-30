@@ -3,7 +3,7 @@ import { printTable } from "console-table-printer";
 import { Benchmark, BenchmarkData, Measurement } from "kelonio";
 import percentile from "percentile";
 
-import { LazyMessageReader, MessageReader, MessageWriter } from "../src.js";
+import { LazyMessageReader, MessageReader, MessageWriter } from "../src/index.js";
 
 type Testcase = {
   name: string;

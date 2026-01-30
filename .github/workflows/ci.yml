@@ -109,5 +109,5 @@ jobs:
 
       - run: yarn install --immutable
 
-      - run: yarn workspaces foreach -Rp --topological-dev --from @foxglove/rosmsg run build
-      - run: yarn workspace @foxglove/rosmsg bench:benny
+      - run: yarn workspaces foreach -Rp --topological-dev --from @foxglove/rosmsg-serialization run build
+      - run: yarn workspace @foxglove/rosmsg-serialization bench:benny

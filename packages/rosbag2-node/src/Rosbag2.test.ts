@@ -2,8 +2,11 @@
 import { Rosbag2 } from "@foxglove/rosbag2";
 import { Time, isGreaterThan, isTimeInRangeInclusive } from "@foxglove/rostime";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import { openNodejsFile, openNodejsDirectory } from "./open.js";
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 const BAG_START: Time = { sec: 1585866235, nsec: 112411371 };
 const BAG_END: Time = { sec: 1585866239, nsec: 643508139 };
@@ -12,7 +15,7 @@ const DATATYPES = ["rcl_interfaces/msg/Log", "std_msgs/msg/String"];
 
 describe("SqliteNodejs single bag file handling", () => {
   it("reads messages", async () => {
-    const bagFilename = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
+    const bagFilename = path.join(currentDir, "..", "tests", "bags", "talker", "talker.db3");
     const bag = await openNodejsFile(bagFilename);
 
     let seenRosout = false;
@@ -45,7 +48,7 @@ describe("SqliteNodejs single bag file handling", () => {
   });
 
   it("reads messages with sec,nsec time type", async () => {
-    const bagFilename = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
+    const bagFilename = path.join(currentDir, "..", "tests", "bags", "talker", "talker.db3");
     const bag = await openNodejsFile(bagFilename, { timeType: "sec,nsec" });
 
     for await (const msg of bag.readMessages()) {
@@ -67,7 +70,7 @@ describe("SqliteNodejs single bag file handling", () => {
   });
 
   it("reads start/end times", async () => {
-    const bagFilename = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
+    const bagFilename = path.join(currentDir, "..", "tests", "bags", "talker", "talker.db3");
     const bag = await openNodejsFile(bagFilename);
 
     const [startTime, endTime] = await bag.timeRange();
@@ -76,7 +79,7 @@ describe("SqliteNodejs single bag file handling", () => {
   });
 
   it("reads the topic list", async () => {
-    const bagFilename = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
+    const bagFilename = path.join(currentDir, "..", "tests", "bags", "talker", "talker.db3");
     const bag = await openNodejsFile(bagFilename);
 
     const topics = await bag.readTopics();
@@ -87,7 +90,7 @@ describe("SqliteNodejs single bag file handling", () => {
   });
 
   it("reads message counts", async () => {
-    const bagFilename = path.join(__dirname, "..", "tests", "bags", "talker", "talker.db3");
+    const bagFilename = path.join(currentDir, "..", "tests", "bags", "talker", "talker.db3");
     const bag = await openNodejsFile(bagFilename);
 
     const counts = await bag.messageCounts();
@@ -104,7 +107,7 @@ describe("SqliteNodejs single bag directory handling", () => {
   });
 
   it("reads messages", async () => {
-    const bagPath = path.join(__dirname, "..", "tests", "bags", "talker");
+    const bagPath = path.join(currentDir, "..", "tests", "bags", "talker");
     const bag = await openNodejsDirectory(bagPath);
 
     let seenRosout = false;
@@ -137,7 +140,7 @@ describe("SqliteNodejs single bag directory handling", () => {
   });
 
   it("reads messages with sec,nsec time type", async () => {
-    const bagPath = path.join(__dirname, "..", "tests", "bags", "talker");
+    const bagPath = path.join(currentDir, "..", "tests", "bags", "talker");
     const bag = await openNodejsDirectory(bagPath, { timeType: "sec,nsec" });
 
     for await (const msg of bag.readMessages()) {
@@ -159,7 +162,7 @@ describe("SqliteNodejs single bag directory handling", () => {
   });
 
   it("reads start/end times", async () => {
-    const bagPath = path.join(__dirname, "..", "tests", "bags", "talker");
+    const bagPath = path.join(currentDir, "..", "tests", "bags", "talker");
     const bag = await openNodejsDirectory(bagPath);
 
     const [startTime, endTime] = await bag.timeRange();
@@ -168,7 +171,7 @@ describe("SqliteNodejs single bag directory handling", () => {
   });
 
   it("reads the topic list", async () => {
-    const bagPath = path.join(__dirname, "..", "tests", "bags", "talker");
+    const bagPath = path.join(currentDir, "..", "tests", "bags", "talker");
     const bag = await openNodejsDirectory(bagPath);
 
     const topics = await bag.readTopics();
@@ -179,7 +182,7 @@ describe("SqliteNodejs single bag directory handling", () => {
   });
 
   it("reads message counts", async () => {
-    const bagPath = path.join(__dirname, "..", "tests", "bags", "talker");
+    const bagPath = path.join(currentDir, "..", "tests", "bags", "talker");
     const bag = await openNodejsDirectory(bagPath);
 
     const counts = await bag.messageCounts();

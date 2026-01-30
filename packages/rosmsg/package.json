@@ -38,7 +38,7 @@
     "build": "webpack --config webpack.config.cjs",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "engines": {
     "node": ">= 14"

@@ -1,7 +1,7 @@
 import { parse } from "@foxglove/rosmsg";
 
 import { testCases } from "./testCases.js";
-import { LazyMessageReader, MessageReader, MessageWriter } from "../src.js";
+import { LazyMessageReader, MessageReader, MessageWriter } from "../src/index.js";
 
 const Iterations = 10_000;
 
