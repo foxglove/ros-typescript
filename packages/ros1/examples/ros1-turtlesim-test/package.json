@@ -21,7 +21,7 @@
     "start": "ts-node src/index.ts"
   },
   "devDependencies": {
-    "@types/node": "^24.0.8",
+    "@types/node": "^25.1.0",
     "ts-node": "^10.7.0",
     "tslib": "^2.1.0",
     "typescript": "^5.8.3"

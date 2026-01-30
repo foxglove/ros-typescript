@@ -927,7 +927,7 @@ __metadata:
     "@foxglove/rosbag2": "workspace:^"
     "@types/better-sqlite3": "npm:^7.6.12"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     better-sqlite3: "npm:^12.2.0"
     jest: "npm:^30.0.3"
     prettier: "npm:^3.6.2"
@@ -981,7 +981,7 @@ __metadata:
     "@foxglove/rostime": "workspace:^"
     "@foxglove/tsconfig": "npm:^3.1.0"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     compressjs: "npm:^1.0.3"
     cross-env: "npm:^10.0.0"
     heap: "npm:^0.2.7"
@@ -1003,7 +1003,7 @@ __metadata:
   dependencies:
     "@foxglove/message-definition": "npm:0.5.0"
     "@foxglove/rosmsg": "workspace:^"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     esbuild: "npm:^0.25.4"
     esbuild-runner: "npm:^2.2.2"
     prettier: "npm:^3.6.2"
@@ -1019,7 +1019,7 @@ __metadata:
     "@foxglove/rosmsg": "workspace:*"
     "@foxglove/tsconfig": "npm:^3.1.0"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     benny: "npm:^3.7.1"
     console-table-printer: "npm:^2.14.6"
     esbuild: "npm:^0.25.4"
@@ -1125,7 +1125,7 @@ __metadata:
   dependencies:
     "@foxglove/just-fetch": "npm:^1.2.4"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     "@types/sax": "npm:^1.2.3"
     byte-base64: "npm:^1.1.0"
     jest: "npm:^30.0.3"
@@ -2253,12 +2253,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^24.0.8":
+"@types/node@npm:*":
   version: 24.3.0
   resolution: "@types/node@npm:24.3.0"
   dependencies:
     undici-types: "npm:~7.10.0"
   checksum: 10c0/96bdeca01f690338957c2dcc92cb9f76c262c10398f8d91860865464412b0f9d309c24d9b03d0bdd26dd47fa7ee3f8227893d5c89bc2009d919a525a22512030
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^25.1.0":
+  version: 25.1.0
+  resolution: "@types/node@npm:25.1.0"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/5f393a127dc9565e2e152514a271455d580c7095afc51302e73ffe8aac3526b64ebacc3c10dd40c93cef81a95436ef2c6a8b522930df567a3f6b189c0eef649a
   languageName: node
   linkType: hard
 
@@ -8330,7 +8339,7 @@ __metadata:
   resolution: "ros1-chatter@workspace:packages/ros1/examples/ros1-chatter"
   dependencies:
     "@foxglove/ros1": "workspace:^"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     ts-node: "npm:^10.7.0"
     tslib: "npm:^2.1.0"
     typescript: "npm:^5.8.3"
@@ -8342,7 +8351,7 @@ __metadata:
   resolution: "ros1-turtlesim-test@workspace:packages/ros1/examples/ros1-turtlesim-test"
   dependencies:
     "@foxglove/ros1": "workspace:^"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     ts-node: "npm:^10.7.0"
     tslib: "npm:^2.1.0"
     typescript: "npm:^5.8.3"
@@ -9434,6 +9443,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
+  languageName: node
+  linkType: hard
+
 "unique-filename@npm:^3.0.0":
   version: 3.0.0
   resolution: "unique-filename@npm:3.0.0"
@@ -9927,7 +9943,7 @@ __metadata:
   resolution: "xmlrpc-examples@workspace:packages/xmlrpc/examples"
   dependencies:
     "@foxglove/xmlrpc": "portal:../"
-    "@types/node": "npm:^24.0.8"
+    "@types/node": "npm:^25.1.0"
     ts-node: "npm:^10.9.2"
     tslib: "npm:^2.3.1"
     typescript: "npm:^5.8.3"
