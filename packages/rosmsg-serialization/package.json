@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@foxglove/rosmsg": "workspace:*",
-    "@foxglove/tsconfig": "^2.0.0",
+    "@foxglove/tsconfig": "^3.1.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.8",
     "benny": "^3.7.1",
