@@ -1,4 +1,4 @@
-import { concatData } from "./concatData";
+import { concatData } from "./concatData.js";
 
 describe("concatData", () => {
   it("concatData works", () => {

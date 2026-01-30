@@ -1,4 +1,4 @@
 export * from "@foxglove/rosbag2";
 
-export * from "./open";
-export * from "./SqliteNodejs";
+export * from "./open.js";
+export * from "./SqliteNodejs.js";

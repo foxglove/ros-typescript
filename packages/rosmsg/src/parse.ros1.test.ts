@@ -9,7 +9,7 @@
 
 import { MessageDefinition } from "@foxglove/message-definition";
 
-import { fixupTypes, parse } from "./parse";
+import { fixupTypes, parse } from "./parse.js";
 
 describe("parseMessageDefinition", () => {
   it("parses a single field from a single message", () => {

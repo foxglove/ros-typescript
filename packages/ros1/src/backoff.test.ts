@@ -1,4 +1,4 @@
-import { backoffTime } from "./backoff";
+import { backoffTime } from "./backoff.js";
 
 describe("backoffTime", () => {
   it("works", () => {

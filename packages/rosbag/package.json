@@ -1,28 +1,43 @@
 {
   "name": "@foxglove/rosbag",
-  "version": "0.4.1",
+  "version": "1.0.0",
+  "description": "ROS 1 bag reader library",
   "license": "Apache-2.0",
+  "type": "module",
+  "keywords": [
+    "ros",
+    "ros1",
+    "robot",
+    "operating",
+    "system",
+    "rosbag",
+    "bag"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "browser": "dist/esm/index.js",
+  "author": {
+    "name": "Foxglove",
+    "email": "support@foxglove.dev"
+  },
+  "homepage": "https://github.com/foxglove/ros-typescript",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
-    "src",
-    "node.d.ts",
-    "node.js",
-    "web.d.ts",
-    "web.js"
+    "src"
   ],
   "scripts": {
+    "build": "yarn clean && tsc -b",
     "clean": "rimraf dist && rimraf *.tsbuildinfo || true",
-    "prepack": "tsc -b tsconfig.json tsconfig.cjs.json",
-    "build": "yarn clean && tsc -b tsconfig.json tsconfig.cjs.json",
-    "test": "jest",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "prepack": "tsc -b",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "dependencies": {
     "@foxglove/rosmsg": "workspace:^",

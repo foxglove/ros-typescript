@@ -2,7 +2,7 @@ import { CdrReader } from "@foxglove/cdr";
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 import { Time as Ros1Time } from "@foxglove/rostime";
 
-import { messageDefinitionHasDataFields } from "./messageDefinitionHasDataFields";
+import { messageDefinitionHasDataFields } from "./messageDefinitionHasDataFields.js";
 
 type Ros2Time = {
   sec: number;

@@ -1,8 +1,8 @@
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "eventemitter3";
 import net from "net";
 
-import { TcpSocketNode } from "./TcpSocketNode";
-import { TcpAddress, TcpServer, TcpServerEvents } from "../TcpTypes";
+import { TcpSocketNode } from "./TcpSocketNode.js";
+import { TcpAddress, TcpServer, TcpServerEvents } from "../TcpTypes.js";
 
 export class TcpServerNode extends EventEmitter<TcpServerEvents> implements TcpServer {
   private _server: net.Server;

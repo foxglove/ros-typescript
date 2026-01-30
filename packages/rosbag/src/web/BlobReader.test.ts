@@ -9,7 +9,7 @@
 
 import { TextEncoder, TextDecoder } from "util";
 
-import BlobReader from "./BlobReader";
+import BlobReader from "./BlobReader.js";
 
 // github.com/jsdom/jsdom/issues/2524
 global.TextEncoder = TextEncoder;
@@ -31,7 +31,7 @@ global.Blob.prototype.arrayBuffer = async function arrayBuffer(): Promise<ArrayB
         return;
       }
 
-      resolve(new Uint8Array(reader.result));
+      resolve(reader.result);
     };
     reader.onerror = function () {
       reader.onload = null;

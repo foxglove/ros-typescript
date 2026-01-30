@@ -1,3 +1,3 @@
 export * from "@foxglove/rosbag2";
 
-export * from "./SqliteSqljs";
+export * from "./SqliteSqljs.js";

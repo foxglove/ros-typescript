@@ -1,5 +1,5 @@
-import { md5 } from "./md5";
-import { parse } from "./parse";
+import { md5 } from "./md5.js";
+import { parse } from "./parse.js";
 
 type Md5Test = [name: string, msgDef: string, expected: string];
 

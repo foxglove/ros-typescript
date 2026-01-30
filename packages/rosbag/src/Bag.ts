@@ -9,12 +9,12 @@ import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 import { MessageReader } from "@foxglove/rosmsg-serialization";
 import { compare, Time } from "@foxglove/rostime";
 
-import BagReader from "./BagReader";
-import { ForwardIterator } from "./ForwardIterator";
-import ReadResult from "./ReadResult";
-import { ReverseIterator } from "./ReverseIterator";
-import { BagHeader, ChunkInfo, Connection, MessageData } from "./record";
-import { Filelike, Decompress, MessageIterator, IteratorConstructorArgs } from "./types";
+import BagReader from "./BagReader.js";
+import { ForwardIterator } from "./ForwardIterator.js";
+import ReadResult from "./ReadResult.js";
+import { ReverseIterator } from "./ReverseIterator.js";
+import { BagHeader, ChunkInfo, Connection, MessageData } from "./record.js";
+import { Filelike, Decompress, MessageIterator, IteratorConstructorArgs } from "./types.js";
 
 export type ReadOptions = {
   decompress?: Decompress;

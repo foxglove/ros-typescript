@@ -1,4 +1,4 @@
-import { stringLengthUtf8 } from "./stringLengthUtf8";
+import { stringLengthUtf8 } from "./stringLengthUtf8.js";
 
 describe("stringLengthUtf8", () => {
   it.each([

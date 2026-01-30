@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/ros1",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Standalone TypeScript implementation of the ROS 1 (Robot Operating System) protocol with a pluggable transport layer",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros1",
@@ -18,21 +19,23 @@
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
-    "name": "Foxglove Technologies Inc",
-    "email": "contact@foxglove.dev"
+    "name": "Foxglove",
+    "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./nodejs": "./dist/nodejs/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./nodejs": {
+      "types": "./dist/nodejs/index.d.ts",
+      "default": "./dist/nodejs/index.js"
+    }
   },
   "files": [
     "dist",
-    "src",
-    "nodejs.d.ts",
-    "nodejs.js"
+    "src"
   ],
   "bin": {
     "roscore": "./dist/nodejs/roscore.js"
@@ -41,11 +44,19 @@
     "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit",
-    "roscore": "node -r esbuild-runner/register src/nodejs/roscore.ts"
+    "roscore": "node --import esbuild-runner/register src/nodejs/roscore.ts",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --forceExit"
   },
   "engines": {
     "node": ">= 14"
+  },
+  "dependencies": {
+    "@foxglove/message-definition": "0.5.0",
+    "@foxglove/rosmsg": "workspace:^",
+    "@foxglove/rosmsg-serialization": "workspace:^",
+    "@foxglove/xmlrpc": "workspace:^",
+    "eventemitter3": "^5.0.0",
+    "ipaddr.js": "^2.0.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -55,13 +66,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/message-definition": "0.5.0",
-    "@foxglove/rosmsg": "workspace:^",
-    "@foxglove/rosmsg-serialization": "workspace:^",
-    "@foxglove/xmlrpc": "workspace:^",
-    "eventemitter3": "^5.0.0",
-    "ipaddr.js": "^2.0.1"
   }
 }

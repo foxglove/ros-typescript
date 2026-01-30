@@ -1,5 +1,5 @@
-import { HttpRequest } from "./HttpTypes";
-import { XmlRpcFault } from "./XmlRpcFault";
+import { HttpRequest } from "./HttpTypes.js";
+import { XmlRpcFault } from "./XmlRpcFault.js";
 
 export type XmlRpcValue =
   | undefined

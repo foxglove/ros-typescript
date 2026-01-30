@@ -1,7 +1,7 @@
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "eventemitter3";
 import net from "net";
 
-import { TcpAddress, TcpSocket, TcpSocketEvents } from "../TcpTypes";
+import { TcpAddress, TcpSocket, TcpSocketEvents } from "../TcpTypes.js";
 
 type MaybeHasFd = {
   _handle?: {

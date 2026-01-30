@@ -1,9 +1,9 @@
 import fetch from "@foxglove/just-fetch";
 
-import { Deserializer } from "./Deserializer";
-import { serializeMethodCall } from "./Serializer";
-import { XmlRpcFault } from "./XmlRpcFault";
-import { Encoding, XmlRpcStruct, XmlRpcValue, XmlRpcValueOrFault } from "./XmlRpcTypes";
+import { Deserializer } from "./Deserializer.js";
+import { serializeMethodCall } from "./Serializer.js";
+import { XmlRpcFault } from "./XmlRpcFault.js";
+import { Encoding, XmlRpcStruct, XmlRpcValue, XmlRpcValueOrFault } from "./XmlRpcTypes.js";
 
 // A client for making XML-RPC method calls over HTTP(S)
 export class XmlRpcClient {

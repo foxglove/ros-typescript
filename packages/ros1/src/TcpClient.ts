@@ -1,11 +1,11 @@
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "eventemitter3";
 
-import { Client, ClientStats } from "./Client";
-import { LoggerService } from "./LoggerService";
-import { Publication } from "./Publication";
-import { RosTcpMessageStream } from "./RosTcpMessageStream";
-import { TcpConnection } from "./TcpConnection";
-import { TcpSocket } from "./TcpTypes";
+import { Client, ClientStats } from "./Client.js";
+import { LoggerService } from "./LoggerService.js";
+import { Publication } from "./Publication.js";
+import { RosTcpMessageStream } from "./RosTcpMessageStream.js";
+import { TcpConnection } from "./TcpConnection.js";
+import { TcpSocket } from "./TcpTypes.js";
 
 export type PublicationLookup = (topic: string) => Publication | undefined;
 

@@ -9,7 +9,7 @@
 
 import { MessageDefinition } from "@foxglove/message-definition";
 
-import decodeString from "./decodeString";
+import decodeString from "./decodeString.js";
 
 type TypedArray =
   | Int8Array
@@ -88,7 +88,7 @@ export class StandardTypeReader {
     // new TypedArray(...) will throw if you try to make a typed array on unaligned boundary
     // but for aligned access we can use a typed array and avoid any extra memory alloc/copy
     if (totalOffset % TypedArrayConstructor.BYTES_PER_ELEMENT === 0) {
-      return new TypedArrayConstructor(view.buffer, totalOffset, arrayLength);
+      return new TypedArrayConstructor(view.buffer as ArrayBuffer, totalOffset, arrayLength);
     }
 
     // copy the data to align it

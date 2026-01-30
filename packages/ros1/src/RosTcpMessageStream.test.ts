@@ -1,4 +1,4 @@
-import { RosTcpMessageStream } from "./RosTcpMessageStream";
+import { RosTcpMessageStream } from "./RosTcpMessageStream.js";
 
 describe("RosTcpMessageStream", () => {
   it("decodes an empty message", () => {

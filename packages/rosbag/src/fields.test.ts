@@ -5,7 +5,7 @@
 // found in the LICENSE file in the root directory of this source tree.
 // You may not use this file except in compliance with the License.
 
-import { extractFields } from "./fields";
+import { extractFields } from "./fields.js";
 
 function stringToUint8(str: string): Uint8Array {
   return new TextEncoder().encode(str);

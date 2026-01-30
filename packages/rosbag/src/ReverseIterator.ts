@@ -1,9 +1,9 @@
 import { compare, subtract as subTime } from "@foxglove/rostime";
 import Heap from "heap";
 
-import { BaseIterator } from "./BaseIterator";
-import { ChunkInfo } from "./record";
-import { ChunkReadResult, IteratorConstructorArgs } from "./types";
+import { BaseIterator } from "./BaseIterator.js";
+import { ChunkInfo } from "./record.js";
+import { ChunkReadResult, IteratorConstructorArgs } from "./types.js";
 
 export class ReverseIterator extends BaseIterator {
   private remainingChunkInfos: (ChunkInfo | undefined)[];

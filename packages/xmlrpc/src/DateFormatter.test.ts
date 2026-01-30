@@ -1,4 +1,4 @@
-import { DateFormatter } from "./DateFormatter";
+import { DateFormatter } from "./DateFormatter.js";
 
 const DATEIN1 = "2019-09-07T-15:50+00";
 const DATEIN2 = "2019-09-07T15:50.123+00Z";

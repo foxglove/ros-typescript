@@ -1,7 +1,11 @@
 {
   "testMatch": ["<rootDir>/src/**/*.test.ts"],
+  "extensionsToTreatAsEsm": [".ts"],
   "transform": {
-    "^.+\\.ts$": "ts-jest",
-    "\\.ne$": "<rootDir>/test/neTransformer.js"
+    "^.+\\.ts$": ["ts-jest", { "useESM": true }],
+    "\\.ne$": "<rootDir>/test/neTransformer.cjs"
+  },
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
   }
 }

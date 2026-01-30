@@ -1,9 +1,9 @@
 import { HttpServer, XmlRpcServer, XmlRpcValue } from "@foxglove/xmlrpc";
 
-import { LoggerService } from "./LoggerService";
-import { RosFollowerClient } from "./RosFollowerClient";
-import { RosXmlRpcResponse } from "./XmlRpcTypes";
-import { isPlainObject } from "./objectTests";
+import { LoggerService } from "./LoggerService.js";
+import { RosFollowerClient } from "./RosFollowerClient.js";
+import { RosXmlRpcResponse } from "./XmlRpcTypes.js";
+import { isPlainObject } from "./objectTests.js";
 
 function CheckArguments(args: XmlRpcValue[], expected: string[]): Error | undefined {
   if (args.length !== expected.length) {

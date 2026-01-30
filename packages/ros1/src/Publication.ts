@@ -1,8 +1,8 @@
 import { MessageDefinition } from "@foxglove/message-definition";
 import { MessageWriter } from "@foxglove/rosmsg-serialization";
 
-import { Client } from "./Client";
-import { SubscriberLink } from "./SubscriberLink";
+import { Client } from "./Client.js";
+import { SubscriberLink } from "./SubscriberLink.js";
 
 // [connectionId, bytesSent, messageDataSent, messagesSent, connected]
 type SubscriberStats = [number, number, number, number, 0];

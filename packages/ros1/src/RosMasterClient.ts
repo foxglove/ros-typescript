@@ -1,5 +1,5 @@
-import { RosXmlRpcClient } from "./RosXmlRpcClient";
-import { RosXmlRpcResponse } from "./XmlRpcTypes";
+import { RosXmlRpcClient } from "./RosXmlRpcClient.js";
+import { RosXmlRpcResponse } from "./XmlRpcTypes.js";
 
 export class RosMasterClient extends RosXmlRpcClient {
   async registerService(

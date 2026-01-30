@@ -1,3 +1,4 @@
-/** @module @foxglove/rosbag/web */
+// Copyright 2018-2020 Cruise LLC
+// Copyright 2021 Foxglove Technologies Inc
 
-export { default as BlobReader } from "./BlobReader";
+export { default as BlobReader } from "./BlobReader.js";

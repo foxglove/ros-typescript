@@ -9,7 +9,7 @@
 
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
-import { stringLengthUtf8 } from "./stringLengthUtf8";
+import { stringLengthUtf8 } from "./stringLengthUtf8.js";
 
 export interface Time {
   // whole seconds

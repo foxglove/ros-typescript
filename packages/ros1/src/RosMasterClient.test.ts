@@ -4,7 +4,7 @@
 import http from "http";
 import type { AddressInfo } from "net";
 
-import { RosMasterClient } from "./RosMasterClient";
+import { RosMasterClient } from "./RosMasterClient.js";
 
 describe("RosMasterClient", () => {
   it("getPublishedTopics", (done) => {

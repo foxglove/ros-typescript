@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/xmlrpc",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "TypeScript library implementing an XMLRPC client and server with pluggable server backend",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "xmlrpc",
     "xml",
@@ -15,25 +16,27 @@
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
-    "name": "Foxglove Technologies Inc",
-    "email": "contact@foxglove.dev"
+    "name": "Foxglove",
+    "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./nodejs": "./dist/nodejs/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./nodejs": {
+      "types": "./dist/nodejs/index.d.ts",
+      "default": "./dist/nodejs/index.js"
+    }
   },
   "files": [
-    "dist",
-    "*.js",
-    "*.d.ts"
+    "dist"
   ],
   "scripts": {
     "build": "tsc -b",
-    "lint:ci": "eslint --report-unused-disable-directives .",
     "lint": "eslint --report-unused-disable-directives --fix .",
+    "lint:ci": "eslint --report-unused-disable-directives .",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest"

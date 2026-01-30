@@ -12,10 +12,12 @@ import {
   MessageDefinitionField,
   isMsgDefEqual,
 } from "@foxglove/message-definition";
-import { Grammar, Parser } from "nearley";
+import nearley, { type Grammar as GrammarType } from "nearley";
 
-import { buildRos2Type } from "./buildRos2Type";
-import ros1Rules from "./ros1.ne";
+import { buildRos2Type } from "./buildRos2Type.js";
+import ros1Rules from "./ros1Grammar.js";
+
+const { Grammar, Parser } = nearley;
 
 const ROS1_GRAMMAR = Grammar.fromCompiled(ros1Rules);
 
@@ -120,7 +122,7 @@ export function fixupTypes(types: MessageDefinition[]): void {
   });
 }
 
-function buildType(lines: { line: string }[], grammar: Grammar): MessageDefinition {
+function buildType(lines: { line: string }[], grammar: GrammarType): MessageDefinition {
   const definitions: MessageDefinitionField[] = [];
   let complexTypeName: string | undefined;
   lines.forEach(({ line }) => {

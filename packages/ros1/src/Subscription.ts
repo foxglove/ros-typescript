@@ -2,9 +2,9 @@ import { MessageDefinition } from "@foxglove/message-definition";
 import { MessageReader } from "@foxglove/rosmsg-serialization";
 import { EventEmitter } from "eventemitter3";
 
-import { Connection } from "./Connection";
-import { PublisherLink } from "./PublisherLink";
-import { RosFollowerClient } from "./RosFollowerClient";
+import { Connection } from "./Connection.js";
+import { PublisherLink } from "./PublisherLink.js";
+import { RosFollowerClient } from "./RosFollowerClient.js";
 
 type PublisherStats = [
   connectionId: number,

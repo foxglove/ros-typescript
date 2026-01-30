@@ -1,14 +1,11 @@
-// -*- jsonc -*-
 {
-  "extends": "@foxglove/tsconfig/base.json",
-  "include": ["./src/**/*"],
+  "extends": "@foxglove/tsconfig/node.json",
+  "include": ["src"],
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist/esm",
-    "lib": ["DOM", "es2020"],
+    "outDir": "dist",
+    "rootDir": "src",
     "verbatimModuleSyntax": false,
     "isolatedDeclarations": false,
-    "esModuleInterop": true,
-    "moduleResolution": "node"
+    "erasableSyntaxOnly": false
   }
 }

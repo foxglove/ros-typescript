@@ -5,3 +5,6 @@ dist/
 node_modules/
 
 .yarn
+
+# Generated grammar file
+packages/rosmsg/src/ros1Grammar.js

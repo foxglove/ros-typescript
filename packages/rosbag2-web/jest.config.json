@@ -1,7 +1,16 @@
 {
   "testMatch": ["<rootDir>/src/**/*.test.ts"],
-  "setupFiles": ["<rootDir>/src/test-setup.ts"],
+  "testEnvironment": "jsdom",
+  "testEnvironmentOptions": {
+    "customExportConditions": ["node"]
+  },
+  "extensionsToTreatAsEsm": [".ts"],
   "transform": {
-    "^.+\\.ts$": "ts-jest"
-  }
+    "^.+\\.ts$": ["ts-jest", { "useESM": true }]
+  },
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
+  "transformIgnorePatterns": ["/node_modules/(?!@foxglove)"],
+  "setupFiles": ["<rootDir>/src/jest.setup.ts"]
 }

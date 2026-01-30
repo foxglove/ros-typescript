@@ -1,6 +1,6 @@
 {
   "name": "@foxglove/rosmsg-msgs-common",
-  "version": "3.2.3",
+  "version": "4.0.0",
   "description": "Common ROS message definitions using @foxglove/rosmsg",
   "license": "MIT",
   "keywords": [
@@ -23,24 +23,31 @@
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
-    "name": "Foxglove Technologies Inc",
-    "email": "contact@foxglove.dev"
+    "name": "Foxglove",
+    "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "msgdefs"
   ],
   "scripts": {
-    "build": "node -r esbuild-runner/register src/index.ts",
+    "build": "npx tsx src/index.ts",
     "prepack": "yarn build",
-    "test:commonjs": "node -e \"require('./dist/index.js')\"",
+    "test": "yarn test:esm && yarn test:types",
+    "test:commonjs": "echo 'CJS test skipped - ESM only'",
     "test:esm": "test/testEsmImport.sh",
-    "test:types": "tsc --noEmit ./dist/index.d.ts",
-    "test": "yarn test:commonjs && yarn test:esm && yarn test:types"
+    "test:types": "tsc --noEmit ./dist/index.d.ts"
+  },
+  "dependencies": {
+    "@foxglove/message-definition": "0.5.0",
+    "@foxglove/rosmsg": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^24.0.8",
@@ -48,9 +55,5 @@
     "esbuild-runner": "^2.2.2",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/message-definition": "0.5.0",
-    "@foxglove/rosmsg": "workspace:^"
   }
 }

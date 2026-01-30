@@ -1,9 +1,9 @@
 import net from "net";
 import type { AddressInfo } from "net";
 
-import { TcpConnection } from "./TcpConnection";
-import { TcpSocket } from "./TcpTypes";
-import { TcpSocketNode } from "./nodejs/TcpSocketNode";
+import { TcpConnection } from "./TcpConnection.js";
+import { TcpSocket } from "./TcpTypes.js";
+import { TcpSocketNode } from "./nodejs/TcpSocketNode.js";
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -7,8 +7,8 @@
 
 import type { Time } from "@foxglove/rostime";
 
-import type { IBagReader } from "./IBagReader";
-import type { Chunk, ChunkInfo, Connection, IndexData } from "./record";
+import type { IBagReader } from "./IBagReader.js";
+import type { Chunk, ChunkInfo, Connection, IndexData } from "./record.js";
 
 export type RawFields = { [k: string]: Uint8Array };
 

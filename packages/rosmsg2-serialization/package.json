@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosmsg2-serialization",
-  "version": "3.0.3",
+  "version": "4.0.0",
   "description": "ROS 2 message serialization, for reading and writing bags and network messages",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros2",
@@ -20,12 +21,16 @@
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
-    "name": "Foxglove Technologies Inc",
-    "email": "contact@foxglove.dev"
+    "name": "Foxglove",
+    "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -36,10 +41,15 @@
     "lint": "eslint --fix .",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "engines": {
     "node": ">= 20"
+  },
+  "dependencies": {
+    "@foxglove/cdr": "^3.4.0",
+    "@foxglove/message-definition": "0.5.0",
+    "@foxglove/rostime": "workspace:^"
   },
   "devDependencies": {
     "@foxglove/ros2idl-parser": "^0.3.6",
@@ -50,11 +60,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/cdr": "^3.4.0",
-    "@foxglove/message-definition": "0.5.0",
-    "@foxglove/rostime": "workspace:^"
-  },
-  "packageManager": "yarn@4.5.3"
+  }
 }

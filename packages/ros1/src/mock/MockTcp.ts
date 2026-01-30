@@ -1,6 +1,6 @@
 import { EventEmitter } from "eventemitter3";
 
-import { TcpAddress, TcpServer, TcpServerEvents, TcpSocket, TcpSocketEvents } from "../TcpTypes";
+import { TcpAddress, TcpServer, TcpServerEvents, TcpSocket, TcpSocketEvents } from "../TcpTypes.js";
 
 export class MockTcpSocket extends EventEmitter<TcpSocketEvents> implements TcpSocket {
   private _connected = true;

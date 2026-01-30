@@ -1,10 +1,10 @@
 import { HttpServerNodejs } from "@foxglove/xmlrpc/nodejs";
 
-import { PublisherLink } from "./PublisherLink";
-import { RosMaster } from "./RosMaster";
-import { ParamUpdateArgs, RosNode } from "./RosNode";
-import { TcpServerNode } from "./nodejs/TcpServerNode";
-import { TcpSocketNode } from "./nodejs/TcpSocketNode";
+import { PublisherLink } from "./PublisherLink.js";
+import { RosMaster } from "./RosMaster.js";
+import { ParamUpdateArgs, RosNode } from "./RosNode.js";
+import { TcpServerNode } from "./nodejs/TcpServerNode.js";
+import { TcpSocketNode } from "./nodejs/TcpSocketNode.js";
 
 describe("RosNode", () => {
   it("Publishes and subscribes to topics and parameters", async () => {

@@ -1,8 +1,9 @@
 {
   "name": "@foxglove/rosbag2-node",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "ROS 2 bag reader and writer for node.js",
   "license": "MIT",
+  "type": "module",
   "keywords": [
     "ros",
     "ros2",
@@ -22,12 +23,16 @@
     "url": "https://github.com/foxglove/ros-typescript.git"
   },
   "author": {
-    "name": "Foxglove Technologies",
+    "name": "Foxglove",
     "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "src"
@@ -36,10 +41,14 @@
     "build": "tsc -b",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "engines": {
     "node": ">= 22"
+  },
+  "dependencies": {
+    "@foxglove/rosbag2": "workspace:^",
+    "better-sqlite3": "^12.2.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
@@ -49,10 +58,5 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@foxglove/rosbag2": "workspace:^",
-    "better-sqlite3": "^12.2.0"
-  },
-  "packageManager": "yarn@4.5.3"
+  }
 }

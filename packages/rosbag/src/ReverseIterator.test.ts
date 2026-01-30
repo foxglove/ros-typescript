@@ -1,5 +1,5 @@
-import { ReverseIterator } from "./ReverseIterator";
-import { consumeMessages, FakeBagReader, generateFixtures } from "./test_support/iterator";
+import { ReverseIterator } from "./ReverseIterator.js";
+import { consumeMessages, FakeBagReader, generateFixtures } from "./test_support/iterator.js";
 
 describe("ReverseIterator", () => {
   it("should iterate empty bag", async () => {

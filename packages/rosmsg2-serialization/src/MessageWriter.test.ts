@@ -1,7 +1,7 @@
 import { parseRos2idl } from "@foxglove/ros2idl-parser";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
-import { MessageWriter } from "./MessageWriter";
+import { MessageWriter } from "./MessageWriter.js";
 
 const serializeString = (str: string): Uint8Array => {
   const data = Buffer.from(str, "utf8");

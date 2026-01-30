@@ -8,21 +8,21 @@ import { MessageWriter } from "@foxglove/rosmsg-serialization";
 import { HttpServer, XmlRpcFault, XmlRpcValue } from "@foxglove/xmlrpc";
 import { EventEmitter } from "eventemitter3";
 
-import { Client } from "./Client";
-import { LoggerService } from "./LoggerService";
-import { Publication } from "./Publication";
-import { RosFollower } from "./RosFollower";
-import { RosFollowerClient } from "./RosFollowerClient";
-import { RosMasterClient } from "./RosMasterClient";
-import { RosParamClient } from "./RosParamClient";
-import { Subscription } from "./Subscription";
-import { TcpConnection } from "./TcpConnection";
-import { TcpPublisher } from "./TcpPublisher";
-import { TcpSocketCreate, TcpServer, TcpAddress, NetworkInterface } from "./TcpTypes";
-import { RosXmlRpcResponse } from "./XmlRpcTypes";
-import { retryForever } from "./backoff";
-import { difference } from "./difference";
-import { isEmptyPlainObject } from "./objectTests";
+import { Client } from "./Client.js";
+import { LoggerService } from "./LoggerService.js";
+import { Publication } from "./Publication.js";
+import { RosFollower } from "./RosFollower.js";
+import { RosFollowerClient } from "./RosFollowerClient.js";
+import { RosMasterClient } from "./RosMasterClient.js";
+import { RosParamClient } from "./RosParamClient.js";
+import { Subscription } from "./Subscription.js";
+import { TcpConnection } from "./TcpConnection.js";
+import { TcpPublisher } from "./TcpPublisher.js";
+import { TcpSocketCreate, TcpServer, TcpAddress, NetworkInterface } from "./TcpTypes.js";
+import { RosXmlRpcResponse } from "./XmlRpcTypes.js";
+import { retryForever } from "./backoff.js";
+import { difference } from "./difference.js";
+import { isEmptyPlainObject } from "./objectTests.js";
 
 export type RosGraph = {
   publishers: Map<string, Set<string>>; // Maps topic names to arrays of nodes publishing each topic

@@ -1,4 +1,3 @@
-// Node.js backend
-export * from "./platform";
-export * from "./TcpServerNode";
-export * from "./TcpSocketNode";
+export * from "./platform.js";
+export * from "./TcpServerNode.js";
+export * from "./TcpSocketNode.js";

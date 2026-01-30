@@ -1,5 +1,5 @@
-import type { ChunkInfo, Record } from "./record";
-import type { Decompress, Constructor, ChunkReadResult } from "./types";
+import type { ChunkInfo, Record } from "./record.js";
+import type { Decompress, Constructor, ChunkReadResult } from "./types.js";
 
 export interface IBagReader {
   /**

@@ -1,6 +1,6 @@
 import type { XmlRpcValue } from "@foxglove/xmlrpc";
 
-import type { RosXmlRpcResponse } from "../XmlRpcTypes";
+import type { RosXmlRpcResponse } from "../XmlRpcTypes.js";
 
 const TURTLESIM_SERVICES = new Set([
   "/turtlesim/get_loggers",

@@ -1,12 +1,9 @@
 {
   "name": "@foxglove/rosmsg",
-  "version": "5.0.5",
+  "version": "6.0.0",
   "description": "Parser for ROS and ROS 2 .msg definitions",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/foxglove/ros-typescript.git"
-  },
+  "type": "module",
   "keywords": [
     "ros",
     "ros1",
@@ -19,41 +16,46 @@
     "parser",
     "grammar"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foxglove/ros-typescript.git"
+  },
   "author": {
-    "name": "Foxglove Technologies Inc",
-    "email": "contact@foxglove.dev"
+    "name": "Foxglove",
+    "email": "support@foxglove.dev"
   },
   "homepage": "https://github.com/foxglove/ros-typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "webpack",
+    "build": "node scripts/compile-grammar.js && tsc -b && cp src/ros1Grammar.js dist/",
     "prepack": "yarn build",
     "prepublishOnly": "yarn lint:ci && yarn test",
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
   },
   "engines": {
     "node": ">= 14"
   },
   "dependencies": {
     "@foxglove/message-definition": "0.5.0",
-    "md5-typescript": "^1.0.5"
+    "md5-typescript": "^1.0.5",
+    "moo": "^0.5.2",
+    "nearley": "^2.20.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@types/moo": "^0.5.9",
     "@types/nearley": "^2.11.5",
     "jest": "^30.0.3",
-    "moo": "^0.5.2",
-    "nearley": "^2.20.1",
-    "nearley-loader": "^2.0.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
-    "webpack": "^5.101.0",
-    "webpack-cli": "^6.0.1"
+    "typescript": "^5.8.3"
   }
 }

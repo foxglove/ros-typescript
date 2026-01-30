@@ -1,4 +1,4 @@
-import { parseQosProfiles } from "./metadata";
+import { parseQosProfiles } from "./metadata.js";
 
 describe("parseQosProfiles", () => {
   it("parses a single QOS profile", () => {
