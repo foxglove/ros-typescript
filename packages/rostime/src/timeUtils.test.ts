@@ -16,6 +16,20 @@ describe("isTime", () => {
     expect(rostime.isTime({ sec: 1, nsec: 0 })).toEqual(true);
     expect(rostime.isTime({ sec: 1624947142, nsec: 42 })).toEqual(true);
   });
+
+  it.each([
+    ["sec is bigint", { sec: 1n, nsec: 0 }],
+    ["nsec is bigint", { sec: 0, nsec: 1n }],
+    ["sec and nsec are bigint", { sec: 1n, nsec: 1n }],
+    ["sec and nsec are strings", { sec: "1", nsec: "1" }],
+    ["sec and nsec are undefined", { sec: undefined, nsec: undefined }],
+    ["sec is undefined", { sec: undefined, nsec: 0 }],
+    ["nsec is undefined", { sec: 0, nsec: undefined }],
+    ["sec is null", { sec: null, nsec: 0 }],
+    ["nsec is null", { sec: 0, nsec: null }],
+  ] as const)("returns false when %s", (_caseName, obj) => {
+    expect(rostime.isTime(obj)).toEqual(false);
+  });
 });
 
 describe("toRFC3339String", () => {

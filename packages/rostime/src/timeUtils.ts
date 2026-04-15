@@ -23,8 +23,8 @@ export function isTime(obj?: unknown): obj is Time {
   return (
     typeof obj === "object" &&
     !!obj &&
-    "sec" in obj &&
-    "nsec" in obj &&
+    typeof (obj as Time).sec === "number" &&
+    typeof (obj as Time).nsec === "number" &&
     Object.getOwnPropertyNames(obj).length === 2
   );
 }
