@@ -2,6 +2,7 @@
 {
   "extends": "@foxglove/tsconfig/base.json",
   "include": ["./src/**/*"],
+  "exclude": ["./src/**/*.test.ts", "./src/fixtures/**/*"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist/esm",

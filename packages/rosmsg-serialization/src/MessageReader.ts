@@ -325,6 +325,12 @@ export const createParsers = ({
 export class MessageReader {
   reader: new (reader: StandardTypeReader) => unknown;
 
+  /**
+   * True when the most recent decode finished before reaching the end of the buffer. This can
+   * signal a schema/payload version mismatch.
+   */
+  hasTrailingBytes = false;
+
   // takes an object message definition and returns
   // a message reader which can be used to read messages based
   // on the message definition
@@ -337,6 +343,8 @@ export class MessageReader {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   readMessage<T = unknown>(buffer: ArrayBufferView): T {
     const standardReaders = new StandardTypeReader(buffer);
-    return new this.reader(standardReaders) as T;
+    const value = new this.reader(standardReaders) as T;
+    this.hasTrailingBytes = standardReaders.offset < buffer.byteLength;
+    return value;
   }
 }

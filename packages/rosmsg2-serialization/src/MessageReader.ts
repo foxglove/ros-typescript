@@ -45,6 +45,12 @@ export class MessageReader<T = unknown> {
   #definitions: Map<string, MessageDefinitionField[]>;
   #useRos1Time: boolean;
 
+  /**
+   * True when the most recent decode finished before reaching the end of the buffer. CDR ignores
+   * trailing bytes by design, so this can signal a schema/payload version mismatch.
+   */
+  public hasTrailingBytes = false;
+
   public constructor(definitions: MessageDefinition[], options: MessageReaderOptions = {}) {
     const { timeType = "sec,nanosec" } = options;
 
@@ -66,7 +72,9 @@ export class MessageReader<T = unknown> {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   public readMessage<R = T>(buffer: ArrayBufferView): R {
     const reader = new CdrReader(buffer);
-    return this.#readComplexType(this.#rootDefinition, reader) as R;
+    const value = this.#readComplexType(this.#rootDefinition, reader) as R;
+    this.hasTrailingBytes = !reader.isAtEnd();
+    return value;
   }
 
   #readComplexType(
