@@ -590,4 +590,54 @@ module builtin_interfaces {
       );
     },
   );
+
+  describe("readMessageWithMetadata", () => {
+    // Mirrors the FG-14433 reproduction shape: an `ImageAnnotations`-style schema with three empty
+    // sequences. The exact-fit case is 16 bytes (4-byte CDR header + three 4-byte zero-length
+    // prefixes). The skewed case appends 12 bytes of unused payload — the same shape produced when
+    // a 3.2.5 publisher (with prepended `Time timestamp` field) writes against a 3.2.4 schema.
+    const annotationsLikeDef = `
+      uint32[] circles
+      uint32[] points
+      uint32[] texts
+    `;
+    const cdrHeader = [0x00, 0x01, 0x00, 0x00];
+    const threeZeroLengthArrays = [
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    ];
+
+    it("reports zero trailing bytes for an exact-fit decode", () => {
+      const buffer = Uint8Array.from([...cdrHeader, ...threeZeroLengthArrays]);
+      const reader = new MessageReader(parseMessageDefinition(annotationsLikeDef, { ros2: true }));
+
+      const result = reader.readMessageWithMetadata(buffer);
+
+      expect(result.value).toEqual({
+        circles: new Uint32Array(),
+        points: new Uint32Array(),
+        texts: new Uint32Array(),
+      });
+      expect(result.bytesRead).toBe(buffer.byteLength);
+      expect(result.hasTrailingBytes).toBe(false);
+    });
+
+    it("flags trailing bytes when the payload is larger than the schema consumes", () => {
+      const trailing = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+      const buffer = Uint8Array.from([...cdrHeader, ...threeZeroLengthArrays, ...trailing]);
+      const reader = new MessageReader(parseMessageDefinition(annotationsLikeDef, { ros2: true }));
+
+      const result = reader.readMessageWithMetadata(buffer);
+
+      expect(result.hasTrailingBytes).toBe(true);
+      expect(result.bytesRead).toBe(16);
+      expect(buffer.byteLength - result.bytesRead).toBe(trailing.length);
+    });
+
+    it("readMessage returns the same value as readMessageWithMetadata", () => {
+      const buffer = Uint8Array.from([...cdrHeader, ...threeZeroLengthArrays]);
+      const reader = new MessageReader(parseMessageDefinition(annotationsLikeDef, { ros2: true }));
+
+      expect(reader.readMessage(buffer)).toEqual(reader.readMessageWithMetadata(buffer).value);
+    });
+  });
 });
