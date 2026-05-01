@@ -322,23 +322,14 @@ export const createParsers = ({
   >;
 };
 
-/**
- * Result of {@link MessageReader.readMessageWithMetadata}, including the decoded value alongside
- * diagnostic information about how the buffer was consumed. A successful decode that leaves
- * trailing bytes typically indicates a publisher/recorder schema version skew: the embedded schema
- * the message is being decoded against does not match the schema the bytes were written under.
- */
-export type ReadMessageResult<T> = {
-  /** The deserialized message. */
-  value: T;
-  /** Total number of bytes consumed from the buffer. Compare against `byteLength` to detect skew. */
-  bytesRead: number;
-  /** True when the decoder finished before reaching the end of the buffer. */
-  hasTrailingBytes: boolean;
-};
-
 export class MessageReader {
   reader: new (reader: StandardTypeReader) => unknown;
+
+  /**
+   * True when the most recent decode finished before reaching the end of the buffer. This can
+   * signal a schema/payload version mismatch.
+   */
+  hasTrailingBytes = false;
 
   // takes an object message definition and returns
   // a message reader which can be used to read messages based
@@ -351,20 +342,9 @@ export class MessageReader {
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   readMessage<T = unknown>(buffer: ArrayBufferView): T {
-    return this.readMessageWithMetadata<T>(buffer).value;
-  }
-
-  /**
-   * Deserialize a message and return diagnostic byte counts alongside the value. Use this when the
-   * caller needs to detect schema/payload skew (trailing bytes after a successful decode).
-   */
-  readMessageWithMetadata<T = unknown>(buffer: ArrayBufferView): ReadMessageResult<T> {
     const standardReaders = new StandardTypeReader(buffer);
     const value = new this.reader(standardReaders) as T;
-    return {
-      value,
-      bytesRead: standardReaders.offset,
-      hasTrailingBytes: standardReaders.offset < buffer.byteLength,
-    };
+    this.hasTrailingBytes = standardReaders.offset < buffer.byteLength;
+    return value;
   }
 }

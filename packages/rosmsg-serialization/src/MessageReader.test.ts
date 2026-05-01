@@ -68,7 +68,7 @@ describe("MessageReader", () => {
     }).toThrow();
   });
 
-  describe("readMessageWithMetadata", () => {
+  describe("hasTrailingBytes", () => {
     const msgDef = `string firstName\nstring lastName\nuint16 age`;
     const exactPayload = Buffer.concat([
       getStringBuffer("foo"),
@@ -79,11 +79,10 @@ describe("MessageReader", () => {
     it("reports zero trailing bytes for an exact-fit decode", () => {
       const reader = new MessageReader(parseMessageDefinition(msgDef));
 
-      const result = reader.readMessageWithMetadata(exactPayload);
+      const result = reader.readMessage(exactPayload);
 
-      expect(result.value).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
-      expect(result.bytesRead).toBe(exactPayload.byteLength);
-      expect(result.hasTrailingBytes).toBe(false);
+      expect(result).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
+      expect(reader.hasTrailingBytes).toBe(false);
     });
 
     it("flags trailing bytes when the payload is larger than the schema consumes", () => {
@@ -91,11 +90,20 @@ describe("MessageReader", () => {
       const trailing = new Uint8Array([0xff, 0xff, 0xff, 0xff]);
       const buffer = Buffer.concat([exactPayload, trailing]);
 
-      const result = reader.readMessageWithMetadata(buffer);
+      expect(reader.readMessage(buffer)).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
+      expect(reader.hasTrailingBytes).toBe(true);
+    });
 
-      expect(result.hasTrailingBytes).toBe(true);
-      expect(result.bytesRead).toBe(exactPayload.byteLength);
-      expect(buffer.byteLength - result.bytesRead).toBe(trailing.byteLength);
+    it("clears trailing byte state after the next exact-fit decode", () => {
+      const reader = new MessageReader(parseMessageDefinition(msgDef));
+      const trailing = new Uint8Array([0xff, 0xff, 0xff, 0xff]);
+      const buffer = Buffer.concat([exactPayload, trailing]);
+
+      reader.readMessage(buffer);
+      expect(reader.hasTrailingBytes).toBe(true);
+
+      reader.readMessage(exactPayload);
+      expect(reader.hasTrailingBytes).toBe(false);
     });
   });
 });

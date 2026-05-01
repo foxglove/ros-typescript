@@ -40,32 +40,16 @@ export type MessageReaderOptions = {
   timeType?: "sec,nanosec" | "sec,nsec";
 };
 
-/**
- * Result of {@link MessageReader.readMessageWithMetadata}, including the decoded value alongside
- * diagnostic information about how the buffer was consumed. This lets callers detect cases where
- * the embedded schema and the payload bytes disagree: a successful decode that leaves trailing
- * bytes typically indicates a publisher/recorder schema version skew.
- */
-export type ReadMessageResult<R> = {
-  /** The deserialized message. */
-  value: R;
-  /**
-   * Total number of bytes consumed from the buffer, including the 4-byte CDR encapsulation header.
-   * Compare against the input buffer's `byteLength` to detect trailing bytes.
-   */
-  bytesRead: number;
-  /**
-   * True when the decoder finished reading before reaching the end of the buffer. CDR ignores
-   * trailing bytes by design, so an exception is never raised — but the surplus is a strong signal
-   * that the schema used to decode disagrees with the schema the bytes were written against.
-   */
-  hasTrailingBytes: boolean;
-};
-
 export class MessageReader<T = unknown> {
   #rootDefinition: MessageDefinitionField[];
   #definitions: Map<string, MessageDefinitionField[]>;
   #useRos1Time: boolean;
+
+  /**
+   * True when the most recent decode finished before reaching the end of the buffer. CDR ignores
+   * trailing bytes by design, so this can signal a schema/payload version mismatch.
+   */
+  public hasTrailingBytes = false;
 
   public constructor(definitions: MessageDefinition[], options: MessageReaderOptions = {}) {
     const { timeType = "sec,nanosec" } = options;
@@ -87,21 +71,10 @@ export class MessageReader<T = unknown> {
   // known or available
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   public readMessage<R = T>(buffer: ArrayBufferView): R {
-    return this.readMessageWithMetadata<R>(buffer).value;
-  }
-
-  /**
-   * Deserialize a message and return diagnostic byte counts alongside the value. Use this when the
-   * caller needs to detect schema/payload skew (trailing bytes after a successful decode).
-   */
-  public readMessageWithMetadata<R = T>(buffer: ArrayBufferView): ReadMessageResult<R> {
     const reader = new CdrReader(buffer);
     const value = this.#readComplexType(this.#rootDefinition, reader) as R;
-    return {
-      value,
-      bytesRead: reader.decodedBytes,
-      hasTrailingBytes: !reader.isAtEnd(),
-    };
+    this.hasTrailingBytes = !reader.isAtEnd();
+    return value;
   }
 
   #readComplexType(
