@@ -329,7 +329,7 @@ export class MessageReader {
    * True when the most recent decode finished before reaching the end of the buffer. This can
    * signal a schema/payload version mismatch.
    */
-  hasTrailingBytes = false;
+  lastReadHadTrailingBytes = false;
 
   // takes an object message definition and returns
   // a message reader which can be used to read messages based
@@ -344,7 +344,7 @@ export class MessageReader {
   readMessage<T = unknown>(buffer: ArrayBufferView): T {
     const standardReaders = new StandardTypeReader(buffer);
     const value = new this.reader(standardReaders) as T;
-    this.hasTrailingBytes = standardReaders.offset < buffer.byteLength;
+    this.lastReadHadTrailingBytes = standardReaders.offset < buffer.byteLength;
     return value;
   }
 }
