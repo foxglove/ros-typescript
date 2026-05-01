@@ -591,7 +591,7 @@ module builtin_interfaces {
     },
   );
 
-  describe("hasTrailingBytes", () => {
+  describe("lastReadHadTrailingBytes", () => {
     // Mirrors the FG-14433 reproduction shape: an `ImageAnnotations`-style schema with three empty
     // sequences. The exact-fit case is 16 bytes (4-byte CDR header + three 4-byte zero-length
     // prefixes). The skewed case appends 12 bytes of unused payload — the same shape produced when
@@ -617,7 +617,7 @@ module builtin_interfaces {
         points: new Uint32Array(),
         texts: new Uint32Array(),
       });
-      expect(reader.hasTrailingBytes).toBe(false);
+      expect(reader.lastReadHadTrailingBytes).toBe(false);
     });
 
     it("flags trailing bytes when the payload is larger than the schema consumes", () => {
@@ -630,7 +630,7 @@ module builtin_interfaces {
         points: new Uint32Array(),
         texts: new Uint32Array(),
       });
-      expect(reader.hasTrailingBytes).toBe(true);
+      expect(reader.lastReadHadTrailingBytes).toBe(true);
     });
 
     it("clears trailing byte state after the next exact-fit decode", () => {
@@ -646,10 +646,10 @@ module builtin_interfaces {
       const reader = new MessageReader(parseMessageDefinition(annotationsLikeDef, { ros2: true }));
 
       reader.readMessage(trailingBuffer);
-      expect(reader.hasTrailingBytes).toBe(true);
+      expect(reader.lastReadHadTrailingBytes).toBe(true);
 
       reader.readMessage(exactBuffer);
-      expect(reader.hasTrailingBytes).toBe(false);
+      expect(reader.lastReadHadTrailingBytes).toBe(false);
     });
   });
 });

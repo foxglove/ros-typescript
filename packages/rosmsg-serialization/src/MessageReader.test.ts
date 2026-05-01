@@ -68,7 +68,7 @@ describe("MessageReader", () => {
     }).toThrow();
   });
 
-  describe("hasTrailingBytes", () => {
+  describe("lastReadHadTrailingBytes", () => {
     const msgDef = `string firstName\nstring lastName\nuint16 age`;
     const exactPayload = Buffer.concat([
       getStringBuffer("foo"),
@@ -82,7 +82,7 @@ describe("MessageReader", () => {
       const result = reader.readMessage(exactPayload);
 
       expect(result).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
-      expect(reader.hasTrailingBytes).toBe(false);
+      expect(reader.lastReadHadTrailingBytes).toBe(false);
     });
 
     it("flags trailing bytes when the payload is larger than the schema consumes", () => {
@@ -91,7 +91,7 @@ describe("MessageReader", () => {
       const buffer = Buffer.concat([exactPayload, trailing]);
 
       expect(reader.readMessage(buffer)).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
-      expect(reader.hasTrailingBytes).toBe(true);
+      expect(reader.lastReadHadTrailingBytes).toBe(true);
     });
 
     it("clears trailing byte state after the next exact-fit decode", () => {
@@ -100,10 +100,10 @@ describe("MessageReader", () => {
       const buffer = Buffer.concat([exactPayload, trailing]);
 
       reader.readMessage(buffer);
-      expect(reader.hasTrailingBytes).toBe(true);
+      expect(reader.lastReadHadTrailingBytes).toBe(true);
 
       reader.readMessage(exactPayload);
-      expect(reader.hasTrailingBytes).toBe(false);
+      expect(reader.lastReadHadTrailingBytes).toBe(false);
     });
   });
 });
