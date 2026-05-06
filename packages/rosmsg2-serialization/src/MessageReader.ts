@@ -51,14 +51,14 @@ export class MessageReader<T = unknown> {
    * True when the most recent decode finished before reaching the end of the buffer. CDR ignores
    * trailing bytes by design, so this can signal a schema/payload version mismatch.
    */
-  public get lastReadHadTrailingBytes(): boolean {
+  public lastReadHadTrailingBytes(): boolean {
     return this.#lastReadHadTrailingBytes;
   }
 
   /**
    * Number of bytes consumed by the most recent decode.
    */
-  public get lastReadByteLength(): number {
+  public lastReadByteLength(): number {
     return this.#lastReadByteLength;
   }
 

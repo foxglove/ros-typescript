@@ -331,14 +331,14 @@ export class MessageReader {
    * True when the most recent decode finished before reaching the end of the buffer. This can
    * signal a schema/payload version mismatch.
    */
-  get lastReadHadTrailingBytes(): boolean {
+  lastReadHadTrailingBytes(): boolean {
     return this.#lastReadHadTrailingBytes;
   }
 
   /**
    * Number of bytes consumed by the most recent decode.
    */
-  get lastReadByteLength(): number {
+  lastReadByteLength(): number {
     return this.#lastReadByteLength;
   }
 

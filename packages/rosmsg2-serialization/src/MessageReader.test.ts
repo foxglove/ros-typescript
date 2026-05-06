@@ -617,8 +617,8 @@ module builtin_interfaces {
         points: new Uint32Array(),
         texts: new Uint32Array(),
       });
-      expect(reader.lastReadByteLength).toBe(buffer.byteLength);
-      expect(reader.lastReadHadTrailingBytes).toBe(false);
+      expect(reader.lastReadByteLength()).toBe(buffer.byteLength);
+      expect(reader.lastReadHadTrailingBytes()).toBe(false);
     });
 
     it("flags trailing bytes when the payload is larger than the schema consumes", () => {
@@ -631,8 +631,8 @@ module builtin_interfaces {
         points: new Uint32Array(),
         texts: new Uint32Array(),
       });
-      expect(reader.lastReadByteLength).toBe(buffer.byteLength - trailing.length);
-      expect(reader.lastReadHadTrailingBytes).toBe(true);
+      expect(reader.lastReadByteLength()).toBe(buffer.byteLength - trailing.length);
+      expect(reader.lastReadHadTrailingBytes()).toBe(true);
     });
 
     it("clears trailing byte state after the next exact-fit decode", () => {
@@ -648,12 +648,12 @@ module builtin_interfaces {
       const reader = new MessageReader(parseMessageDefinition(annotationsLikeDef, { ros2: true }));
 
       reader.readMessage(trailingBuffer);
-      expect(reader.lastReadByteLength).toBe(exactBuffer.byteLength);
-      expect(reader.lastReadHadTrailingBytes).toBe(true);
+      expect(reader.lastReadByteLength()).toBe(exactBuffer.byteLength);
+      expect(reader.lastReadHadTrailingBytes()).toBe(true);
 
       reader.readMessage(exactBuffer);
-      expect(reader.lastReadByteLength).toBe(exactBuffer.byteLength);
-      expect(reader.lastReadHadTrailingBytes).toBe(false);
+      expect(reader.lastReadByteLength()).toBe(exactBuffer.byteLength);
+      expect(reader.lastReadHadTrailingBytes()).toBe(false);
     });
   });
 });
