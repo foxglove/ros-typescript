@@ -324,12 +324,23 @@ export const createParsers = ({
 
 export class MessageReader {
   reader: new (reader: StandardTypeReader) => unknown;
+  #lastReadByteLength = 0;
+  #lastReadHadTrailingBytes = false;
 
   /**
    * True when the most recent decode finished before reaching the end of the buffer. This can
    * signal a schema/payload version mismatch.
    */
-  lastReadHadTrailingBytes = false;
+  get lastReadHadTrailingBytes(): boolean {
+    return this.#lastReadHadTrailingBytes;
+  }
+
+  /**
+   * Number of bytes consumed by the most recent decode.
+   */
+  get lastReadByteLength(): number {
+    return this.#lastReadByteLength;
+  }
 
   // takes an object message definition and returns
   // a message reader which can be used to read messages based
@@ -344,7 +355,8 @@ export class MessageReader {
   readMessage<T = unknown>(buffer: ArrayBufferView): T {
     const standardReaders = new StandardTypeReader(buffer);
     const value = new this.reader(standardReaders) as T;
-    this.lastReadHadTrailingBytes = standardReaders.offset < buffer.byteLength;
+    this.#lastReadByteLength = standardReaders.offset;
+    this.#lastReadHadTrailingBytes = this.#lastReadByteLength < buffer.byteLength;
     return value;
   }
 }

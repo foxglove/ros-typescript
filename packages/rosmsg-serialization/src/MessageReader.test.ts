@@ -82,6 +82,7 @@ describe("MessageReader", () => {
       const result = reader.readMessage(exactPayload);
 
       expect(result).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
+      expect(reader.lastReadByteLength).toBe(exactPayload.byteLength);
       expect(reader.lastReadHadTrailingBytes).toBe(false);
     });
 
@@ -91,6 +92,7 @@ describe("MessageReader", () => {
       const buffer = Buffer.concat([exactPayload, trailing]);
 
       expect(reader.readMessage(buffer)).toEqual({ firstName: "foo", lastName: "bar", age: 5 });
+      expect(reader.lastReadByteLength).toBe(exactPayload.byteLength);
       expect(reader.lastReadHadTrailingBytes).toBe(true);
     });
 
@@ -100,9 +102,11 @@ describe("MessageReader", () => {
       const buffer = Buffer.concat([exactPayload, trailing]);
 
       reader.readMessage(buffer);
+      expect(reader.lastReadByteLength).toBe(exactPayload.byteLength);
       expect(reader.lastReadHadTrailingBytes).toBe(true);
 
       reader.readMessage(exactPayload);
+      expect(reader.lastReadByteLength).toBe(exactPayload.byteLength);
       expect(reader.lastReadHadTrailingBytes).toBe(false);
     });
   });
