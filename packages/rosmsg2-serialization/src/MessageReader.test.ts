@@ -605,6 +605,18 @@ module builtin_interfaces {
     const threeZeroLengthArrays = [
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     ];
+    const finalPaddingDef = `
+      string frame_id
+      float64[9] position_covariance
+      uint8 position_covariance_type
+    `;
+
+    function makeFinalPaddingBuffer(): Uint8Array {
+      const buffer = new Uint8Array(96);
+      buffer.set(cdrHeader, 0);
+      buffer.set(serializeString("123456789"), 4);
+      return buffer;
+    }
 
     it("reports zero trailing bytes for an exact-fit decode", () => {
       const buffer = Uint8Array.from([...cdrHeader, ...threeZeroLengthArrays]);
@@ -632,6 +644,33 @@ module builtin_interfaces {
         texts: new Uint32Array(),
       });
       expect(reader.lastReadByteLength()).toBe(buffer.byteLength - trailing.length);
+      expect(reader.lastReadHadTrailingBytes()).toBe(true);
+    });
+
+    it("does not flag all-zero CDR final padding", () => {
+      const buffer = makeFinalPaddingBuffer();
+      const reader = new MessageReader(parseMessageDefinition(finalPaddingDef, { ros2: true }));
+
+      expect(reader.readMessage(buffer)).toEqual({
+        frame_id: "123456789",
+        position_covariance: new Float64Array(9),
+        position_covariance_type: 0,
+      });
+      expect(reader.lastReadByteLength()).toBe(93);
+      expect(reader.lastReadHadTrailingBytes()).toBe(false);
+    });
+
+    it("flags non-zero bytes in the final padding region", () => {
+      const buffer = makeFinalPaddingBuffer();
+      buffer[buffer.byteLength - 1] = 1;
+      const reader = new MessageReader(parseMessageDefinition(finalPaddingDef, { ros2: true }));
+
+      expect(reader.readMessage(buffer)).toEqual({
+        frame_id: "123456789",
+        position_covariance: new Float64Array(9),
+        position_covariance_type: 0,
+      });
+      expect(reader.lastReadByteLength()).toBe(93);
       expect(reader.lastReadHadTrailingBytes()).toBe(true);
     });
 
