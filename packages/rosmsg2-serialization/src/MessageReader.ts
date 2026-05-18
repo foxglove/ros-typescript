@@ -166,6 +166,10 @@ function isCdrFinalPadding(buffer: ArrayBufferView, decodedBytes: number): boole
     return false;
   }
 
+  // The 4-byte branch is load-bearing: standard CDR1 final padding aligns the data section to a
+  // 4-byte boundary, and since the encapsulation header is itself 4 bytes, buffer-relative and
+  // data-relative alignment agree. The 8-byte branch is a buffer-relative best-effort for
+  // publishers that pad to a wider boundary.
   const paddingToFourByteBoundary = (4 - (decodedBytes % 4)) % 4;
   const paddingToEightByteBoundary = (8 - (decodedBytes % 8)) % 8;
   if (
