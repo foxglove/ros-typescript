@@ -6,6 +6,7 @@ import {
 } from "@foxglove/message-definition";
 
 import { messageDefinitionHasDataFields } from "./messageDefinitionHasDataFields";
+import { stringLengthUtf8 } from "./stringLengthUtf8";
 
 type PrimitiveWriter = (
   value: unknown,
@@ -159,7 +160,7 @@ export class MessageWriter {
           for (let i = 0; i < arrayLength; i++) {
             const entry = (dataArray[i] ?? "") as string;
             newOffset += padding(newOffset, 4);
-            newOffset += 4 + entry.length + 1; // uint32 length prefix, string, null terminator
+            newOffset += 4 + stringLengthUtf8(entry) + 1; // uint32 length prefix, string, null terminator
           }
         } else {
           // Primitive array
@@ -178,7 +179,7 @@ export class MessageWriter {
           // String
           const entry = typeof nestedMessage === "string" ? nestedMessage : "";
           newOffset += padding(newOffset, 4);
-          newOffset += 4 + entry.length + 1; // uint32 length prefix, string, null terminator
+          newOffset += 4 + stringLengthUtf8(entry) + 1; // uint32 length prefix, string, null terminator
         } else {
           // Primitive
           const entrySize = this.#getPrimitiveSize(field.type);
