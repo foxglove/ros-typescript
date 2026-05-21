@@ -832,10 +832,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@foxglove/cdr@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@foxglove/cdr@npm:3.4.0"
-  checksum: 10c0/0bef7183c9cb828a4b83e811f615da7d95e554b2c56d78d3e1b9df7b158cec55cfdbd7422f38ceece26834306cccf06d5a11560bb554d7416181c0b9c610e238
+"@foxglove/cdr@github:foxglove/cdr#miles/fix-utf8-cdr-string":
+  version: 3.5.0
+  resolution: "@foxglove/cdr@https://github.com/foxglove/cdr.git#commit=f134cf5c85f822981ef03c1fb3f177d14d5dfeb7"
+  checksum: 10c0/14fad5e1dca75dfb10cf50da195dae6e0a426ad6eec93cc4cbc123af50fe710ae61374517816e18a12fcc4c9b87de574a3bab7ae1f4e1fa18d4b9a6b7cfde98e
   languageName: node
   linkType: hard
 
@@ -1037,7 +1037,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@foxglove/rosmsg2-serialization@workspace:packages/rosmsg2-serialization"
   dependencies:
-    "@foxglove/cdr": "npm:^3.4.0"
+    "@foxglove/cdr": "github:foxglove/cdr#miles/fix-utf8-cdr-string"
     "@foxglove/message-definition": "npm:0.5.0"
     "@foxglove/ros2idl-parser": "npm:^0.3.6"
     "@foxglove/rosmsg": "workspace:*"
