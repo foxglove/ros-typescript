@@ -832,10 +832,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@foxglove/cdr@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@foxglove/cdr@npm:3.4.0"
-  checksum: 10c0/0bef7183c9cb828a4b83e811f615da7d95e554b2c56d78d3e1b9df7b158cec55cfdbd7422f38ceece26834306cccf06d5a11560bb554d7416181c0b9c610e238
+"@foxglove/cdr@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "@foxglove/cdr@npm:3.5.1"
+  checksum: 10c0/eadd02f48551b360c040624eb7e9e501840937618e338c2e560a5b0676a7f08f419c3794ec90bbfac7a6675b411e2a4241e9aee4b1a9febafc1d446af892060b
   languageName: node
   linkType: hard
 
@@ -1037,7 +1037,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@foxglove/rosmsg2-serialization@workspace:packages/rosmsg2-serialization"
   dependencies:
-    "@foxglove/cdr": "npm:^3.4.0"
+    "@foxglove/cdr": "npm:^3.5.1"
     "@foxglove/message-definition": "npm:0.5.0"
     "@foxglove/ros2idl-parser": "npm:^0.3.6"
     "@foxglove/rosmsg": "workspace:*"
