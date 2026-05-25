@@ -1,6 +1,12 @@
 import { stringLengthUtf8 } from "./stringLengthUtf8";
 
 describe("stringLengthUtf8", () => {
+  it("does not include an implicit null terminator", () => {
+    expect(stringLengthUtf8("")).toEqual(0);
+    expect(stringLengthUtf8("BLUE")).toEqual(4);
+    expect(stringLengthUtf8("BLUE\u0000")).toEqual(5);
+  });
+
   it.each([
     "",
     "a",
