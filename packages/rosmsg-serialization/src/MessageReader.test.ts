@@ -46,6 +46,12 @@ describe("MessageReader", () => {
     expect(globalWithMarker.rosmsgSerializationReaderInjected).toBeUndefined();
   });
 
+  it("allows reserved words as field names", () => {
+    const reader = new MessageReader(parseMessageDefinition("uint8 function"));
+
+    expect(reader.readMessage(Uint8Array.from([3]))).toEqual({ function: 3 });
+  });
+
   it.each(messageReaderTests)(
     "should deserialize %s",
     (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
