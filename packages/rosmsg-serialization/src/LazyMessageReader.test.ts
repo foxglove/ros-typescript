@@ -6,7 +6,7 @@ import { LazyMessageReader } from "./LazyMessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 describe("LazyReader", () => {
-  it("treats field names as data when generating lazy readers", () => {
+  it("rejects unsafe field names before generating lazy readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationLazyReaderInjected?: boolean;
     };
@@ -25,12 +25,10 @@ describe("LazyReader", () => {
         ],
       },
     ];
-    const reader = new LazyMessageReader<Record<string, string>>(definitions);
 
-    const read = reader.readMessage(Buffer.alloc(4));
-
-    expect(read[payloadName]).toEqual("");
-    expect(read.toObject()).toEqual({ [payloadName]: "" });
+    expect(() => new LazyMessageReader(definitions)).toThrow(
+      /Invalid message definition field name/,
+    );
     expect(globalWithMarker.rosmsgSerializationLazyReaderInjected).toBeUndefined();
   });
 

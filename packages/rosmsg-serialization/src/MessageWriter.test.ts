@@ -61,7 +61,7 @@ function writeDoubleLE(data: Uint8Array, value: number, offset: number): void {
 }
 
 describe("MessageWriter", () => {
-  it("treats field names as data when generating writers", () => {
+  it("rejects unsafe field names before generating writers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationWriterInjected?: boolean;
     };
@@ -80,9 +80,8 @@ describe("MessageWriter", () => {
         ],
       },
     ];
-    const writer = new MessageWriter(definitions);
 
-    expect(writer.writeMessage({ [payloadName]: "" })).toEqual(Buffer.alloc(4));
+    expect(() => new MessageWriter(definitions)).toThrow(/Invalid message definition field name/);
     expect(globalWithMarker.rosmsgSerializationWriterInjected).toBeUndefined();
   });
 

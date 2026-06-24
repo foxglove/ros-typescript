@@ -2,6 +2,7 @@ import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-def
 
 import { createParsers, StandardTypeReader } from ".";
 import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
+import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
 const builtinSizes = {
   // strings are the only builtin type that are variable size
@@ -63,37 +64,6 @@ function sanitizeName(name: string): string {
   return name.replace(/^[0-9]|[^a-zA-Z0-9_]/g, "_");
 }
 
-function sourceString(value: string): string {
-  return JSON.stringify(value);
-}
-
-function hasOwn(object: object, key: string): boolean {
-  return Object.prototype.hasOwnProperty.call(object, key);
-}
-
-function arrayLengthSource(field: MessageDefinitionField): string {
-  const { arrayLength } = field;
-  if (arrayLength == undefined) {
-    return "undefined";
-  }
-  if (!Number.isSafeInteger(arrayLength) || arrayLength < 0) {
-    throw new Error(`Invalid array length ${String(arrayLength)} for field '${field.name}'`);
-  }
-  return String(arrayLength);
-}
-
-function fieldSizeFunctionName(fieldIndex: number): string {
-  return `__field${fieldIndex}$size`;
-}
-
-function fieldOffsetFunctionName(fieldIndex: number): string {
-  return `__field${fieldIndex}$offset`;
-}
-
-function fieldOffsetCacheName(fieldIndex: number): string {
-  return `#_field${fieldIndex}_offset_cache`;
-}
-
 interface SerializedMessageReader {
   build: (view: DataView, offset?: number) => unknown;
   size: (view: DataView, offset?: number) => number;
@@ -101,13 +71,12 @@ interface SerializedMessageReader {
 }
 
 // Return a static size function for our @param field
-function sizeFunction(field: MessageDefinitionField, fieldIndex: number): string {
+function sizeFunction(field: MessageDefinitionField): string {
   if (field.isConstant === true) {
     return "";
   }
 
   const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
-  const sizeFunctionName = fieldSizeFunctionName(fieldIndex);
 
   // if the field size is not known, size will be calculated on-demand
   if (fieldSize == undefined) {
@@ -118,31 +87,31 @@ function sizeFunction(field: MessageDefinitionField, fieldIndex: number): string
     if (field.isArray === true) {
       if (field.arrayLength != undefined) {
         return `
-          static ${sizeFunctionName}(view /* dataview */, offset) {
-              return builtinSizes.fixedArray(view, offset, ${arrayLengthSource(field)}, ${fieldSizeFn});
+          static __${field.name}$size(view /* dataview */, offset) {
+              return builtinSizes.fixedArray(view, offset, ${field.arrayLength}, ${fieldSizeFn});
           }`;
       } else {
         return `
-          static ${sizeFunctionName}(view /* dataview */, offset) {
+          static __${field.name}$size(view /* dataview */, offset) {
               return builtinSizes.array(view, offset, ${fieldSizeFn});
           }`;
       }
     }
 
     return `
-      static ${sizeFunctionName}(view /* dataview */, offset) {
+      static __${field.name}$size(view /* dataview */, offset) {
           return ${fieldSizeFn}(view, offset);
       }`;
   } else {
     if (field.isArray === true) {
       if (field.arrayLength != undefined) {
         return `
-          static ${sizeFunctionName}(view /* dataview */, offset) {
-            return ${fieldSize} * ${arrayLengthSource(field)};
+          static __${field.name}$size(view /* dataview */, offset) {
+            return ${fieldSize} * ${field.arrayLength};
           }`;
       } else {
         return `
-          static ${sizeFunctionName}(view /* dataview */, offset) {
+          static __${field.name}$size(view /* dataview */, offset) {
             const len = view.getUint32(offset, true);
             return 4 + len * ${fieldSize};
           }`;
@@ -150,18 +119,14 @@ function sizeFunction(field: MessageDefinitionField, fieldIndex: number): string
     }
 
     return `
-      static ${sizeFunctionName}(view /* dataview */, offset) {
+      static __${field.name}$size(view /* dataview */, offset) {
           return ${fieldSize};
       }`;
   }
 }
 
 // Return the part of the static size() function for our message class for @param field
-function sizePartForDefinition(
-  className: string,
-  field: MessageDefinitionField,
-  fieldIndex: number,
-): string {
+function sizePartForDefinition(className: string, field: MessageDefinitionField): string {
   if (field.isConstant === true) {
     return "";
   }
@@ -171,13 +136,15 @@ function sizePartForDefinition(
 
   if (fieldSize != undefined && (isFixedArray || field.isArray === false)) {
     if (field.arrayLength != undefined) {
-      const totalSize = fieldSize * Number(arrayLengthSource(field));
+      const totalSize = fieldSize * field.arrayLength;
       return `
+        // ${field.type}[${field.arrayLength}] ${field.name}
         totalSize += ${totalSize};
         offset += ${totalSize};
       `;
     } else {
       return `
+        // ${field.type} ${field.name}
         totalSize += ${fieldSize};
         offset += ${fieldSize};
       `;
@@ -185,8 +152,9 @@ function sizePartForDefinition(
   }
 
   return `
+    // ${field.type} ${field.name}
     {
-        const size = ${className}.${fieldSizeFunctionName(fieldIndex)}(view, offset);
+        const size = ${className}.__${field.name}$size(view, offset);
         totalSize += size;
         offset += size;
     }
@@ -194,31 +162,23 @@ function sizePartForDefinition(
 }
 
 // Create a getter function for the field
-function getterFunction(field: MessageDefinitionField, fieldIndex: number): string {
+function getterFunction(field: MessageDefinitionField): string {
   if (field.isConstant === true) {
     return "";
   }
 
-  if (field.name === "constructor") {
-    throw new Error("LazyMessageReader does not support a field named 'constructor'");
-  }
-
-  const isBuiltinReader = hasOwn(deserializers, field.type);
-  const isBuiltinSize = hasOwn(builtinSizes, field.type);
+  const isBuiltinReader = field.type in deserializers;
+  const isBuiltinSize = field.type in builtinSizes;
 
   // function to return a read array item
   const readerFn = isBuiltinReader
-    ? `deserializers[${sourceString(field.type)}]`
+    ? `deserializers.${field.type}`
     : `${sanitizeName(field.type)}.build`;
 
   // function to return size of individual array item
-  const sizeFn = isBuiltinSize
-    ? `builtinSizes[${sourceString(field.type)}]`
-    : `${sanitizeName(field.type)}.size`;
+  const sizeFn = isBuiltinSize ? `builtinSizes.${field.type}` : `${sanitizeName(field.type)}.size`;
 
   const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
-  const fieldName = sourceString(field.name);
-  const offsetFunctionName = fieldOffsetFunctionName(fieldIndex);
 
   if (field.isArray === true) {
     const arrLen = field.arrayLength;
@@ -226,38 +186,42 @@ function getterFunction(field: MessageDefinitionField, fieldIndex: number): stri
       // total size is known, which means we should use a builtin array reader
       if (fieldSize != undefined) {
         return `
-          get ${fieldName}() {
-            const offset = this.${offsetFunctionName}(this.#view, this.#offset);
-            return deserializers[${sourceString(`${field.type}Array`)}](this.#view, offset, ${arrayLengthSource(field)});
+          // ${field.type}[${arrLen}] ${field.name}
+          get ${field.name}() {
+            const offset = this.__${field.name}$offset(this.#view, this.#offset);
+            return deserializers.${field.type}Array(this.#view, offset, ${arrLen});
           }`;
       } else {
         // fixed size array of complex size items
         return `
-          get ${fieldName}() {
-            const offset = this.${offsetFunctionName}(this.#view, this.#offset);
-            return deserializers.fixedArray(this.#view, offset, ${arrayLengthSource(field)}, ${readerFn}, ${sizeFn});
+        // ${field.type}[${arrLen}] ${field.name}
+          get ${field.name}() {
+            const offset = this.__${field.name}$offset(this.#view, this.#offset);
+            return deserializers.fixedArray(this.#view, offset, ${arrLen}, ${readerFn}, ${sizeFn});
           }`;
       }
     } else {
       // total size is known, which means we should use a builtin array reader
       if (fieldSize != undefined) {
         return `
-          get ${fieldName}() {
-            const offset = this.${offsetFunctionName}(this.#view, this.#offset);
+          // ${field.type}[] ${field.name}
+          get ${field.name}() {
+            const offset = this.__${field.name}$offset(this.#view, this.#offset);
             const len = this.#view.getUint32(offset, true);
-            return deserializers[${sourceString(`${field.type}Array`)}](this.#view, offset + 4, len);
+            return deserializers.${field.type}Array(this.#view, offset + 4, len);
           }`;
       } else {
         return `
-          get ${fieldName}() {
-            const offset = this.${offsetFunctionName}(this.#view, this.#offset);
+          // ${field.type}[] ${field.name}
+          get ${field.name}() {
+            const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.dynamicArray(this.#view, offset, ${readerFn}, ${sizeFn});
           }`;
       }
     }
   } else {
-    return `get ${fieldName}() {
-        const offset = this.${offsetFunctionName}(this.#view, this.#offset);
+    return `get ${field.name}() {
+        const offset = this.__${field.name}$offset(this.#view, this.#offset);
         return ${readerFn}(this.#view, offset);
       }`;
   }
@@ -275,6 +239,8 @@ function getterFunction(field: MessageDefinitionField, fieldIndex: number): stri
 export default function buildReader(
   definitions: readonly MessageDefinition[],
 ): SerializedMessageReader {
+  validateMessageDefinitionsForCodegen(definitions, { validateTypeNames: true });
+
   const classes = new Array<string>();
   const rootClassName = "__RootMsg";
 
@@ -285,9 +251,9 @@ export default function buildReader(
     const initializers = new Array<string>();
 
     // getters need to "look back" at the previous field to create the offset function calls
-    let prevField: { index: number } | undefined;
+    let prevField: MessageDefinitionField | undefined;
 
-    for (const [fieldIndex, field] of type.definitions.entries()) {
+    for (const field of type.definitions) {
       // constants have no impact on deserialization
       if (field.isConstant === true) {
         continue;
@@ -298,27 +264,26 @@ export default function buildReader(
       // the first first field is at offset 0
       if (prevField == undefined) {
         offsetFns.push(`
-          ${fieldOffsetFunctionName(fieldIndex)}(view, initOffset) {
+          __${field.name}$offset(view, initOffset) {
             return initOffset;
           }`);
       } else {
         // offsets tell you where the raw data of your field starts (including any length bytes)
         // they are the size of the offset of the previous field + size of previous field
-        const cacheName = fieldOffsetCacheName(fieldIndex);
+        initializers.push(`#_${field.name}_offset_cache = undefined;`);
         offsetFns.push(`
-          ${fieldOffsetFunctionName(fieldIndex)}(view, initOffset) {
-            if (this.${cacheName}) {
-              return this.${cacheName};
+          __${field.name}$offset(view, initOffset) {
+            if (this.#_${field.name}_offset_cache) {
+              return this.#_${field.name}_offset_cache;
             }
-            const prevOffset = this.${fieldOffsetFunctionName(prevField.index)}(view, initOffset);
-            const totalOffset = prevOffset + ${name}.${fieldSizeFunctionName(prevField.index)}(view, prevOffset);
-            this.${cacheName} = totalOffset;
+            const prevOffset = this.__${prevField.name}$offset(view, initOffset);
+            const totalOffset = prevOffset + ${name}.__${prevField.name}$size(view, prevOffset);
+            this.#_${field.name}_offset_cache = totalOffset;
             return totalOffset;
           }`);
-        initializers.push(`${cacheName} = undefined;`);
       }
 
-      prevField = { index: fieldIndex };
+      prevField = field;
     }
 
     const messageSrc = `class ${name} {

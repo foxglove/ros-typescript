@@ -21,7 +21,7 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
-  it("treats field names as data when generating readers", () => {
+  it("rejects unsafe field names before generating readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationReaderInjected?: boolean;
     };
@@ -42,9 +42,7 @@ describe("MessageReader", () => {
       },
     ];
 
-    const reader = new MessageReader(definitions);
-
-    expect(reader.readMessage(Buffer.alloc(4))).toEqual({ [payloadName]: "" });
+    expect(() => new MessageReader(definitions)).toThrow(/Invalid message definition field name/);
     expect(globalWithMarker.rosmsgSerializationReaderInjected).toBeUndefined();
   });
 
