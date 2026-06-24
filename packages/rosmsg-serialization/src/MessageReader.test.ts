@@ -23,10 +23,10 @@ const getStringBuffer = (str: string) => {
 describe("MessageReader", () => {
   it("treats field names as data when generating readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
-      __rosmsgSerializationReaderInjected?: boolean;
+      rosmsgSerializationReaderInjected?: boolean;
     };
-    delete globalWithMarker.__rosmsgSerializationReaderInjected;
-    const payloadName = "x; globalThis.__rosmsgSerializationReaderInjected = true; this.y";
+    delete globalWithMarker.rosmsgSerializationReaderInjected;
+    const payloadName = "x; globalThis.rosmsgSerializationReaderInjected = true; this.y";
     const definitions: MessageDefinition[] = [
       {
         name: "std_msgs/String",
@@ -45,7 +45,7 @@ describe("MessageReader", () => {
     const reader = new MessageReader(definitions);
 
     expect(reader.readMessage(Buffer.alloc(4))).toEqual({ [payloadName]: "" });
-    expect(globalWithMarker.__rosmsgSerializationReaderInjected).toBeUndefined();
+    expect(globalWithMarker.rosmsgSerializationReaderInjected).toBeUndefined();
   });
 
   it.each(messageReaderTests)(

@@ -8,10 +8,10 @@ import messageReaderTests from "./fixtures/messageReaderTests";
 describe("LazyReader", () => {
   it("treats field names as data when generating lazy readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
-      __rosmsgSerializationLazyReaderInjected?: boolean;
+      rosmsgSerializationLazyReaderInjected?: boolean;
     };
-    delete globalWithMarker.__rosmsgSerializationLazyReaderInjected;
-    const payloadName = "x; globalThis.__rosmsgSerializationLazyReaderInjected = true; this.y";
+    delete globalWithMarker.rosmsgSerializationLazyReaderInjected;
+    const payloadName = "x; globalThis.rosmsgSerializationLazyReaderInjected = true; this.y";
     const definitions: MessageDefinition[] = [
       {
         definitions: [
@@ -31,7 +31,7 @@ describe("LazyReader", () => {
 
     expect(read[payloadName]).toEqual("");
     expect(read.toObject()).toEqual({ [payloadName]: "" });
-    expect(globalWithMarker.__rosmsgSerializationLazyReaderInjected).toBeUndefined();
+    expect(globalWithMarker.rosmsgSerializationLazyReaderInjected).toBeUndefined();
   });
 
   it.each(messageReaderTests)(
