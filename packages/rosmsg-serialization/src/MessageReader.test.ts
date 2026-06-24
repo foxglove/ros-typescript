@@ -7,6 +7,7 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
+import type { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
 import { MessageReader } from "./MessageReader";
@@ -20,6 +21,33 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
+  it("treats field names as data when generating readers", () => {
+    const globalWithMarker = globalThis as typeof globalThis & {
+      __rosmsgSerializationReaderInjected?: boolean;
+    };
+    delete globalWithMarker.__rosmsgSerializationReaderInjected;
+    const payloadName = "x; globalThis.__rosmsgSerializationReaderInjected = true; this.y";
+    const definitions: MessageDefinition[] = [
+      {
+        name: "std_msgs/String",
+        definitions: [
+          {
+            name: payloadName,
+            type: "string",
+            isArray: false,
+            isComplex: false,
+            isConstant: false,
+          },
+        ],
+      },
+    ];
+
+    const reader = new MessageReader(definitions);
+
+    expect(reader.readMessage(Buffer.alloc(4))).toEqual({ [payloadName]: "" });
+    expect(globalWithMarker.__rosmsgSerializationReaderInjected).toBeUndefined();
+  });
+
   it.each(messageReaderTests)(
     "should deserialize %s",
     (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {

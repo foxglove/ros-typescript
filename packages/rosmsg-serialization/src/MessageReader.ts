@@ -189,9 +189,22 @@ const findTypeByName = (types: readonly MessageDefinition[], name = ""): NamedMe
   return { ...matches[0]!, name: foundName };
 };
 
-const friendlyName = (name: string) => name.replace(/\//g, "_");
-
 type NamedMessageDefinition = MessageDefinition & { name: string };
+
+function sourceString(value: string): string {
+  return JSON.stringify(value);
+}
+
+function arrayLengthSource(def: MessageDefinitionField): string {
+  const { arrayLength } = def;
+  if (arrayLength == undefined) {
+    return "undefined";
+  }
+  if (!Number.isSafeInteger(arrayLength) || arrayLength < 0) {
+    throw new Error(`Invalid array length ${String(arrayLength)} for field '${def.name}'`);
+  }
+  return String(arrayLength);
+}
 
 function toTypedArrayType(rosType: string): string | undefined {
   switch (rosType) {
@@ -247,47 +260,54 @@ export const createParsers = ({
 
   const constructorBody = (type: MessageDefinition | NamedMessageDefinition) => {
     const readerLines: string[] = [];
-    type.definitions.forEach((def) => {
+    type.definitions.forEach((def, index) => {
       if (def.isConstant === true) {
         return;
       }
+      const fieldName = sourceString(def.name);
+      const setField = (value: string) => `setField(this, ${fieldName}, ${value});`;
       if (def.isArray === true) {
         // detect if typed array
         const typedArrayType = toTypedArrayType(def.type);
         if (typedArrayType != undefined) {
           readerLines.push(
-            `this.${def.name} = reader.typedArray(${String(def.arrayLength)}, ${typedArrayType});`,
+            setField(`reader.typedArray(${arrayLengthSource(def)}, ${typedArrayType})`),
           );
           return;
         }
 
-        const lenField = `length_${def.name}`;
+        const lenField = `length_${index}`;
         // set a variable pointing to the parsed fixed array length
         // or read the byte indicating the dynamic length
-        readerLines.push(`var ${lenField} = ${def.arrayLength ?? "reader.uint32();"}`);
+        readerLines.push(
+          `var ${lenField} = ${def.arrayLength == undefined ? "reader.uint32()" : arrayLengthSource(def)};`,
+        );
 
         // only allocate an array if there is a length - skips empty allocations
-        const arrayName = `this.${def.name}`;
+        const arrayName = `array_${index}`;
 
         // allocate the new array to a fixed length since we know it ahead of time
-        readerLines.push(`${arrayName} = new Array(${lenField})`);
+        readerLines.push(`var ${arrayName} = new Array(${lenField});`);
+        readerLines.push(setField(arrayName));
         // start the for-loop
         readerLines.push(`for (var i = 0; i < ${lenField}; i++) {`);
         // if the sub type is complex we need to allocate it and parse its values
         if (def.isComplex === true) {
           const defType = findTypeByName(definitions, def.type);
           // recursively call the constructor for the sub-type
-          readerLines.push(`  ${arrayName}[i] = new Record.${friendlyName(defType.name)}(reader);`);
+          readerLines.push(
+            `  ${arrayName}[i] = new (Record[${sourceString(defType.name)}])(reader);`,
+          );
         } else {
           // if the subtype is not complex its a simple low-level reader operation
-          readerLines.push(`  ${arrayName}[i] = reader.${def.type}();`);
+          readerLines.push(`  ${arrayName}[i] = reader[${sourceString(def.type)}]();`);
         }
         readerLines.push("}"); // close the for-loop
       } else if (def.isComplex === true) {
         const defType = findTypeByName(definitions, def.type);
-        readerLines.push(`this.${def.name} = new Record.${friendlyName(defType.name)}(reader);`);
+        readerLines.push(setField(`new (Record[${sourceString(defType.name)}])(reader)`));
       } else {
-        readerLines.push(`this.${def.name} = reader.${def.type}();`);
+        readerLines.push(setField(`reader[${sourceString(def.type)}]()`));
       }
     });
     if (options.freeze === true) {
@@ -298,6 +318,14 @@ export const createParsers = ({
 
   let js = `
   const builtReaders = new Map();
+  function setField(record, name, value) {
+    Object.defineProperty(record, name, {
+      value,
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  }
   var Record = function (reader) {
     ${constructorBody(unnamedType)}
   };
@@ -306,10 +334,10 @@ export const createParsers = ({
 
   for (const type of namedTypes) {
     js += `
-  Record.${friendlyName(type.name)} = function(reader) {
+  setField(Record, ${sourceString(type.name)}, function(reader) {
     ${constructorBody(type)}
-  };
-  builtReaders.set(${JSON.stringify(type.name)}, Record.${friendlyName(type.name)});
+  });
+  builtReaders.set(${sourceString(type.name)}, Record[${sourceString(type.name)}]);
   `;
   }
 
