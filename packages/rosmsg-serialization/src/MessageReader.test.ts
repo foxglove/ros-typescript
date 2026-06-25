@@ -21,7 +21,7 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
-  it("rejects unsafe field names before generating readers", () => {
+  it("rejects invalid ROS field names before generating readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationReaderInjected?: boolean;
     };
@@ -42,7 +42,7 @@ describe("MessageReader", () => {
       },
     ];
 
-    expect(() => new MessageReader(definitions)).toThrow(/Invalid message definition field name/);
+    expect(() => new MessageReader(definitions)).toThrow(/valid ROS field name/);
     expect(globalWithMarker.rosmsgSerializationReaderInjected).toBeUndefined();
   });
 

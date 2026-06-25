@@ -61,7 +61,7 @@ function writeDoubleLE(data: Uint8Array, value: number, offset: number): void {
 }
 
 describe("MessageWriter", () => {
-  it("rejects unsafe field names before generating writers", () => {
+  it("rejects invalid ROS field names before generating writers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationWriterInjected?: boolean;
     };
@@ -81,7 +81,7 @@ describe("MessageWriter", () => {
       },
     ];
 
-    expect(() => new MessageWriter(definitions)).toThrow(/Invalid message definition field name/);
+    expect(() => new MessageWriter(definitions)).toThrow(/valid ROS field name/);
     expect(globalWithMarker.rosmsgSerializationWriterInjected).toBeUndefined();
   });
 

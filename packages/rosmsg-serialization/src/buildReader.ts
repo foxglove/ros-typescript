@@ -239,7 +239,7 @@ function getterFunction(field: MessageDefinitionField): string {
 export default function buildReader(
   definitions: readonly MessageDefinition[],
 ): SerializedMessageReader {
-  validateMessageDefinitionsForCodegen(definitions, { validateTypeNames: true });
+  validateMessageDefinitionsForCodegen(definitions);
 
   const classes = new Array<string>();
   const rootClassName = "__RootMsg";

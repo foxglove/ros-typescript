@@ -233,7 +233,7 @@ export const createParsers = ({
   if (definitions.length === 0) {
     throw new Error(`no types given`);
   }
-  validateMessageDefinitionsForCodegen(definitions, { validateTypeNames: true });
+  validateMessageDefinitionsForCodegen(definitions);
 
   const unnamedTypes = definitions.filter((type) => !type.name);
   if (unnamedTypes.length > 1) {

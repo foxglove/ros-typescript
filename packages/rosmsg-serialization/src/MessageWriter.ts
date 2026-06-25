@@ -234,7 +234,7 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
   if (types.length === 0) {
     throw new Error(`no types given`);
   }
-  validateMessageDefinitionsForCodegen(types, { validateTypeNames: true });
+  validateMessageDefinitionsForCodegen(types);
 
   const unnamedTypes = types.filter((type) => type.name == undefined);
   if (unnamedTypes.length > 1) {
