@@ -2,6 +2,7 @@ import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-def
 
 import { createParsers, StandardTypeReader } from ".";
 import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
+import { sanitizeMessageDefinitionFields, sanitizeName } from "./sanitizeMessageDefinitionFields";
 
 const builtinSizes = {
   // strings are the only builtin type that are variable size
@@ -58,10 +59,6 @@ const builtinSizes = {
     return size;
   },
 };
-
-function sanitizeName(name: string): string {
-  return name.replace(/^[0-9]|[^a-zA-Z0-9_]/g, "_");
-}
 
 interface SerializedMessageReader {
   build: (view: DataView, offset?: number) => unknown;
@@ -238,10 +235,11 @@ function getterFunction(field: MessageDefinitionField): string {
 export default function buildReader(
   definitions: readonly MessageDefinition[],
 ): SerializedMessageReader {
+  const sanitizedDefinitions = sanitizeMessageDefinitionFields(definitions);
   const classes = new Array<string>();
   const rootClassName = "__RootMsg";
 
-  for (const type of definitions) {
+  for (const type of sanitizedDefinitions) {
     const name = sanitizeName(type.name ?? rootClassName);
 
     const offsetFns = new Array<string>();
@@ -343,7 +341,10 @@ export default function buildReader(
   // Since the root message depends on custom types we want those to be defined
   const src = classes.reverse().join("\n\n");
 
-  const typeReaders = createParsers({ definitions, topLevelReaderKey: rootClassName });
+  const typeReaders = createParsers({
+    definitions: sanitizedDefinitions,
+    topLevelReaderKey: rootClassName,
+  });
 
   // close over our builtin deserializers and builtin size functions
   // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func

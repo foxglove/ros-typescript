@@ -10,6 +10,7 @@
 import { MessageDefinition } from "@foxglove/message-definition";
 
 import decodeString from "./decodeString";
+import { sanitizeMessageDefinitionFields } from "./sanitizeMessageDefinitionFields";
 
 type TypedArray =
   | Int8Array
@@ -229,19 +230,21 @@ export const createParsers = ({
   options?: { freeze?: boolean };
   topLevelReaderKey: string;
 }): Map<string, new (reader: StandardTypeReader) => unknown> => {
-  if (definitions.length === 0) {
+  const sanitizedDefinitions = sanitizeMessageDefinitionFields(definitions);
+
+  if (sanitizedDefinitions.length === 0) {
     throw new Error(`no types given`);
   }
 
-  const unnamedTypes = definitions.filter((type) => !type.name);
+  const unnamedTypes = sanitizedDefinitions.filter((type) => !type.name);
   if (unnamedTypes.length > 1) {
     throw new Error("multiple unnamed types");
   }
 
-  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : definitions[0]!;
+  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : sanitizedDefinitions[0]!;
 
   // keep only definitions with a name
-  const namedTypes: NamedMessageDefinition[] = definitions.filter(
+  const namedTypes: NamedMessageDefinition[] = sanitizedDefinitions.filter(
     (type) => !!type.name,
   ) as NamedMessageDefinition[];
 
@@ -275,7 +278,7 @@ export const createParsers = ({
         readerLines.push(`for (var i = 0; i < ${lenField}; i++) {`);
         // if the sub type is complex we need to allocate it and parse its values
         if (def.isComplex === true) {
-          const defType = findTypeByName(definitions, def.type);
+          const defType = findTypeByName(sanitizedDefinitions, def.type);
           // recursively call the constructor for the sub-type
           readerLines.push(`  ${arrayName}[i] = new Record.${friendlyName(defType.name)}(reader);`);
         } else {
@@ -284,7 +287,7 @@ export const createParsers = ({
         }
         readerLines.push("}"); // close the for-loop
       } else if (def.isComplex === true) {
-        const defType = findTypeByName(definitions, def.type);
+        const defType = findTypeByName(sanitizedDefinitions, def.type);
         readerLines.push(`this.${def.name} = new Record.${friendlyName(defType.name)}(reader);`);
       } else {
         readerLines.push(`this.${def.name} = reader.${def.type}();`);

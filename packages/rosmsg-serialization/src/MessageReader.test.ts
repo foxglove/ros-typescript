@@ -7,6 +7,7 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
+import { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
 import { MessageReader } from "./MessageReader";
@@ -66,6 +67,26 @@ describe("MessageReader", () => {
     expect(() => {
       output.firstName = "boooo";
     }).toThrow();
+  });
+
+  it("sanitizes untrusted field names before generating parser source", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { isArray: false, isComplex: false, name: "bad-name", type: "uint8" },
+          { isArray: false, isComplex: false, name: "__proto__", type: "uint8" },
+          { isArray: false, isComplex: false, name: "constructor", type: "uint8" },
+        ],
+        name: undefined,
+      },
+    ];
+    const reader = new MessageReader(definitions);
+
+    expect(reader.readMessage(Uint8Array.from([0x02, 0x03, 0x04]))).toEqual({
+      bad_name: 2,
+      ___proto__: 3,
+      _constructor: 4,
+    });
   });
 
   describe("lastReadHadTrailingBytes", () => {

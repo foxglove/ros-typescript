@@ -1,3 +1,4 @@
+import { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 import * as prettier from "prettier";
 
@@ -139,5 +140,29 @@ describe("LazyReader", () => {
     const read = reader.readMessage(buffer);
     expect(read.custom.first).toEqual(3);
     expect(read.custom.first_offset).toEqual(7);
+  });
+
+  it("sanitizes untrusted field names before generating reader source", () => {
+    const unsafeFieldName = "bad-name";
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { isArray: false, isComplex: false, name: unsafeFieldName, type: "uint8" },
+          { isArray: false, isComplex: false, name: "__proto__", type: "uint8" },
+          { isArray: false, isComplex: false, name: "constructor", type: "uint8" },
+        ],
+        name: undefined,
+      },
+    ];
+
+    const buffer = Uint8Array.from([0x02, 0x03, 0x04]);
+    const reader = new LazyMessageReader<Record<string, unknown>>(definitions);
+    const read = reader.readMessage(buffer);
+
+    expect(reader.source()).not.toContain(unsafeFieldName);
+    expect(read["bad_name"]).toEqual(2);
+    expect(read["___proto__"]).toEqual(3);
+    expect(read["_constructor"]).toEqual(4);
+    expect(read.toObject()).toEqual({ bad_name: 2, ___proto__: 3, _constructor: 4 });
   });
 });
