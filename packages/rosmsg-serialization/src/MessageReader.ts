@@ -10,7 +10,7 @@
 import { MessageDefinition } from "@foxglove/message-definition";
 
 import decodeString from "./decodeString";
-import { sanitizeMessageDefinitionFields } from "./sanitizeMessageDefinitionFields";
+import { sanitizeMessageDefinitionFields, sanitizeName } from "./sanitizeMessageDefinitionFields";
 
 type TypedArray =
   | Int8Array
@@ -190,7 +190,7 @@ const findTypeByName = (types: readonly MessageDefinition[], name = ""): NamedMe
   return { ...matches[0]!, name: foundName };
 };
 
-const friendlyName = (name: string) => name.replace(/\//g, "_");
+const friendlyName = (name: string) => sanitizeName(name);
 
 type NamedMessageDefinition = MessageDefinition & { name: string };
 
@@ -283,14 +283,14 @@ export const createParsers = ({
           readerLines.push(`  ${arrayName}[i] = new Record.${friendlyName(defType.name)}(reader);`);
         } else {
           // if the subtype is not complex its a simple low-level reader operation
-          readerLines.push(`  ${arrayName}[i] = reader.${def.type}();`);
+          readerLines.push(`  ${arrayName}[i] = reader.${sanitizeName(def.type)}();`);
         }
         readerLines.push("}"); // close the for-loop
       } else if (def.isComplex === true) {
         const defType = findTypeByName(sanitizedDefinitions, def.type);
         readerLines.push(`this.${def.name} = new Record.${friendlyName(defType.name)}(reader);`);
       } else {
-        readerLines.push(`this.${def.name} = reader.${def.type}();`);
+        readerLines.push(`this.${def.name} = reader.${sanitizeName(def.type)}();`);
       }
     });
     if (options.freeze === true) {
@@ -308,11 +308,12 @@ export const createParsers = ({
   `;
 
   for (const type of namedTypes) {
+    const typeReaderName = friendlyName(type.name);
     js += `
-  Record.${friendlyName(type.name)} = function(reader) {
+  Record.${typeReaderName} = function(reader) {
     ${constructorBody(type)}
   };
-  builtReaders.set(${JSON.stringify(type.name)}, Record.${friendlyName(type.name)});
+  builtReaders.set(${JSON.stringify(type.name)}, Record.${typeReaderName});
   `;
   }
 

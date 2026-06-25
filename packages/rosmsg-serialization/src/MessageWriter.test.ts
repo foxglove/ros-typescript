@@ -7,6 +7,7 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
+import { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
 import { MessageReader } from "./MessageReader";
@@ -438,6 +439,40 @@ describe("MessageWriter", () => {
       const writer = new MessageWriter(parseMessageDefinition(messageDefinition));
       expect(writer.calculateByteSize(message)).toEqual(108);
     });
+  });
+
+  it("sanitizes untrusted field and type names before generating writer source", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { isArray: false, isComplex: false, name: "bad-name", type: "uint8" },
+          {
+            arrayLength: undefined,
+            isArray: true,
+            isComplex: false,
+            name: "arr-name",
+            type: "uint8",
+          },
+          { isArray: false, isComplex: true, name: "custom-name", type: "bad-type/Custom" },
+        ],
+        name: undefined,
+      },
+      {
+        definitions: [{ isArray: false, isComplex: false, name: "value", type: "uint8" }],
+        name: "bad-type/Custom",
+      },
+    ];
+    const writer = new MessageWriter(definitions);
+    const message = {
+      arr_name: Uint8Array.from([3, 4]),
+      bad_name: 2,
+      custom_name: { value: 5 },
+    };
+
+    expect(writer.calculateByteSize(message)).toEqual(8);
+    expect(writer.writeMessage(message)).toEqual(
+      Uint8Array.from([0x02, 0x02, 0x00, 0x00, 0x00, 0x03, 0x04, 0x05]),
+    );
   });
 
   it.each([

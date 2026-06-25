@@ -3,6 +3,7 @@ import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-def
 import { Time as Ros1Time } from "@foxglove/rostime";
 
 import { messageDefinitionHasDataFields } from "./messageDefinitionHasDataFields";
+import { sanitizeName } from "./sanitizeName";
 
 type Ros2Time = {
   sec: number;
@@ -126,9 +127,9 @@ export class MessageReader<T = unknown> {
           for (let i = 0; i < arrayLength; i++) {
             array.push(this.#readComplexType(nestedDefinition, reader));
           }
-          msg[field.name] = array;
+          msg[sanitizeName(field.name)] = array;
         } else {
-          msg[field.name] = this.#readComplexType(nestedDefinition, reader);
+          msg[sanitizeName(field.name)] = this.#readComplexType(nestedDefinition, reader);
         }
       } else {
         // Primitive type
@@ -141,13 +142,13 @@ export class MessageReader<T = unknown> {
           }
           // For dynamic length arrays we need to read a uint32 prefix
           const arrayLength = field.arrayLength ?? reader.sequenceLength();
-          msg[field.name] = deser(reader, arrayLength);
+          msg[sanitizeName(field.name)] = deser(reader, arrayLength);
         } else {
           const deser = (this.#useRos1Time ? ros1TimeDeserializers : deserializers).get(field.type);
           if (deser == undefined) {
             throw new Error(`Unrecognized primitive type ${field.type}`);
           }
-          msg[field.name] = deser(reader);
+          msg[sanitizeName(field.name)] = deser(reader);
         }
       }
     }

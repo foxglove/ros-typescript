@@ -76,16 +76,22 @@ describe("MessageReader", () => {
           { isArray: false, isComplex: false, name: "bad-name", type: "uint8" },
           { isArray: false, isComplex: false, name: "__proto__", type: "uint8" },
           { isArray: false, isComplex: false, name: "constructor", type: "uint8" },
+          { isArray: false, isComplex: true, name: "custom-name", type: "bad-type/Custom" },
         ],
         name: undefined,
+      },
+      {
+        definitions: [{ isArray: false, isComplex: false, name: "value", type: "uint8" }],
+        name: "bad-type/Custom",
       },
     ];
     const reader = new MessageReader(definitions);
 
-    expect(reader.readMessage(Uint8Array.from([0x02, 0x03, 0x04]))).toEqual({
+    expect(reader.readMessage(Uint8Array.from([0x02, 0x03, 0x04, 0x05]))).toEqual({
       bad_name: 2,
       ___proto__: 3,
       _constructor: 4,
+      custom_name: { value: 5 },
     });
   });
 

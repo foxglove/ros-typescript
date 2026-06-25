@@ -1,3 +1,4 @@
+import { MessageDefinition } from "@foxglove/message-definition";
 import { parseRos2idl } from "@foxglove/ros2idl-parser";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
@@ -226,6 +227,25 @@ describe("MessageReader", () => {
       expect(read).toEqual(expected);
     },
   );
+
+  it("reads untrusted field names as own data properties", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { isArray: false, isComplex: false, name: "__proto__", type: "uint8" },
+          { isArray: false, isComplex: false, name: "constructor", type: "uint8" },
+        ],
+        name: undefined,
+      },
+    ];
+    const reader = new MessageReader(definitions);
+    const read = reader.readMessage<Record<string, unknown>>(Uint8Array.from([0, 1, 0, 0, 2, 3]));
+
+    expect(Object.getPrototypeOf(read)).toBe(Object.prototype);
+    expect(Object.prototype.hasOwnProperty.call(read, "__proto__")).toBe(false);
+    expect(read["___proto__"]).toEqual(2);
+    expect(read["_constructor"]).toEqual(3);
+  });
 
   it.each([
     [

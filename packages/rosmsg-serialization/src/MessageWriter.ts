@@ -9,6 +9,7 @@
 
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
+import { sanitizeMessageDefinitionFields, sanitizeName } from "./sanitizeMessageDefinitionFields";
 import { stringLengthUtf8 } from "./stringLengthUtf8";
 
 export interface Time {
@@ -223,25 +224,28 @@ const findTypeByName = (types: MessageDefinition[], name = ""): NamedRosMsgDefin
   return { ...matches[0]!, name: foundName };
 };
 
-const friendlyName = (name: string): string => name.replace(/\//g, "_");
+const friendlyName = (name: string): string => sanitizeName(name);
+
 type WriterAndSizeCalculator = {
   writer: (message: unknown, output: Uint8Array) => Uint8Array;
   byteSizeCalculator: (message: unknown) => number;
 };
 
 function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSizeCalculator {
-  if (types.length === 0) {
+  const sanitizedTypes = sanitizeMessageDefinitionFields(types);
+
+  if (sanitizedTypes.length === 0) {
     throw new Error(`no types given`);
   }
 
-  const unnamedTypes = types.filter((type) => type.name == undefined);
+  const unnamedTypes = sanitizedTypes.filter((type) => type.name == undefined);
   if (unnamedTypes.length > 1) {
     throw new Error("multiple unnamed types");
   }
 
-  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : types[0]!;
+  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : sanitizedTypes[0]!;
 
-  const namedTypes: NamedRosMsgDefinition[] = types.filter(
+  const namedTypes: NamedRosMsgDefinition[] = sanitizedTypes.filter(
     (type) => type.name != undefined,
   ) as NamedRosMsgDefinition[];
 
@@ -256,9 +260,9 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
       }
 
       // Accesses the field we are currently writing. Pulled out for easy reuse.
-      const accessMessageField = `message["${def.name}"]`;
+      const accessMessageField = `message.${def.name}`;
       if (def.isArray ?? false) {
-        const lenField = `length_${def.name}`;
+        const lenField = sanitizeName(`length_${def.name}`);
         // set a variable pointing to the parsed fixed array length
         // or write the byte indicating the dynamic length
         if (def.arrayLength != undefined) {
@@ -272,20 +276,20 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
         lines.push(`for (var i = 0; i < ${lenField}; i++) {`);
         // if the sub type is complex we need to allocate it and parse its values
         if (def.isComplex ?? false) {
-          const defType = findTypeByName(types, def.type);
+          const defType = findTypeByName(sanitizedTypes, def.type);
           // recursively call the function for the sub-type
           lines.push(`  ${friendlyName(defType.name)}(${argName}, ${accessMessageField}[i]);`);
         } else {
           // if the subtype is not complex its a simple low-level operation
-          lines.push(`  ${argName}.${def.type}(${accessMessageField}[i]);`);
+          lines.push(`  ${argName}.${sanitizeName(def.type)}(${accessMessageField}[i]);`);
         }
         lines.push("}"); // close the for-loop
       } else if (def.isComplex ?? false) {
-        const defType = findTypeByName(types, def.type);
+        const defType = findTypeByName(sanitizedTypes, def.type);
         lines.push(`${friendlyName(defType.name)}(${argName}, ${accessMessageField});`);
       } else {
         // Call primitives directly.
-        lines.push(`${argName}.${def.type}(${accessMessageField});`);
+        lines.push(`${argName}.${sanitizeName(def.type)}(${accessMessageField});`);
       }
     });
     return lines.join("\n    ");
@@ -295,12 +299,13 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
   let calculateSizeJs = "";
 
   namedTypes.forEach((t) => {
+    const typeWriterName = friendlyName(t.name);
     writerJs += `
-  function ${friendlyName(t.name)}(writer, message) {
+  function ${typeWriterName}(writer, message) {
     ${constructorBody(t, "writer")}
   };\n`;
     calculateSizeJs += `
-  function ${friendlyName(t.name)}(offsetCalculator, message) {
+  function ${typeWriterName}(offsetCalculator, message) {
     ${constructorBody(t, "offsetCalculator")}
   };\n`;
   });

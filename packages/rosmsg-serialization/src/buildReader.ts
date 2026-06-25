@@ -1,8 +1,10 @@
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
 import { createParsers, StandardTypeReader } from ".";
-import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
+import { deserializers, fixedSizeTypes } from "./BuiltinDeserialize";
 import { sanitizeMessageDefinitionFields, sanitizeName } from "./sanitizeMessageDefinitionFields";
+
+const fixedSizeTypesByName: ReadonlyMap<string, number> = fixedSizeTypes;
 
 const builtinSizes = {
   // strings are the only builtin type that are variable size
@@ -72,7 +74,7 @@ function sizeFunction(field: MessageDefinitionField): string {
     return "";
   }
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize = fixedSizeTypesByName.get(field.type);
 
   // if the field size is not known, size will be calculated on-demand
   if (fieldSize == undefined) {
@@ -127,7 +129,7 @@ function sizePartForDefinition(className: string, field: MessageDefinitionField)
     return "";
   }
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize = fixedSizeTypesByName.get(field.type);
   const isFixedArray = field.isArray === true && field.arrayLength != undefined;
 
   if (fieldSize != undefined && (isFixedArray || field.isArray === false)) {
@@ -163,8 +165,9 @@ function getterFunction(field: MessageDefinitionField): string {
     return "";
   }
 
-  const isBuiltinReader = field.type in deserializers;
-  const isBuiltinSize = field.type in builtinSizes;
+  const fieldSize = fixedSizeTypesByName.get(field.type);
+  const isBuiltinReader = field.type === "string" || fieldSize != undefined;
+  const isBuiltinSize = field.type === "string";
 
   // function to return a read array item
   const readerFn = isBuiltinReader
@@ -173,8 +176,6 @@ function getterFunction(field: MessageDefinitionField): string {
 
   // function to return size of individual array item
   const sizeFn = isBuiltinSize ? `builtinSizes.${field.type}` : `${sanitizeName(field.type)}.size`;
-
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
 
   if (field.isArray === true) {
     const arrLen = field.arrayLength;
