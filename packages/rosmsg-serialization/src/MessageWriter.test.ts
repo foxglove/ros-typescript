@@ -85,6 +85,37 @@ describe("MessageWriter", () => {
     expect(globalWithMarker.rosmsgSerializationWriterInjected).toBeUndefined();
   });
 
+  it.each([
+    { description: "punctuation", typeName: "foo-msgs/Inner" },
+    { description: "a line terminator", typeName: "foo\u2028msgs/Inner" },
+  ])("rejects ROS type names containing $description before generating writers", ({ typeName }) => {
+    const definitions = parseMessageDefinition(`Inner inner\n===\nMSG: ${typeName}\nstring data`);
+
+    expect(() => new MessageWriter(definitions)).toThrow(
+      `'${typeName}' is not a valid ROS type name`,
+    );
+  });
+
+  it("rejects non-complex field types containing a slash before generating writers", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          {
+            name: "data",
+            type: "x/eval",
+            isArray: false,
+            isComplex: false,
+            isConstant: false,
+          },
+        ],
+      },
+    ];
+
+    expect(() => new MessageWriter(definitions)).toThrow(
+      `'x/eval' is not a valid ROS primitive type name`,
+    );
+  });
+
   describe("simple type", () => {
     const testNum = (
       type: string,

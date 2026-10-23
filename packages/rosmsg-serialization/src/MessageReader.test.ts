@@ -46,6 +46,49 @@ describe("MessageReader", () => {
     expect(globalWithMarker.rosmsgSerializationReaderInjected).toBeUndefined();
   });
 
+  it.each([
+    { description: "punctuation", typeName: "foo-msgs/Inner" },
+    { description: "a line terminator", typeName: "foo\u2028msgs/Inner" },
+  ])("rejects ROS type names containing $description before generating readers", ({ typeName }) => {
+    const definitions = parseMessageDefinition(`Inner inner\n===\nMSG: ${typeName}\nstring data`);
+
+    expect(() => new MessageReader(definitions)).toThrow(
+      `'${typeName}' is not a valid ROS type name`,
+    );
+  });
+
+  it("rejects empty type names before generating readers", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        name: "",
+        definitions: [
+          { name: "data", type: "uint8", isArray: false, isComplex: false, isConstant: false },
+        ],
+      },
+    ];
+
+    expect(() => new MessageReader(definitions)).toThrow("'' is not a valid ROS type name");
+  });
+
+  it("rejects invalid array lengths before generating readers", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          {
+            name: "data",
+            type: "uint8",
+            isArray: true,
+            arrayLength: -1,
+            isComplex: false,
+            isConstant: false,
+          },
+        ],
+      },
+    ];
+
+    expect(() => new MessageReader(definitions)).toThrow(/not a non-negative integer/);
+  });
+
   it("allows reserved words as field names", () => {
     const reader = new MessageReader(parseMessageDefinition("uint8 function"));
 
