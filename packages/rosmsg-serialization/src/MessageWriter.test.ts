@@ -61,7 +61,26 @@ function writeDoubleLE(data: Uint8Array, value: number, offset: number): void {
 }
 
 describe("MessageWriter", () => {
-  it("rejects invalid ROS field names before generating writers", () => {
+  it("does not compile message definitions into code", () => {
+    const functionSpy = jest.spyOn(globalThis, "Function");
+    const evalSpy = jest.spyOn(globalThis, "eval");
+    try {
+      const writer = new MessageWriter(
+        parseMessageDefinition("Inner[] inners\n===\nMSG: foo_msgs/Inner\nstring data"),
+      );
+      const message = { inners: [{ data: "a" }] };
+      expect(writer.writeMessage(message)).toEqual(
+        Uint8Array.from([1, 0, 0, 0, ...getStringBytes("a")]),
+      );
+      expect(functionSpy).not.toHaveBeenCalled();
+      expect(evalSpy).not.toHaveBeenCalled();
+    } finally {
+      functionSpy.mockRestore();
+      evalSpy.mockRestore();
+    }
+  });
+
+  it("treats field names as data", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationWriterInjected?: boolean;
     };
@@ -81,8 +100,39 @@ describe("MessageWriter", () => {
       },
     ];
 
-    expect(() => new MessageWriter(definitions)).toThrow(/valid ROS field name/);
+    const output = new MessageWriter(definitions).writeMessage({ [payloadName]: "value" });
+
+    expect(output).toEqual(getStringBytes("value"));
     expect(globalWithMarker.rosmsgSerializationWriterInjected).toBeUndefined();
+  });
+
+  it.each([
+    { description: "punctuation", typeName: "foo-msgs/Inner" },
+    { description: "a line terminator", typeName: "foo\u2028msgs/Inner" },
+  ])("treats type names containing $description as data", ({ typeName }) => {
+    const definitions = parseMessageDefinition(`Inner inner\n===\nMSG: ${typeName}\nuint8 data`);
+    const message = { inner: { data: 5 } };
+
+    const output = new MessageWriter(definitions).writeMessage(message);
+
+    expect(output).toEqual(Uint8Array.from([5]));
+    expect(new MessageReader(definitions).readMessage(output)).toEqual(message);
+  });
+
+  it("rejects unsupported primitive types when writing", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { name: "data", type: "x/eval", isArray: false, isComplex: false, isConstant: false },
+        ],
+      },
+    ];
+
+    const writer = new MessageWriter(definitions);
+
+    expect(() => writer.writeMessage({ data: "1" })).toThrow(
+      "Unsupported ROS 1 primitive type 'x/eval'",
+    );
   });
 
   describe("simple type", () => {

@@ -1,12 +1,29 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
-import * as prettier from "prettier";
 
 import { LazyMessageReader } from "./LazyMessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 describe("LazyReader", () => {
-  it("rejects invalid ROS field names before generating lazy readers", () => {
+  it("does not compile message definitions into code", () => {
+    const functionSpy = jest.spyOn(globalThis, "Function");
+    const evalSpy = jest.spyOn(globalThis, "eval");
+    try {
+      const reader = new LazyMessageReader<{ inners: { data: string }[] }>(
+        parseMessageDefinition("Inner[] inners\n===\nMSG: foo_msgs/Inner\nstring data"),
+      );
+      const read = reader.readMessage(Uint8Array.from([1, 0, 0, 0, 1, 0, 0, 0, 97]));
+      expect(read.inners[0]?.data).toEqual("a");
+      expect(read.toObject()).toEqual({ inners: [{ data: "a" }] });
+      expect(functionSpy).not.toHaveBeenCalled();
+      expect(evalSpy).not.toHaveBeenCalled();
+    } finally {
+      functionSpy.mockRestore();
+      evalSpy.mockRestore();
+    }
+  });
+
+  it("treats field names as data", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationLazyReaderInjected?: boolean;
     };
@@ -17,7 +34,7 @@ describe("LazyReader", () => {
         definitions: [
           {
             name: payloadName,
-            type: "string",
+            type: "uint8",
             isArray: false,
             isComplex: false,
             isConstant: false,
@@ -26,19 +43,34 @@ describe("LazyReader", () => {
       },
     ];
 
-    expect(() => new LazyMessageReader(definitions)).toThrow(/valid ROS field name/);
+    const read = new LazyMessageReader<Record<string, unknown>>(definitions).readMessage(
+      Uint8Array.from([5]),
+    );
+
+    expect(read[payloadName]).toEqual(5);
+    expect(read.toObject()).toEqual({ [payloadName]: 5 });
     expect(globalWithMarker.rosmsgSerializationLazyReaderInjected).toBeUndefined();
+  });
+
+  it.each([
+    { description: "punctuation", typeName: "foo-msgs/Inner" },
+    { description: "a line terminator", typeName: "foo\u2028msgs/Inner" },
+  ])("treats type names containing $description as data", ({ typeName }) => {
+    const reader = new LazyMessageReader<{ inner: { data: number } }>(
+      parseMessageDefinition(`Inner inner\n===\nMSG: ${typeName}\nuint8 data`),
+    );
+
+    const read = reader.readMessage(Uint8Array.from([5]));
+
+    expect(read.inner.data).toEqual(5);
+    expect(read.toObject()).toEqual({ inner: { data: 5 } });
   });
 
   it.each(messageReaderTests)(
     "should deserialize %s",
-    async (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
+    (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
       const buffer = Uint8Array.from(arr);
       const reader = new LazyMessageReader<Record<string, unknown>>(parseMessageDefinition(msgDef));
-
-      // allows for easier review of the generated parser source
-      const source = reader.source();
-      expect(await prettier.format(source, { parser: "babel" })).toMatchSnapshot(msgDef);
 
       // read aligned array
       {

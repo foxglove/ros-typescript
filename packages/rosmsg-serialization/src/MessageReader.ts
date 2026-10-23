@@ -10,7 +10,6 @@
 import { MessageDefinition } from "@foxglove/message-definition";
 
 import decodeString from "./decodeString";
-import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
 type TypedArray =
   | Int8Array
@@ -190,37 +189,87 @@ const findTypeByName = (types: readonly MessageDefinition[], name = ""): NamedMe
   return { ...matches[0]!, name: foundName };
 };
 
-const friendlyName = (name: string) => name.replace(/\//g, "_");
-
 type NamedMessageDefinition = MessageDefinition & { name: string };
 
-function toTypedArrayType(rosType: string): string | undefined {
-  switch (rosType) {
-    case "int8":
-      return "Int8Array";
-    case "uint8":
-      return "Uint8Array";
-    case "int16":
-      return "Int16Array";
-    case "uint16":
-      return "Uint16Array";
-    case "int32":
-      return "Int32Array";
-    case "uint32":
-      return "Uint32Array";
-    case "int64":
-      return "BigInt64Array";
-    case "uint64":
-      return "BigUint64Array";
-    case "float32":
-      return "Float32Array";
-    case "float64":
-      return "Float64Array";
-    default:
-      return undefined;
-  }
+type RecordConstructor = new (reader: StandardTypeReader) => unknown;
+type ValueReader = (reader: StandardTypeReader) => unknown;
+type FieldReader = {
+  name: string;
+  read: ValueReader;
+  // A plain assignment to `__proto__` would replace the record's prototype instead of creating a
+  // field, so that name is defined as an own property.
+  isProtoKey: boolean;
+};
+
+const primitiveReaders = new Map<string, ValueReader>([
+  ["json", (reader) => reader.json()],
+  ["string", (reader) => reader.string()],
+  ["bool", (reader) => reader.bool()],
+  ["int8", (reader) => reader.int8()],
+  ["uint8", (reader) => reader.uint8()],
+  ["int16", (reader) => reader.int16()],
+  ["uint16", (reader) => reader.uint16()],
+  ["int32", (reader) => reader.int32()],
+  ["uint32", (reader) => reader.uint32()],
+  ["int64", (reader) => reader.int64()],
+  ["uint64", (reader) => reader.uint64()],
+  ["float32", (reader) => reader.float32()],
+  ["float64", (reader) => reader.float64()],
+  ["time", (reader) => reader.time()],
+  ["duration", (reader) => reader.duration()],
+]);
+
+const typedArrayConstructors = new Map<string, TypedArrayConstructor>([
+  ["int8", Int8Array],
+  ["uint8", Uint8Array],
+  ["int16", Int16Array],
+  ["uint16", Uint16Array],
+  ["int32", Int32Array],
+  ["uint32", Uint32Array],
+  ["int64", BigInt64Array],
+  ["uint64", BigUint64Array],
+  ["float32", Float32Array],
+  ["float64", Float64Array],
+]);
+
+function primitiveReader(type: string): ValueReader {
+  return (
+    primitiveReaders.get(type) ??
+    (() => {
+      throw new Error(`Unsupported ROS 1 primitive type '${type}'`);
+    })
+  );
 }
 
+function createRecordClass(fields: readonly FieldReader[], freeze: boolean): RecordConstructor {
+  return class MessageRecord {
+    constructor(reader: StandardTypeReader) {
+      const record = this as unknown as Record<string, unknown>;
+      for (const field of fields) {
+        const value = field.read(reader);
+        if (field.isProtoKey) {
+          Object.defineProperty(record, field.name, {
+            value,
+            enumerable: true,
+            writable: true,
+            configurable: true,
+          });
+        } else {
+          record[field.name] = value;
+        }
+      }
+      if (freeze) {
+        Object.freeze(this);
+      }
+    }
+  };
+}
+
+/**
+ * Create a constructor for each message type that reads one message from a StandardTypeReader.
+ * The returned map holds the root type under `topLevelReaderKey` and each named type under its name.
+ * Message definitions are interpreted as data and never compiled into code.
+ */
 export const createParsers = ({
   definitions,
   options = {},
@@ -229,11 +278,10 @@ export const createParsers = ({
   definitions: readonly MessageDefinition[];
   options?: { freeze?: boolean };
   topLevelReaderKey: string;
-}): Map<string, new (reader: StandardTypeReader) => unknown> => {
+}): Map<string, RecordConstructor> => {
   if (definitions.length === 0) {
     throw new Error(`no types given`);
   }
-  validateMessageDefinitionsForCodegen(definitions);
 
   const unnamedTypes = definitions.filter((type) => !type.name);
   if (unnamedTypes.length > 1) {
@@ -247,81 +295,60 @@ export const createParsers = ({
     (type) => !!type.name,
   ) as NamedMessageDefinition[];
 
-  const constructorBody = (type: MessageDefinition | NamedMessageDefinition) => {
-    const readerLines: string[] = [];
-    type.definitions.forEach((def) => {
-      if (def.isConstant === true) {
-        return;
-      }
-      if (def.isArray === true) {
-        // detect if typed array
-        const typedArrayType = toTypedArrayType(def.type);
-        if (typedArrayType != undefined) {
-          readerLines.push(
-            `this.${def.name} = reader.typedArray(${String(def.arrayLength)}, ${typedArrayType});`,
-          );
-          return;
-        }
-
-        const lenField = `length_${def.name}`;
-        // set a variable pointing to the parsed fixed array length
-        // or read the byte indicating the dynamic length
-        readerLines.push(`var ${lenField} = ${def.arrayLength ?? "reader.uint32();"}`);
-
-        // only allocate an array if there is a length - skips empty allocations
-        const arrayName = `this.${def.name}`;
-
-        // allocate the new array to a fixed length since we know it ahead of time
-        readerLines.push(`${arrayName} = new Array(${lenField})`);
-        // start the for-loop
-        readerLines.push(`for (var i = 0; i < ${lenField}; i++) {`);
-        // if the sub type is complex we need to allocate it and parse its values
-        if (def.isComplex === true) {
-          const defType = findTypeByName(definitions, def.type);
-          // recursively call the constructor for the sub-type
-          readerLines.push(`  ${arrayName}[i] = new Record.${friendlyName(defType.name)}(reader);`);
-        } else {
-          // if the subtype is not complex its a simple low-level reader operation
-          readerLines.push(`  ${arrayName}[i] = reader.${def.type}();`);
-        }
-        readerLines.push("}"); // close the for-loop
-      } else if (def.isComplex === true) {
-        const defType = findTypeByName(definitions, def.type);
-        readerLines.push(`this.${def.name} = new Record.${friendlyName(defType.name)}(reader);`);
-      } else {
-        readerLines.push(`this.${def.name} = reader.${def.type}();`);
-      }
-    });
-    if (options.freeze === true) {
-      readerLines.push("Object.freeze(this);");
-    }
-    return readerLines.join("\n    ");
+  // Constructors are created before their fields are filled in, so complex fields can refer to
+  // types that appear later in the definition list.
+  const freeze = options.freeze === true;
+  const builtReaders = new Map<string, RecordConstructor>();
+  const typeFields: [MessageDefinition, FieldReader[]][] = [];
+  const addType = (key: string, type: MessageDefinition) => {
+    const fields: FieldReader[] = [];
+    typeFields.push([type, fields]);
+    builtReaders.set(key, createRecordClass(fields, freeze));
   };
-
-  let js = `
-  const builtReaders = new Map();
-  var Record = function (reader) {
-    ${constructorBody(unnamedType)}
-  };
-  builtReaders.set(topLevelReaderKey, Record);
-  `;
-
+  addType(topLevelReaderKey, unnamedType);
   for (const type of namedTypes) {
-    js += `
-  Record.${friendlyName(type.name)} = function(reader) {
-    ${constructorBody(type)}
-  };
-  builtReaders.set(${JSON.stringify(type.name)}, Record.${friendlyName(type.name)});
-  `;
+    addType(type.name, type);
   }
 
-  js += `return builtReaders;`;
+  const complexReader = (typeName: string): ValueReader => {
+    const RecordClass = builtReaders.get(findTypeByName(definitions, typeName).name)!;
+    return (reader) => new RecordClass(reader);
+  };
 
-  // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func, @typescript-eslint/no-unsafe-call
-  return new Function("topLevelReaderKey", js)(topLevelReaderKey) as Map<
-    string,
-    new (reader: StandardTypeReader) => unknown
-  >;
+  for (const [type, fields] of typeFields) {
+    for (const def of type.definitions) {
+      if (def.isConstant === true) {
+        continue;
+      }
+
+      let read: ValueReader;
+      if (def.isArray === true) {
+        const TypedArrayType = typedArrayConstructors.get(def.type);
+        const fixedLength = def.arrayLength;
+        if (TypedArrayType != undefined) {
+          read = (reader) => reader.typedArray(fixedLength, TypedArrayType);
+        } else {
+          const readElement =
+            def.isComplex === true ? complexReader(def.type) : primitiveReader(def.type);
+          read = (reader) => {
+            const length = fixedLength ?? reader.uint32();
+            const array = new Array<unknown>(length);
+            for (let i = 0; i < length; i++) {
+              array[i] = readElement(reader);
+            }
+            return array;
+          };
+        }
+      } else if (def.isComplex === true) {
+        read = complexReader(def.type);
+      } else {
+        read = primitiveReader(def.type);
+      }
+      fields.push({ name: def.name, read, isProtoKey: def.name === "__proto__" });
+    }
+  }
+
+  return builtReaders;
 };
 
 export class MessageReader {

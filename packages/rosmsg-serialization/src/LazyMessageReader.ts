@@ -37,6 +37,10 @@ export class LazyMessageReader<T = unknown> {
     return this.readerImpl.size(view);
   }
 
+  /**
+   * @deprecated Message definitions are interpreted rather than compiled, so there is no generated
+   * source. Always returns an empty string.
+   */
   source(): string {
     return this.readerImpl.source();
   }

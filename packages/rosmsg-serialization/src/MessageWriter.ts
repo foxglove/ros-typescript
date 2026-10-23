@@ -10,7 +10,6 @@
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
 import { stringLengthUtf8 } from "./stringLengthUtf8";
-import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
 export interface Time {
   // whole seconds
@@ -224,17 +223,54 @@ const findTypeByName = (types: MessageDefinition[], name = ""): NamedRosMsgDefin
   return { ...matches[0]!, name: foundName };
 };
 
-const friendlyName = (name: string): string => name.replace(/\//g, "_");
 type WriterAndSizeCalculator = {
   writer: (message: unknown, output: Uint8Array) => Uint8Array;
   byteSizeCalculator: (message: unknown) => number;
 };
 
+// Fields are visited the same way to write a message and to calculate its size; only the target
+// differs.
+type WriteTarget = StandardTypeWriter | StandardTypeOffsetCalculator;
+type ValueWriter = (target: WriteTarget, value: unknown) => void;
+type FieldWriter = (target: WriteTarget, message: unknown) => void;
+
+const primitiveWriters = new Map<string, ValueWriter>([
+  ["json", (target, value) => target.json(value)],
+  ["string", (target, value) => target.string(value as string)],
+  ["bool", (target, value) => target.bool(value as boolean)],
+  ["int8", (target, value) => target.int8(value as number)],
+  ["uint8", (target, value) => target.uint8(value as number)],
+  ["int16", (target, value) => target.int16(value as number)],
+  ["uint16", (target, value) => target.uint16(value as number)],
+  ["int32", (target, value) => target.int32(value as number)],
+  ["uint32", (target, value) => target.uint32(value as number)],
+  ["int64", (target, value) => target.int64(value as bigint | number)],
+  ["uint64", (target, value) => target.uint64(value as bigint | number)],
+  ["float32", (target, value) => target.float32(value as number)],
+  ["float64", (target, value) => target.float64(value as number)],
+  ["time", (target, value) => target.time(value as Time)],
+  ["duration", (target, value) => target.duration(value as Time)],
+]);
+
+function primitiveWriter(type: string): ValueWriter {
+  return (
+    primitiveWriters.get(type) ??
+    (() => {
+      throw new Error(`Unsupported ROS 1 primitive type '${type}'`);
+    })
+  );
+}
+
+function writeFields(fields: readonly FieldWriter[], target: WriteTarget, message: unknown): void {
+  for (const field of fields) {
+    field(target, message);
+  }
+}
+
 function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSizeCalculator {
   if (types.length === 0) {
     throw new Error(`no types given`);
   }
-  validateMessageDefinitionsForCodegen(types);
 
   const unnamedTypes = types.filter((type) => type.name == undefined);
   if (unnamedTypes.length > 1) {
@@ -247,102 +283,65 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
     (type) => type.name != undefined,
   ) as NamedRosMsgDefinition[];
 
-  const constructorBody = (
-    type: MessageDefinition | NamedRosMsgDefinition,
-    argName: "offsetCalculator" | "writer",
-  ): string => {
-    const lines: string[] = [];
-    type.definitions.forEach((def) => {
-      if (def.isConstant ?? false) {
-        return;
-      }
-
-      // Accesses the field we are currently writing. Pulled out for easy reuse.
-      const accessMessageField = `message["${def.name}"]`;
-      if (def.isArray ?? false) {
-        const lenField = `length_${def.name}`;
-        // set a variable pointing to the parsed fixed array length
-        // or write the byte indicating the dynamic length
-        if (def.arrayLength != undefined) {
-          lines.push(`var ${lenField} = ${def.arrayLength};`);
-        } else {
-          lines.push(`var ${lenField} = ${accessMessageField}.length;`);
-          lines.push(`${argName}.uint32(${lenField});`);
-        }
-
-        // start the for-loop
-        lines.push(`for (var i = 0; i < ${lenField}; i++) {`);
-        // if the sub type is complex we need to allocate it and parse its values
-        if (def.isComplex ?? false) {
-          const defType = findTypeByName(types, def.type);
-          // recursively call the function for the sub-type
-          lines.push(`  ${friendlyName(defType.name)}(${argName}, ${accessMessageField}[i]);`);
-        } else {
-          // if the subtype is not complex its a simple low-level operation
-          lines.push(`  ${argName}.${def.type}(${accessMessageField}[i]);`);
-        }
-        lines.push("}"); // close the for-loop
-      } else if (def.isComplex ?? false) {
-        const defType = findTypeByName(types, def.type);
-        lines.push(`${friendlyName(defType.name)}(${argName}, ${accessMessageField});`);
-      } else {
-        // Call primitives directly.
-        lines.push(`${argName}.${def.type}(${accessMessageField});`);
-      }
-    });
-    return lines.join("\n    ");
-  };
-
-  let writerJs = "";
-  let calculateSizeJs = "";
-
-  namedTypes.forEach((t) => {
-    writerJs += `
-  function ${friendlyName(t.name)}(writer, message) {
-    ${constructorBody(t, "writer")}
-  };\n`;
-    calculateSizeJs += `
-  function ${friendlyName(t.name)}(offsetCalculator, message) {
-    ${constructorBody(t, "offsetCalculator")}
-  };\n`;
-  });
-
-  writerJs += `
-  return function write(writer, message) {
-    ${constructorBody(unnamedType, "writer")}
-    return writer.data;
-  };`;
-  calculateSizeJs += `
-  return function calculateSize(offsetCalculator, message) {
-    ${constructorBody(unnamedType, "offsetCalculator")}
-    return offsetCalculator.offset;
-  };`;
-
-  let write: (writer: StandardTypeWriter, message: unknown) => Uint8Array;
-  let calculateSize: (offsetCalculator: StandardTypeOffsetCalculator, message: unknown) => number;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,no-eval
-    write = eval(`(function buildWriter() { ${writerJs} })()`);
-  } catch (e) {
-    console.error("error building writer:", writerJs);
-    throw e;
+  // Field lists are created before they are filled in, so complex fields can refer to types that
+  // appear later in the definition list.
+  const rootFields: FieldWriter[] = [];
+  const typeFields: [MessageDefinition, FieldWriter[]][] = [[unnamedType, rootFields]];
+  const fieldsByName = new Map<string, FieldWriter[]>();
+  for (const type of namedTypes) {
+    const fields: FieldWriter[] = [];
+    typeFields.push([type, fields]);
+    fieldsByName.set(type.name, fields);
   }
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,no-eval
-    calculateSize = eval(`(function buildSizeCalculator() { ${calculateSizeJs} })()`);
-  } catch (e) {
-    console.error("error building size calculator:", calculateSizeJs);
-    throw e;
+
+  for (const [type, fields] of typeFields) {
+    for (const def of type.definitions) {
+      if (def.isConstant ?? false) {
+        continue;
+      }
+
+      const name = def.name;
+      let writeValue: ValueWriter;
+      if (def.isComplex ?? false) {
+        const subFields = fieldsByName.get(findTypeByName(types, def.type).name)!;
+        writeValue = (target, value) => {
+          writeFields(subFields, target, value);
+        };
+      } else {
+        writeValue = primitiveWriter(def.type);
+      }
+
+      if (def.isArray ?? false) {
+        const fixedLength = def.arrayLength;
+        fields.push((target, message) => {
+          const array = (message as Record<string, unknown>)[name] as ArrayLike<unknown>;
+          // Fixed-length arrays have no length prefix
+          const length = fixedLength ?? array.length;
+          if (fixedLength == undefined) {
+            target.uint32(length);
+          }
+          for (let i = 0; i < length; i++) {
+            writeValue(target, array[i]);
+          }
+        });
+      } else {
+        fields.push((target, message) => {
+          writeValue(target, (message as Record<string, unknown>)[name]);
+        });
+      }
+    }
   }
 
   return {
     writer(message: unknown, data: Uint8Array): Uint8Array {
       const writer = new StandardTypeWriter(data);
-      return write(writer, message);
+      writeFields(rootFields, writer, message);
+      return writer.data;
     },
     byteSizeCalculator(message: unknown): number {
       const offsetCalculator = new StandardTypeOffsetCalculator();
-      return calculateSize(offsetCalculator, message);
+      writeFields(rootFields, offsetCalculator, message);
+      return offsetCalculator.offset;
     },
   };
 }

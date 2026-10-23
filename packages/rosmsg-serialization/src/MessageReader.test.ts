@@ -21,7 +21,25 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
-  it("rejects invalid ROS field names before generating readers", () => {
+  it("does not compile message definitions into code", () => {
+    const functionSpy = jest.spyOn(globalThis, "Function");
+    const evalSpy = jest.spyOn(globalThis, "eval");
+    try {
+      const reader = new MessageReader(
+        parseMessageDefinition("Inner[] inners\n===\nMSG: foo_msgs/Inner\nstring data"),
+      );
+      expect(reader.readMessage(Uint8Array.from([1, 0, 0, 0, ...getStringBuffer("a")]))).toEqual({
+        inners: [{ data: "a" }],
+      });
+      expect(functionSpy).not.toHaveBeenCalled();
+      expect(evalSpy).not.toHaveBeenCalled();
+    } finally {
+      functionSpy.mockRestore();
+      evalSpy.mockRestore();
+    }
+  });
+
+  it("treats field names as data", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationReaderInjected?: boolean;
     };
@@ -42,8 +60,54 @@ describe("MessageReader", () => {
       },
     ];
 
-    expect(() => new MessageReader(definitions)).toThrow(/valid ROS field name/);
+    const reader = new MessageReader(definitions);
+
+    expect(reader.readMessage(getStringBuffer("value"))).toEqual({ [payloadName]: "value" });
     expect(globalWithMarker.rosmsgSerializationReaderInjected).toBeUndefined();
+  });
+
+  it.each([
+    { description: "punctuation", typeName: "foo-msgs/Inner" },
+    { description: "a line terminator", typeName: "foo\u2028msgs/Inner" },
+  ])("treats type names containing $description as data", ({ typeName }) => {
+    const reader = new MessageReader(
+      parseMessageDefinition(`Inner inner\n===\nMSG: ${typeName}\nuint8 data`),
+    );
+
+    expect(reader.readMessage(Uint8Array.from([5]))).toEqual({ inner: { data: 5 } });
+  });
+
+  it("reads a field named __proto__ as an own property", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { name: "__proto__", type: "uint8", isArray: false, isComplex: false, isConstant: false },
+        ],
+      },
+    ];
+
+    const message = new MessageReader(definitions).readMessage<Record<string, unknown>>(
+      Uint8Array.from([7]),
+    );
+
+    expect(Object.getOwnPropertyDescriptor(message, "__proto__")?.value).toBe(7);
+    expect(Object.getPrototypeOf(message)).not.toBe(7);
+  });
+
+  it("rejects unsupported primitive types when reading", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          { name: "data", type: "x/eval", isArray: false, isComplex: false, isConstant: false },
+        ],
+      },
+    ];
+
+    const reader = new MessageReader(definitions);
+
+    expect(() => reader.readMessage(Uint8Array.from([0]))).toThrow(
+      "Unsupported ROS 1 primitive type 'x/eval'",
+    );
   });
 
   it("allows reserved words as field names", () => {
