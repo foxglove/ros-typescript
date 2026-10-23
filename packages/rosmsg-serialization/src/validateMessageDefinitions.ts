@@ -1,8 +1,8 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 
 const ROS_FIELD_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
-// Type names and field types are interpolated into generated code after replacing "/" with "_",
-// so they must reduce to a single identifier.
+// Named types and complex field types are interpolated into generated code after replacing "/"
+// with "_", so they must reduce to a single identifier.
 const ROS_TYPE_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_/]*$/;
 
 function assertValidRosFieldName(name: string): void {
@@ -40,7 +40,14 @@ export function validateMessageDefinitionsForCodegen(
       }
 
       assertValidRosFieldName(field.name);
-      assertValidRosTypeName(field.type);
+      if (field.isComplex === true) {
+        assertValidRosTypeName(field.type);
+      } else if (!ROS_FIELD_NAME_PATTERN.test(field.type)) {
+        // Generators interpolate non-complex field types verbatim, so they must be one identifier.
+        throw new Error(
+          `Invalid message definition type name: '${field.type}' is not a valid ROS type name`,
+        );
+      }
       assertValidArrayLength(field.arrayLength);
     }
   }
