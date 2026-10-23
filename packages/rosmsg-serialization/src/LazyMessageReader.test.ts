@@ -179,6 +179,26 @@ describe("LazyReader", () => {
     expect(read.custom2.toJSON()).toEqual({ first: 7 });
   });
 
+  it("reads json fields", () => {
+    const text = new TextEncoder().encode('{"a":1}');
+    const buffer = Uint8Array.from([text.length, 0, 0, 0, ...text, 9]);
+    const reader = new LazyMessageReader<{ data: unknown; after: number }>([
+      {
+        definitions: [
+          { name: "data", type: "json", isArray: false, isComplex: false },
+          { name: "after", type: "uint8", isArray: false, isComplex: false },
+        ],
+      },
+    ]);
+
+    const read = reader.readMessage(buffer);
+
+    expect(reader.size(buffer)).toEqual(buffer.length);
+    expect(read.data).toEqual({ a: 1 });
+    expect(read.after).toEqual(9);
+    expect(read.toObject()).toEqual({ data: { a: 1 }, after: 9 });
+  });
+
   it("should support field names ending in _offset", () => {
     const msgDef = `CustomType custom
     ============
