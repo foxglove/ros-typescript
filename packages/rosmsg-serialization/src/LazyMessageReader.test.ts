@@ -30,6 +30,20 @@ describe("LazyReader", () => {
     expect(globalWithMarker.rosmsgSerializationLazyReaderInjected).toBeUndefined();
   });
 
+  it.each([
+    { description: "punctuation", typeName: "foo-msgs/Inner" },
+    { description: "a line terminator", typeName: "foo\u2028msgs/Inner" },
+  ])(
+    "rejects ROS type names containing $description before generating lazy readers",
+    ({ typeName }) => {
+      const definitions = parseMessageDefinition(`Inner inner\n===\nMSG: ${typeName}\nstring data`);
+
+      expect(() => new LazyMessageReader(definitions)).toThrow(
+        `'${typeName}' is not a valid ROS type name`,
+      );
+    },
+  );
+
   it.each(messageReaderTests)(
     "should deserialize %s",
     async (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
