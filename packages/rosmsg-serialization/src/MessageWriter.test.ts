@@ -111,7 +111,9 @@ describe("MessageWriter", () => {
       },
     ];
 
-    expect(() => new MessageWriter(definitions)).toThrow(`'x/eval' is not a valid ROS type name`);
+    expect(() => new MessageWriter(definitions)).toThrow(
+      `'x/eval' is not a valid ROS primitive type name`,
+    );
   });
 
   describe("simple type", () => {

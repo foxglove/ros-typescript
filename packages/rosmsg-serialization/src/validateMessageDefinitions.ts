@@ -19,6 +19,15 @@ function assertValidRosTypeName(name: string): void {
   }
 }
 
+// Generators interpolate non-complex field types verbatim, so they must be one identifier.
+function assertValidRosPrimitiveTypeName(type: string): void {
+  if (!ROS_FIELD_NAME_PATTERN.test(type)) {
+    throw new Error(
+      `Invalid message definition type name: '${type}' is not a valid ROS primitive type name (set isComplex for message types)`,
+    );
+  }
+}
+
 function assertValidArrayLength(arrayLength: number | undefined): void {
   if (arrayLength != undefined && (!Number.isSafeInteger(arrayLength) || arrayLength < 0)) {
     throw new Error(
@@ -42,11 +51,8 @@ export function validateMessageDefinitionsForCodegen(
       assertValidRosFieldName(field.name);
       if (field.isComplex === true) {
         assertValidRosTypeName(field.type);
-      } else if (!ROS_FIELD_NAME_PATTERN.test(field.type)) {
-        // Generators interpolate non-complex field types verbatim, so they must be one identifier.
-        throw new Error(
-          `Invalid message definition type name: '${field.type}' is not a valid ROS type name`,
-        );
+      } else {
+        assertValidRosPrimitiveTypeName(field.type);
       }
       assertValidArrayLength(field.arrayLength);
     }
