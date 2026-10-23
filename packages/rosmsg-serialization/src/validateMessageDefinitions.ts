@@ -23,7 +23,7 @@ function assertValidRosTypeName(name: string): void {
 function assertValidRosPrimitiveTypeName(type: string): void {
   if (!ROS_FIELD_NAME_PATTERN.test(type)) {
     throw new Error(
-      `Invalid message definition type name: '${type}' is not a valid ROS primitive type name (set isComplex for message types)`,
+      `Invalid message definition type name: '${type}' is not a valid ROS primitive type name`,
     );
   }
 }
@@ -40,7 +40,7 @@ export function validateMessageDefinitionsForCodegen(
   definitions: readonly MessageDefinition[],
 ): void {
   for (const type of definitions) {
-    if (type.name != undefined && type.name !== "") {
+    if (type.name != undefined) {
       assertValidRosTypeName(type.name);
     }
     for (const field of type.definitions) {

@@ -57,6 +57,19 @@ describe("MessageReader", () => {
     );
   });
 
+  it("rejects empty type names before generating readers", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        name: "",
+        definitions: [
+          { name: "data", type: "uint8", isArray: false, isComplex: false, isConstant: false },
+        ],
+      },
+    ];
+
+    expect(() => new MessageReader(definitions)).toThrow("'' is not a valid ROS type name");
+  });
+
   it("rejects invalid array lengths before generating readers", () => {
     const definitions: MessageDefinition[] = [
       {
