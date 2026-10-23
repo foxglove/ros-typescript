@@ -96,6 +96,24 @@ describe("MessageWriter", () => {
     );
   });
 
+  it("rejects non-complex field types containing a slash before generating writers", () => {
+    const definitions: MessageDefinition[] = [
+      {
+        definitions: [
+          {
+            name: "data",
+            type: "x/eval",
+            isArray: false,
+            isComplex: false,
+            isConstant: false,
+          },
+        ],
+      },
+    ];
+
+    expect(() => new MessageWriter(definitions)).toThrow(`'x/eval' is not a valid ROS type name`);
+  });
+
   describe("simple type", () => {
     const testNum = (
       type: string,
