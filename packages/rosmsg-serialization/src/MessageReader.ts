@@ -241,28 +241,29 @@ function primitiveReader(type: string): ValueReader {
   );
 }
 
-function createRecordClass(fields: readonly FieldReader[], freeze: boolean): RecordConstructor {
-  return class MessageRecord {
-    constructor(reader: StandardTypeReader) {
-      const record = this as unknown as Record<string, unknown>;
-      for (const field of fields) {
-        const value = field.read(reader);
-        if (field.isProtoKey) {
-          Object.defineProperty(record, field.name, {
-            value,
-            enumerable: true,
-            writable: true,
-            configurable: true,
-          });
-        } else {
-          record[field.name] = value;
-        }
-      }
-      if (freeze) {
-        Object.freeze(this);
+function createRecordClass(
+  fields: readonly FieldReader[],
+  options: { freeze: boolean },
+): RecordConstructor {
+  function MessageRecord(this: Record<string, unknown>, reader: StandardTypeReader) {
+    for (const field of fields) {
+      const value = field.read(reader);
+      if (field.isProtoKey) {
+        Object.defineProperty(this, field.name, {
+          value,
+          enumerable: true,
+          writable: true,
+          configurable: true,
+        });
+      } else {
+        this[field.name] = value;
       }
     }
-  };
+    if (options.freeze) {
+      Object.freeze(this);
+    }
+  }
+  return MessageRecord as unknown as RecordConstructor;
 }
 
 /**
@@ -297,13 +298,13 @@ export const createParsers = ({
 
   // Constructors are created before their fields are filled in, so complex fields can refer to
   // types that appear later in the definition list.
-  const freeze = options.freeze === true;
+  const recordOptions = { freeze: options.freeze === true };
   const builtReaders = new Map<string, RecordConstructor>();
   const typeFields: [MessageDefinition, FieldReader[]][] = [];
   const addType = (key: string, type: MessageDefinition) => {
     const fields: FieldReader[] = [];
     typeFields.push([type, fields]);
-    builtReaders.set(key, createRecordClass(fields, freeze));
+    builtReaders.set(key, createRecordClass(fields, recordOptions));
   };
   addType(topLevelReaderKey, unnamedType);
   for (const type of namedTypes) {

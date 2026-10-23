@@ -9,6 +9,7 @@
 
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
+import { fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
 import { stringLengthUtf8 } from "./stringLengthUtf8";
 
 export interface Time {
@@ -37,6 +38,10 @@ class StandardTypeOffsetCalculator {
     const offset = this.offset;
     this.offset += byteCount;
     return offset;
+  }
+
+  bytes(byteCount: number): number {
+    return this._incrementAndReturn(byteCount);
   }
 
   // These are not actually used in the StandardTypeWriter, so they must be kept in sync with those implementations.
@@ -120,6 +125,13 @@ class StandardTypeWriter {
     this.data = data;
     this.view = new DataView(data.buffer, data.byteOffset, data.byteLength);
     this.offsetCalculator = new StandardTypeOffsetCalculator();
+  }
+
+  // Copy the bytes of a typed array. Typed arrays use host byte order, and this package assumes
+  // a little-endian host to match the ROS 1 wire format.
+  bytes(source: ArrayBufferView): void {
+    const offset = this.offsetCalculator.bytes(source.byteLength);
+    this.data.set(new Uint8Array(source.buffer, source.byteOffset, source.byteLength), offset);
   }
 
   json(value: unknown): void {
@@ -252,6 +264,31 @@ const primitiveWriters = new Map<string, ValueWriter>([
   ["duration", (target, value) => target.duration(value as Time)],
 ]);
 
+type TypedArray =
+  | Int8Array
+  | Uint8Array
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | BigInt64Array
+  | BigUint64Array
+  | Float32Array
+  | Float64Array;
+
+const typedArrayTypes = new Map<string, abstract new (...args: never[]) => TypedArray>([
+  ["int8", Int8Array],
+  ["uint8", Uint8Array],
+  ["int16", Int16Array],
+  ["uint16", Uint16Array],
+  ["int32", Int32Array],
+  ["uint32", Uint32Array],
+  ["int64", BigInt64Array],
+  ["uint64", BigUint64Array],
+  ["float32", Float32Array],
+  ["float64", Float64Array],
+]);
+
 function primitiveWriter(type: string): ValueWriter {
   return (
     primitiveWriters.get(type) ??
@@ -313,12 +350,28 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
 
       if (def.isArray ?? false) {
         const fixedLength = def.arrayLength;
+        const elementSize =
+          (def.isComplex ?? false) ? undefined : fixedSizeTypes.get(def.type as FixedSizeTypes);
+        const TypedArrayType = (def.isComplex ?? false) ? undefined : typedArrayTypes.get(def.type);
         fields.push((target, message) => {
           const array = (message as Record<string, unknown>)[name] as ArrayLike<unknown>;
           // Fixed-length arrays have no length prefix
           const length = fixedLength ?? array.length;
           if (fixedLength == undefined) {
             target.uint32(length);
+          }
+          if (elementSize != undefined && target instanceof StandardTypeOffsetCalculator) {
+            target.bytes(length * elementSize);
+            return;
+          }
+          if (
+            TypedArrayType != undefined &&
+            target instanceof StandardTypeWriter &&
+            array instanceof TypedArrayType &&
+            array.length >= length
+          ) {
+            target.bytes(array.subarray(0, length));
+            return;
           }
           for (let i = 0; i < length; i++) {
             writeValue(target, array[i]);

@@ -274,6 +274,34 @@ describe("MessageWriter", () => {
         const buff = new Uint8Array([0x01, 0x02, 0x03, 0x04]);
         expect(result).toEqual(buff);
       });
+
+      it.each([
+        { msgDef: "float32[] values", values: Float32Array.from([1.5, -2, 3.25]) },
+        { msgDef: "int16[3] values", values: Int16Array.from([-1, 2, -3]) },
+        { msgDef: "int64[] values", values: BigInt64Array.from([-1n, 2n ** 40n]) },
+        { msgDef: "uint32[2] values", values: Uint32Array.from([7, 8, 9]).subarray(1) },
+      ])(
+        "writes $msgDef from a typed array the same as from a plain array",
+        ({ msgDef, values }) => {
+          const writer = new MessageWriter(parseMessageDefinition(`${msgDef}\nuint8 after`));
+          const plainValues = Array.from(values as ArrayLike<number | bigint>);
+
+          const fromTyped = writer.writeMessage({ values, after: 4 });
+          const fromPlain = writer.writeMessage({ values: plainValues, after: 4 });
+
+          expect(fromTyped).toEqual(fromPlain);
+          expect(writer.calculateByteSize({ values, after: 4 })).toEqual(fromPlain.byteLength);
+        },
+      );
+
+      it("writes a fixed-length typed array shorter than the field like a plain array", () => {
+        const writer = new MessageWriter(parseMessageDefinition("float32[3] values\nuint8 after"));
+
+        const fromTyped = writer.writeMessage({ values: Float32Array.from([1, 2]), after: 4 });
+        const fromPlain = writer.writeMessage({ values: [1, 2], after: 4 });
+
+        expect(fromTyped).toEqual(fromPlain);
+      });
     });
   });
 

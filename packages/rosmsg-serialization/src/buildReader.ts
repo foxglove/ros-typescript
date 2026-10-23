@@ -140,9 +140,11 @@ function createLazyField(
     readElement = readJson;
     elementSize = builtinSizes.string;
   } else {
-    // Any other type is a message type, whether or not the field sets isComplex
-    readElement = (view, offset) => resolveClass(field.type).build(view, offset);
-    elementSize = (view, offset) => resolveClass(field.type).size(view, offset);
+    // Any other type is a message type, whether or not the field sets isComplex. It is resolved
+    // on first use because the type may appear later in the definition list.
+    let elementClass: LazyMessageClass | undefined;
+    readElement = (view, offset) => (elementClass ??= resolveClass(field.type)).build(view, offset);
+    elementSize = (view, offset) => (elementClass ??= resolveClass(field.type)).size(view, offset);
   }
 
   if (field.isArray !== true) {
@@ -281,7 +283,11 @@ export default function buildReader(
       if (TypeReader == undefined) {
         throw new Error(`No reader for type '${type.name ?? rootClassName}'`);
       }
-      const buffer = new Uint8Array(view.buffer, view.byteOffset + offset, view.byteLength - offset);
+      const buffer = new Uint8Array(
+        view.buffer,
+        view.byteOffset + offset,
+        view.byteLength - offset,
+      );
       return new TypeReader(new StandardTypeReader(buffer));
     };
 
