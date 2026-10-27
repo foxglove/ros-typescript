@@ -57,6 +57,10 @@ const messageDataFields: [string, Buffer][] = [
 class FakeHeaderFilelike {
   preamble = "#ROSBAG V2.0\n";
   headerLength?: number;
+  dataLength?: number;
+  // Reported in place of the real size, so a test can describe a large file without allocating it.
+  fileSize?: number;
+  reads: { offset: number; length: number }[] = [];
   indexPosition = 0;
   connectionCount = 0;
   chunkCount = 0;
@@ -79,15 +83,16 @@ class FakeHeaderFilelike {
     const padding = Buffer.alloc(Math.max(0, this.paddedSize - headerSize), " ");
     return Buffer.concat([
       Buffer.from(this.preamble),
-      makeRecord(fields, padding, { headerLength: this.headerLength }),
+      makeRecord(fields, padding, { headerLength: this.headerLength, dataLength: this.dataLength }),
     ]);
   }
 
   size() {
-    return this.bytes().byteLength;
+    return this.fileSize ?? this.bytes().byteLength;
   }
 
   async read(offset: number, length: number): Promise<Uint8Array> {
+    this.reads.push({ offset, length });
     const bytes = this.bytes();
     if (offset + length > bytes.byteLength) {
       throw new Error(`Attempted to read ${length} bytes at offset ${offset}`);
@@ -149,6 +154,27 @@ describe("BagReader", () => {
       const header = await reader.readHeader();
       expect(header.chunkCount).toEqual(3);
       expect(header.length).toEqual(6008);
+      expect(filelike.reads[filelike.reads.length - 1]!.length).toEqual(header.dataOffset! - 13);
+    });
+
+    it("does not read header record padding", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.chunkCount = 3;
+      filelike.dataLength = 0xffffffff;
+      filelike.fileSize = 2 ** 33;
+      const reader = new BagReader(filelike);
+      const header = await reader.readHeader();
+      expect(header.chunkCount).toEqual(3);
+      expect(Math.max(...filelike.reads.map((read) => read.length))).toBeLessThanOrEqual(4104);
+    });
+
+    it("rejects header record padding that extends past the end of the file", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.dataLength = 0xffffffff;
+      const reader = new BagReader(filelike);
+      await expect(reader.readHeader()).rejects.toThrow(
+        `Record at position 13 data too large: 4294967295.`,
+      );
     });
 
     it("does not read past the end of a file that ends after a 4096-byte header record", async () => {

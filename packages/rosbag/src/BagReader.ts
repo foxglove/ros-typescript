@@ -20,21 +20,6 @@ const LITTLE_ENDIAN = true;
 const HEADER_READAHEAD = 4104;
 const HEADER_OFFSET = 13;
 
-// Returns the length of the record at the start of buffer, or if the record is incomplete, the
-// length that would be needed to read more of the record's length prefixes or data.
-function bytesNeededForRecord(buffer: Uint8Array): number {
-  if (buffer.byteLength < 4) {
-    return 8;
-  }
-  const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-  const headerLength = view.getUint32(0, LITTLE_ENDIAN);
-  const dataOffset = 4 + headerLength + 4;
-  if (buffer.byteLength < dataOffset) {
-    return dataOffset;
-  }
-  return dataOffset + view.getUint32(4 + headerLength, LITTLE_ENDIAN);
-}
-
 // BagReader is a lower level interface for reading specific sections & chunks
 // from a rosbag file - generally it is consumed through the Bag class, but
 // can be useful to use directly for efficiently accessing raw pieces from
@@ -66,16 +51,24 @@ export default class BagReader {
       HEADER_OFFSET,
       Math.min(HEADER_READAHEAD, fileSize - HEADER_OFFSET),
     );
-    // We may need up to 2 re-reads to read the complete header record: one to ensure we
-    // reach the data length, and another to ensure we reach the end of the record's data.
-    for (let i = 0; i < 2; i++) {
-      const length = bytesNeededForRecord(buffer);
-      if (length <= buffer.byteLength || HEADER_OFFSET + length > fileSize) {
-        break;
+    // Header fields longer than the readahead need a re-read. The record's data is only padding,
+    // so it is never read.
+    if (buffer.byteLength >= 4) {
+      const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+      const dataOffset = 4 + view.getUint32(0, LITTLE_ENDIAN) + 4;
+      if (dataOffset > buffer.byteLength && HEADER_OFFSET + dataOffset <= fileSize) {
+        buffer = await this._file.read(HEADER_OFFSET, dataOffset);
       }
-      buffer = await this._file.read(HEADER_OFFSET, length);
     }
-    return this.readRecordFromBuffer(buffer, HEADER_OFFSET, BagHeader);
+    const { record, dataLength } = this.readRecordHeaderFromBuffer(
+      buffer,
+      HEADER_OFFSET,
+      BagHeader,
+    );
+    if (record.end! > fileSize) {
+      throw new Error(`Record at position ${HEADER_OFFSET} data too large: ${dataLength}.`);
+    }
+    return record;
   }
 
   // reads connection and chunk information from the bag
@@ -248,6 +241,39 @@ export default class BagReader {
     fileOffset: number,
     cls: Constructor<T> & { opcode: number },
   ): T {
+    const { record, dataOffset, dataLength } = this.readRecordHeaderFromBuffer(
+      buffer,
+      fileOffset,
+      cls,
+    );
+    if (buffer.byteLength < dataOffset + dataLength) {
+      throw new Error(`Record at position ${fileOffset} data too large: ${dataLength}.`);
+    }
+
+    // Take a data slice of the underlying array buffer so we don't hold on to the rest of the chunk
+    // when we store `data` on the record (happens in parseData)
+    //
+    // Note: using slice on the Uint8Array does not slice the underlying array buffer and can result
+    // in the `data` still having a reference to the entire underlying array buffer which we do not
+    // want.
+    const data = new Uint8Array(
+      buffer.buffer.slice(
+        buffer.byteOffset + dataOffset,
+        buffer.byteOffset + dataOffset + dataLength,
+      ),
+    );
+
+    record.parseData(data);
+
+    return record;
+  }
+
+  // Reads a record's header and data length without reading its data, which buffer need not hold.
+  private readRecordHeaderFromBuffer<T extends Record>(
+    buffer: Uint8Array,
+    fileOffset: number,
+    cls: Constructor<T> & { opcode: number },
+  ): { record: T; dataOffset: number; dataLength: number } {
     const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
 
     if (buffer.byteLength < 8) {
@@ -273,30 +299,12 @@ export default class BagReader {
     const record = new cls(fields);
 
     const dataLength = view.getUint32(4 + headerLength, LITTLE_ENDIAN);
-    if (buffer.byteLength < dataOffset + dataLength) {
-      throw new Error(`Record at position ${fileOffset} data too large: ${dataLength}.`);
-    }
-
-    // Take a data slice of the underlying array buffer so we don't hold on to the rest of the chunk
-    // when we store `data` on the record (happens in parseData)
-    //
-    // Note: using slice on the Uint8Array does not slice the underlying array buffer and can result
-    // in the `data` still having a reference to the entire underlying array buffer which we do not
-    // want.
-    const data = new Uint8Array(
-      buffer.buffer.slice(
-        buffer.byteOffset + dataOffset,
-        buffer.byteOffset + dataOffset + dataLength,
-      ),
-    );
-
-    record.parseData(data);
 
     record.offset = fileOffset;
-    record.dataOffset = record.offset + 4 + headerLength + 4;
+    record.dataOffset = record.offset + dataOffset;
     record.end = record.dataOffset + dataLength;
     record.length = record.end - record.offset;
 
-    return record;
+    return { record, dataOffset, dataLength };
   }
 }
