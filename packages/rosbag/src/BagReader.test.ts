@@ -6,75 +6,98 @@
 // You may not use this file except in compliance with the License.
 
 import BagReader from "./BagReader";
+import { BagHeader, Chunk, ChunkInfo, MessageData } from "./record";
 
-function int64Buffer(number: number) {
+function uint64Buffer(number: number) {
   const buff = Buffer.alloc(8);
-  buff.writeBigInt64LE(BigInt(number), 0);
+  buff.writeBigUInt64LE(BigInt(number), 0);
   return buff;
 }
 
-function int32Buffer(number: number) {
+function uint32Buffer(number: number) {
   const buff = Buffer.alloc(4);
-  buff.writeInt32LE(number, 0);
+  buff.writeUInt32LE(number, 0);
   return buff;
 }
 
 function makeHeaderKeyValuePairBuffer(key: string, value: Buffer) {
   const indexFieldName = Buffer.from(`${key}=`, "ascii");
   const combined = Buffer.concat([indexFieldName, value]);
-  const lengthBuffer = int32Buffer(combined.byteLength);
+  const lengthBuffer = uint32Buffer(combined.byteLength);
   return Buffer.concat([lengthBuffer, combined]);
 }
 
+function makeRecord(
+  fields: [string, Buffer][],
+  data: Buffer,
+  {
+    headerLength,
+    dataLength = data.byteLength,
+  }: { headerLength?: number; dataLength?: number } = {},
+) {
+  const header = Buffer.concat(
+    fields.map(([key, value]) => makeHeaderKeyValuePairBuffer(key, value)),
+  );
+  return Buffer.concat([
+    uint32Buffer(headerLength ?? header.byteLength),
+    header,
+    uint32Buffer(dataLength),
+    data,
+  ]);
+}
+
+const messageDataFields: [string, Buffer][] = [
+  ["op", Buffer.from([MessageData.opcode])],
+  ["conn", uint32Buffer(0)],
+  ["time", uint64Buffer(0)],
+];
+
+// A bag holding only the preamble and header record, which throws on reads past the end of the
+// file like the node FileReader.
 class FakeHeaderFilelike {
   preamble = "#ROSBAG V2.0\n";
+  headerLength?: number;
+  dataLength?: number;
+  // Reported in place of the real size, so a test can describe a large file without allocating it.
+  fileSize?: number;
+  reads: { offset: number; length: number }[] = [];
   indexPosition = 0;
   connectionCount = 0;
   chunkCount = 0;
+  extraFields: [string, Buffer][] = [];
+  // The header record's header and data are padded with spaces to this many bytes, as the ROS 1
+  // writers do. Headers longer than this get no padding.
+  paddedSize = 4096;
 
-  size() {
-    return 4096;
+  private bytes() {
+    const fields: [string, Buffer][] = [
+      ["op", Buffer.from([BagHeader.opcode])],
+      ["index_pos", uint64Buffer(this.indexPosition)],
+      ["conn_count", uint32Buffer(this.connectionCount)],
+      ["chunk_count", uint32Buffer(this.chunkCount)],
+      ...this.extraFields,
+    ];
+    const headerSize = makeRecord(fields, Buffer.alloc(0)).byteLength - 8;
+    // According to rosbag documentation,
+    // header record is padded out by filling with ASCII space (0x20).
+    const padding = Buffer.alloc(Math.max(0, this.paddedSize - headerSize), " ");
+    return Buffer.concat([
+      Buffer.from(this.preamble),
+      makeRecord(fields, padding, { headerLength: this.headerLength, dataLength: this.dataLength }),
+    ]);
   }
 
-  async read(offset: number, _: number): Promise<Buffer> {
-    if (offset === 0) {
-      return Buffer.from(this.preamble, "utf8");
+  size() {
+    return this.fileSize ?? this.bytes().byteLength;
+  }
+
+  async read(offset: number, length: number): Promise<Uint8Array> {
+    this.reads.push({ offset, length });
+    const bytes = this.bytes();
+    if (offset + length > bytes.byteLength) {
+      throw new Error(`Attempted to read ${length} bytes at offset ${offset}`);
     }
-    if (offset === 13) {
-      const resultBuffer = Buffer.alloc(4096, 0);
-
-      // build a list of key value pair buffers
-      const kvpBuffers = [
-        makeHeaderKeyValuePairBuffer("op", Buffer.from([0x03])),
-        makeHeaderKeyValuePairBuffer("index_pos", int64Buffer(this.indexPosition)),
-        makeHeaderKeyValuePairBuffer("conn_count", int32Buffer(this.connectionCount)),
-        makeHeaderKeyValuePairBuffer("chunk_count", int32Buffer(this.chunkCount)),
-      ];
-      const bagHeaderHeader = Buffer.concat(kvpBuffers);
-
-      // start at the beginning of the output buffer
-      let currentOffset = 0;
-      // write header length
-      resultBuffer.writeInt32LE(bagHeaderHeader.byteLength, currentOffset);
-      currentOffset += 4;
-
-      // copy bag header record's "header" section to the overall buffer
-      // right after the length byte
-      bagHeaderHeader.copy(resultBuffer, currentOffset);
-      currentOffset += bagHeaderHeader.byteLength;
-
-      // we're currently header_len (4) + header bytes into the buffer
-      const remainingBytes = resultBuffer.byteLength - currentOffset;
-      // write the data_len which is the remaining 4096 bytes
-      resultBuffer.writeInt32LE(remainingBytes, currentOffset);
-      currentOffset += 4;
-
-      // According to rosbag documentation,
-      // header record is padded out by filling with ASCII space (0x20).
-      resultBuffer.fill(0x20, currentOffset);
-      return resultBuffer;
-    }
-    throw new Error(`Unexpected read position: ${offset}`);
+    return bytes.subarray(offset, offset + length);
   }
 }
 
@@ -87,7 +110,7 @@ describe("BagReader", () => {
       await expect(reader.readHeader()).rejects.toThrow(new Error("Cannot identify bag format."));
     });
 
-    it("parses header correctly with small int32 values", async () => {
+    it("parses header correctly with small values", async () => {
       const filelike = new FakeHeaderFilelike();
       filelike.indexPosition = 1;
       filelike.connectionCount = 2;
@@ -100,17 +123,125 @@ describe("BagReader", () => {
       expect(header.chunkCount).toEqual(3);
     });
 
-    it("parses header correctly with large int32 values", async () => {
+    it("parses header correctly with large values", async () => {
       const filelike = new FakeHeaderFilelike();
-      // 100000, 200000, 300000 etc overflow an Int16, but fit in Int32.
-      filelike.indexPosition = 100000;
-      filelike.connectionCount = 200000;
-      filelike.chunkCount = 300000;
+      filelike.indexPosition = 2 ** 32 + 1;
+      filelike.connectionCount = 0x80000000;
+      filelike.chunkCount = 0xffffffff;
       const reader = new BagReader(filelike);
       const header = await reader.readHeader();
-      expect(header.indexPosition).toEqual(100000);
-      expect(header.connectionCount).toEqual(200000);
-      expect(header.chunkCount).toEqual(300000);
+      expect(header.indexPosition).toEqual(2 ** 32 + 1);
+      expect(header.connectionCount).toEqual(0x80000000);
+      expect(header.chunkCount).toEqual(0xffffffff);
     });
+
+    it("parses an unpadded header record longer than the readahead", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.chunkCount = 3;
+      filelike.extraFields = [["extra", Buffer.alloc(5000, "x")]];
+      const reader = new BagReader(filelike);
+      const header = await reader.readHeader();
+      expect(header.chunkCount).toEqual(3);
+      expect(header.length).toBeGreaterThan(5000);
+    });
+
+    it("parses a padded header record longer than the readahead", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.chunkCount = 3;
+      filelike.extraFields = [["extra", Buffer.alloc(5000, "x")]];
+      filelike.paddedSize = 6000;
+      const reader = new BagReader(filelike);
+      const header = await reader.readHeader();
+      expect(header.chunkCount).toEqual(3);
+      expect(header.length).toEqual(6008);
+      expect(filelike.reads[filelike.reads.length - 1]!.length).toEqual(header.dataOffset! - 13);
+    });
+
+    it("does not read header record padding", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.chunkCount = 3;
+      filelike.dataLength = 0xffffffff;
+      filelike.fileSize = 2 ** 33;
+      const reader = new BagReader(filelike);
+      const header = await reader.readHeader();
+      expect(header.chunkCount).toEqual(3);
+      expect(Math.max(...filelike.reads.map((read) => read.length))).toBeLessThanOrEqual(4104);
+    });
+
+    it("rejects header record padding that extends past the end of the file", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.dataLength = 0xffffffff;
+      const reader = new BagReader(filelike);
+      await expect(reader.readHeader()).rejects.toThrow(
+        `Record at position 13 data too large: 4294967295.`,
+      );
+    });
+
+    it("does not read past the end of a file that ends after a 4096-byte header record", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.chunkCount = 3;
+      filelike.paddedSize = 4088;
+      const reader = new BagReader(filelike);
+      const header = await reader.readHeader();
+      expect(header.chunkCount).toEqual(3);
+      expect(header.length).toEqual(4096);
+    });
+
+    it("rejects a header length larger than the read buffer", async () => {
+      const filelike = new FakeHeaderFilelike();
+      filelike.headerLength = 0xffffffff;
+      const reader = new BagReader(filelike);
+      await expect(reader.readHeader()).rejects.toThrow(
+        `Record at position 13 header too large: 4294967295.`,
+      );
+    });
+  });
+
+  describe("reading records", () => {
+    it.each([8, 0x80000000, 0xffffffff])(
+      "rejects record data length %i that exceeds the buffer",
+      (dataLength) => {
+        const record = makeRecord(messageDataFields, Buffer.from([1, 2, 3, 4]), { dataLength });
+        // Bytes after the record's view belong to someone else and must not be read as its data.
+        const backing = Uint8Array.from([...record, 0xde, 0xad, 0xbe, 0xef]);
+        const reader = new BagReader(new FakeHeaderFilelike());
+
+        expect(() =>
+          reader.readRecordFromBuffer(backing.subarray(0, record.byteLength), 0, MessageData),
+        ).toThrow(`Record at position 0 data too large: ${dataLength}.`);
+      },
+    );
+
+    it.each([0x80000000, 0xffffffff])(
+      "rejects record header length %i that exceeds the buffer",
+      (headerLength) => {
+        const record = makeRecord(messageDataFields, Buffer.from([1, 2, 3, 4]), { headerLength });
+        const reader = new BagReader(new FakeHeaderFilelike());
+
+        expect(() => reader.readRecordFromBuffer(record, 0, MessageData)).toThrow(
+          `Record at position 0 header too large: ${headerLength}.`,
+        );
+      },
+    );
+
+    it.each(["constructor", "toString", "valueOf"])(
+      "rejects compression type '%s' inherited from the decompress map",
+      async (compression) => {
+        const record = makeRecord(
+          [
+            ["op", Buffer.from([Chunk.opcode])],
+            ["compression", Buffer.from(compression)],
+            ["size", uint32Buffer(4)],
+          ],
+          Buffer.from([1, 2, 3, 4]),
+        );
+        const reader = new BagReader({ size: () => record.byteLength, read: async () => record });
+        const chunkInfo = { chunkPosition: 0, count: 0 } as ChunkInfo;
+
+        await expect(reader.readChunk(chunkInfo, {})).rejects.toThrow(
+          `Unsupported compression type ${compression}`,
+        );
+      },
+    );
   });
 });

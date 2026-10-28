@@ -15,11 +15,6 @@ function readUint32(buff: Uint8Array): number {
   return view.getUint32(0, true);
 }
 
-function readInt32(buff: Uint8Array): number {
-  const view = new DataView(buff.buffer, buff.byteOffset, buff.byteLength);
-  return view.getInt32(0, true);
-}
-
 function readBigUInt64(buff: Uint8Array): number {
   const view = new DataView(buff.buffer, buff.byteOffset, buff.byteLength);
   // Avoid using DataView.getBigUint64 for improved browser compatibility
@@ -50,8 +45,8 @@ export class BagHeader extends Record {
   constructor(fields: { [key: string]: Uint8Array }) {
     super();
     this.indexPosition = readBigUInt64(fields.index_pos!);
-    this.connectionCount = readInt32(fields.conn_count!);
-    this.chunkCount = readInt32(fields.chunk_count!);
+    this.connectionCount = readUint32(fields.conn_count!);
+    this.chunkCount = readUint32(fields.chunk_count!);
   }
 }
 

@@ -15,7 +15,9 @@ import type { Filelike, Constructor, Decompress, ChunkReadResult } from "./types
 // Use little endian to read values in dataview
 const LITTLE_ENDIAN = true;
 
-const HEADER_READAHEAD = 4096;
+// rosbag writers pad the header record's data to 4096 bytes minus the header length, so the full
+// record (including both 4-byte length prefixes) is usually 4104 bytes, although it can be longer.
+const HEADER_READAHEAD = 4104;
 const HEADER_OFFSET = 13;
 
 // BagReader is a lower level interface for reading specific sections & chunks
@@ -44,19 +46,29 @@ export default class BagReader {
   // because you need the header information to call readConnectionsAndChunkInfo
   async readHeader(): Promise<BagHeader> {
     await this.verifyBagHeader();
-    const buffer = await this._file.read(HEADER_OFFSET, HEADER_READAHEAD);
-    const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-
-    const read = buffer.length;
-    if (read < 8) {
-      throw new Error(`Record at position ${HEADER_OFFSET} is truncated.`);
+    const fileSize = this._file.size();
+    let buffer = await this._file.read(
+      HEADER_OFFSET,
+      Math.min(HEADER_READAHEAD, fileSize - HEADER_OFFSET),
+    );
+    // Header fields longer than the readahead need a re-read. The record's data is only padding,
+    // so it is never read.
+    if (buffer.byteLength >= 4) {
+      const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+      const dataOffset = 4 + view.getUint32(0, LITTLE_ENDIAN) + 4;
+      if (dataOffset > buffer.byteLength && HEADER_OFFSET + dataOffset <= fileSize) {
+        buffer = await this._file.read(HEADER_OFFSET, dataOffset);
+      }
     }
-
-    const headerLength = view.getInt32(0, LITTLE_ENDIAN);
-    if (read < headerLength + 8) {
-      throw new Error(`Record at position ${HEADER_OFFSET} header too large: ${headerLength}.`);
+    const { record, dataLength } = this.readRecordHeaderFromBuffer(
+      buffer,
+      HEADER_OFFSET,
+      BagHeader,
+    );
+    if (record.end! > fileSize) {
+      throw new Error(`Record at position ${HEADER_OFFSET} data too large: ${dataLength}.`);
     }
-    return this.readRecordFromBuffer(buffer, HEADER_OFFSET, BagHeader);
+    return record;
   }
 
   // reads connection and chunk information from the bag
@@ -177,7 +189,9 @@ export default class BagReader {
     const chunk = this.readRecordFromBuffer(buffer, chunkInfo.chunkPosition, Chunk);
     const { compression } = chunk;
     if (compression !== "none") {
-      const decompressFn = decompress[compression];
+      const decompressFn = Object.prototype.hasOwnProperty.call(decompress, compression)
+        ? decompress[compression]
+        : undefined;
       if (decompressFn == null) {
         throw new Error(`Unsupported compression type ${chunk.compression}`);
       }
@@ -227,24 +241,14 @@ export default class BagReader {
     fileOffset: number,
     cls: Constructor<T> & { opcode: number },
   ): T {
-    const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-
-    const headerLength = view.getInt32(0, LITTLE_ENDIAN);
-
-    const fields = extractFields(buffer.subarray(4, 4 + headerLength));
-    if (fields.op == undefined) {
-      throw new Error("Record is missing 'op' field.");
+    const { record, dataOffset, dataLength } = this.readRecordHeaderFromBuffer(
+      buffer,
+      fileOffset,
+      cls,
+    );
+    if (buffer.byteLength < dataOffset + dataLength) {
+      throw new Error(`Record at position ${fileOffset} data too large: ${dataLength}.`);
     }
-
-    const opView = new DataView(fields.op.buffer, fields.op.byteOffset, fields.op.byteLength);
-    const opcode = opView.getUint8(0);
-    if (opcode !== cls.opcode) {
-      throw new Error(`Expected ${cls.name} (${cls.opcode}) but found ${opcode}`);
-    }
-    const record = new cls(fields);
-
-    const dataOffset = 4 + headerLength + 4;
-    const dataLength = view.getInt32(4 + headerLength, LITTLE_ENDIAN);
 
     // Take a data slice of the underlying array buffer so we don't hold on to the rest of the chunk
     // when we store `data` on the record (happens in parseData)
@@ -261,11 +265,46 @@ export default class BagReader {
 
     record.parseData(data);
 
+    return record;
+  }
+
+  // Reads a record's header and data length without reading its data, which buffer need not hold.
+  private readRecordHeaderFromBuffer<T extends Record>(
+    buffer: Uint8Array,
+    fileOffset: number,
+    cls: Constructor<T> & { opcode: number },
+  ): { record: T; dataOffset: number; dataLength: number } {
+    const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+
+    if (buffer.byteLength < 8) {
+      throw new Error(`Record at position ${fileOffset} is truncated.`);
+    }
+
+    const headerLength = view.getUint32(0, LITTLE_ENDIAN);
+    const dataOffset = 4 + headerLength + 4;
+    if (buffer.byteLength < dataOffset) {
+      throw new Error(`Record at position ${fileOffset} header too large: ${headerLength}.`);
+    }
+
+    const fields = extractFields(buffer.subarray(4, 4 + headerLength));
+    if (fields.op == undefined) {
+      throw new Error("Record is missing 'op' field.");
+    }
+
+    const opView = new DataView(fields.op.buffer, fields.op.byteOffset, fields.op.byteLength);
+    const opcode = opView.getUint8(0);
+    if (opcode !== cls.opcode) {
+      throw new Error(`Expected ${cls.name} (${cls.opcode}) but found ${opcode}`);
+    }
+    const record = new cls(fields);
+
+    const dataLength = view.getUint32(4 + headerLength, LITTLE_ENDIAN);
+
     record.offset = fileOffset;
-    record.dataOffset = record.offset + 4 + headerLength + 4;
+    record.dataOffset = record.offset + dataOffset;
     record.end = record.dataOffset + dataLength;
     record.length = record.end - record.offset;
 
-    return record;
+    return { record, dataOffset, dataLength };
   }
 }

@@ -19,10 +19,13 @@ export function extractFields(buffer: Uint8Array): Record<string, Uint8Array> {
 
   const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
   let offset = 0;
-  const fields: Record<string, Uint8Array> = {};
+  const fields = Object.create(null) as Record<string, Uint8Array>;
 
   while (offset < buffer.length) {
-    const length = view.getInt32(offset, true);
+    if (offset + 4 > buffer.length) {
+      throw new Error("Header fields are corrupt.");
+    }
+    const length = view.getUint32(offset, true);
     offset += 4;
 
     if (offset + length > buffer.length) {
