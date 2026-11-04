@@ -6,6 +6,53 @@ import { LazyMessageReader } from "./LazyMessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 describe("LazyReader", () => {
+  it.each(["toObject", "toJSON"])("rejects conflicting field %s in nested types", (name) => {
+    const definitions: MessageDefinition[] = [
+      { definitions: [{ name: "nested", type: "test/Nested", isComplex: true }] },
+      { name: "test/Nested", definitions: [{ name, type: "uint8" }] },
+    ];
+    expect(() => new LazyMessageReader(definitions)).toThrow(
+      `ROS field '${name}' conflicts with a lazy message method`,
+    );
+  });
+
+  it.each(["toObject", "toJSON"])("rejects conflicting root field %s", (name) => {
+    expect(() => new LazyMessageReader(parseMessageDefinition(`uint8 ${name}`))).toThrow(
+      `ROS field '${name}' conflicts with a lazy message method`,
+    );
+  });
+
+  it.each(["prototype", "constructor", "class", "let", "eval", "arguments", "Type0"])(
+    "reads a complex type named %s without using it as an identifier",
+    (name) => {
+      const definitions: MessageDefinition[] = [
+        { definitions: [{ name: "value", type: name, isComplex: true }] },
+        { name, definitions: [{ name: "data", type: "uint8" }] },
+      ];
+      const reader = new LazyMessageReader<{ value: { data: number } }>(definitions);
+      expect(reader.readMessage(new Uint8Array([7])).value.data).toBe(7);
+    },
+  );
+
+  it("keeps distinct type names that have the same underscore spelling", () => {
+    const definitions = parseMessageDefinition(
+      "a/b_c first\na_b/c second\n===\nMSG: a/b_c\nuint8 x\n===\nMSG: a_b/c\nuint16 y",
+    );
+    const reader = new LazyMessageReader<{ first: { x: number }; second: { y: number } }>(
+      definitions,
+    );
+    const message = reader.readMessage(new Uint8Array([1, 2, 3]));
+    expect(message.first.x).toBe(1);
+    expect(message.second.y).toBe(770);
+  });
+
+  it("reads a field named constructor", () => {
+    const reader = new LazyMessageReader<{ constructor: number }>(
+      parseMessageDefinition("uint8 constructor"),
+    );
+    expect(reader.readMessage(new Uint8Array([7])).constructor).toBe(7);
+  });
+
   it("rejects invalid ROS field names before generating lazy readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationLazyReaderInjected?: boolean;

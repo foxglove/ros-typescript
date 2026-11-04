@@ -61,6 +61,36 @@ function writeDoubleLE(data: Uint8Array, value: number, offset: number): void {
 }
 
 describe("MessageWriter", () => {
+  it.each(["prototype", "constructor", "class", "let", "eval", "arguments", "Type0"])(
+    "writes a complex type named %s without using it as an identifier",
+    (name) => {
+      const definitions: MessageDefinition[] = [
+        { definitions: [{ name: "value", type: name, isComplex: true }] },
+        { name, definitions: [{ name: "data", type: "uint8" }] },
+      ];
+      const writer = new MessageWriter(definitions);
+      expect(writer.writeMessage({ value: { data: 7 } })).toEqual(new Uint8Array([7]));
+    },
+  );
+
+  it("writes distinct types that have the same underscore spelling", () => {
+    const definitions = parseMessageDefinition(
+      "a/b_c first\na_b/c second\n===\nMSG: a/b_c\nuint8 x\n===\nMSG: a_b/c\nuint16 y",
+    );
+    const writer = new MessageWriter(definitions);
+    const message = { first: { x: 1 }, second: { y: 770 } };
+    expect(writer.calculateByteSize(message)).toBe(3);
+    expect(writer.writeMessage(message)).toEqual(new Uint8Array([1, 2, 3]));
+  });
+
+  it.each(["toObject", "toJSON", "constructor"])("preserves the eager field %s", (name) => {
+    const definitions = parseMessageDefinition(`uint8 ${name}`);
+    const message = { [name]: 7 };
+    const bytes = new MessageWriter(definitions).writeMessage(message);
+    expect(bytes).toEqual(new Uint8Array([7]));
+    expect(new MessageReader(definitions).readMessage(bytes)).toEqual(message);
+  });
+
   it("rejects invalid ROS field names before generating writers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationWriterInjected?: boolean;

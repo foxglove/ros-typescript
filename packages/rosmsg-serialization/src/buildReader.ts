@@ -2,6 +2,7 @@ import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-def
 
 import { createParsers, StandardTypeReader } from ".";
 import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
+import { resolveMessageDefinition } from "./resolveMessageDefinition";
 import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
 const builtinSizes = {
@@ -60,10 +61,6 @@ const builtinSizes = {
   },
 };
 
-function sanitizeName(name: string): string {
-  return name.replace(/^[0-9]|[^a-zA-Z0-9_]/g, "_");
-}
-
 interface SerializedMessageReader {
   build: (view: DataView, offset?: number) => unknown;
   size: (view: DataView, offset?: number) => number;
@@ -71,18 +68,21 @@ interface SerializedMessageReader {
 }
 
 // Return a static size function for our @param field
-function sizeFunction(field: MessageDefinitionField): string {
+function sizeFunction(field: MessageDefinitionField, typeName: string): string {
   if (field.isConstant === true) {
     return "";
   }
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize =
+    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
 
   // if the field size is not known, size will be calculated on-demand
   if (fieldSize == undefined) {
     // the size function for the field to use in calculating the size on-demand
     const fieldSizeFn =
-      field.type === "string" ? "builtinSizes.string" : `${sanitizeName(field.type)}.size`;
+      field.isComplex !== true && field.type === "string"
+        ? "builtinSizes.string"
+        : `${typeName}.size`;
 
     if (field.isArray === true) {
       if (field.arrayLength != undefined) {
@@ -131,7 +131,8 @@ function sizePartForDefinition(className: string, field: MessageDefinitionField)
     return "";
   }
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize =
+    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
   const isFixedArray = field.isArray === true && field.arrayLength != undefined;
 
   if (fieldSize != undefined && (isFixedArray || field.isArray === false)) {
@@ -162,23 +163,24 @@ function sizePartForDefinition(className: string, field: MessageDefinitionField)
 }
 
 // Create a getter function for the field
-function getterFunction(field: MessageDefinitionField): string {
+function getterFunction(field: MessageDefinitionField, typeName: string): string {
   if (field.isConstant === true) {
     return "";
   }
 
-  const isBuiltinReader = field.type in deserializers;
-  const isBuiltinSize = field.type in builtinSizes;
+  const isBuiltinReader =
+    field.isComplex !== true && Object.prototype.hasOwnProperty.call(deserializers, field.type);
+  const isBuiltinSize =
+    field.isComplex !== true && Object.prototype.hasOwnProperty.call(builtinSizes, field.type);
 
   // function to return a read array item
-  const readerFn = isBuiltinReader
-    ? `deserializers.${field.type}`
-    : `${sanitizeName(field.type)}.build`;
+  const readerFn = isBuiltinReader ? `deserializers.${field.type}` : `${typeName}.build`;
 
   // function to return size of individual array item
-  const sizeFn = isBuiltinSize ? `builtinSizes.${field.type}` : `${sanitizeName(field.type)}.size`;
+  const sizeFn = isBuiltinSize ? `builtinSizes.${field.type}` : `${typeName}.size`;
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize =
+    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
 
   if (field.isArray === true) {
     const arrLen = field.arrayLength;
@@ -187,7 +189,7 @@ function getterFunction(field: MessageDefinitionField): string {
       if (fieldSize != undefined) {
         return `
           // ${field.type}[${arrLen}] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.${field.type}Array(this.#view, offset, ${arrLen});
           }`;
@@ -195,7 +197,7 @@ function getterFunction(field: MessageDefinitionField): string {
         // fixed size array of complex size items
         return `
         // ${field.type}[${arrLen}] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.fixedArray(this.#view, offset, ${arrLen}, ${readerFn}, ${sizeFn});
           }`;
@@ -205,7 +207,7 @@ function getterFunction(field: MessageDefinitionField): string {
       if (fieldSize != undefined) {
         return `
           // ${field.type}[] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             const len = this.#view.getUint32(offset, true);
             return deserializers.${field.type}Array(this.#view, offset + 4, len);
@@ -213,14 +215,14 @@ function getterFunction(field: MessageDefinitionField): string {
       } else {
         return `
           // ${field.type}[] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.dynamicArray(this.#view, offset, ${readerFn}, ${sizeFn});
           }`;
       }
     }
   } else {
-    return `get ${field.name}() {
+    return `get [${JSON.stringify(field.name)}]() {
         const offset = this.__${field.name}$offset(this.#view, this.#offset);
         return ${readerFn}(this.#view, offset);
       }`;
@@ -240,12 +242,28 @@ export default function buildReader(
   definitions: readonly MessageDefinition[],
 ): SerializedMessageReader {
   validateMessageDefinitionsForCodegen(definitions);
+  for (const type of definitions) {
+    for (const field of type.definitions) {
+      if (field.isConstant !== true && (field.name === "toObject" || field.name === "toJSON")) {
+        throw new Error(`ROS field '${field.name}' conflicts with a lazy message method`);
+      }
+    }
+  }
 
   const classes = new Array<string>();
+  const rootType = definitions.find((type) => type.name == undefined) ?? definitions[0];
+  if (rootType == undefined) {
+    throw new Error("no types given");
+  }
   const rootClassName = "__RootMsg";
+  const rootTypeName = `Type${definitions.indexOf(rootType)}`;
+  const typeNameForField = (field: MessageDefinitionField): string =>
+    field.isComplex === true && field.isConstant !== true
+      ? `Type${definitions.indexOf(resolveMessageDefinition(definitions, field.type))}`
+      : field.type;
 
   for (const type of definitions) {
-    const name = sanitizeName(type.name ?? rootClassName);
+    const name = `Type${definitions.indexOf(type)}`;
 
     const offsetFns = new Array<string>();
     const initializers = new Array<string>();
@@ -287,7 +305,7 @@ export default function buildReader(
     }
 
     const messageSrc = `class ${name} {
-        ${type.definitions.map(sizeFunction).join("\n")}
+        ${type.definitions.map((field) => sizeFunction(field, typeNameForField(field))).join("\n")}
 
         // return the total serialized size of the message in the view
         static size(view /* DataView */, initOffset = 0) {
@@ -336,7 +354,7 @@ export default function buildReader(
           return new (typeReaders.get(${JSON.stringify(type.name ?? rootClassName)}))(reader);
         }
 
-        ${type.definitions.map(getterFunction).join("\n")}
+        ${type.definitions.map((field) => getterFunction(field, typeNameForField(field))).join("\n")}
     }`;
 
     classes.push(messageSrc);
@@ -355,7 +373,7 @@ export default function buildReader(
     "builtinSizes",
     "typeReaders",
     "StandardTypeReader",
-    `${src}\nreturn __RootMsg;`,
+    `${src}\nreturn ${rootTypeName};`,
   );
   const rootMsg = wrapFn.call(
     undefined,

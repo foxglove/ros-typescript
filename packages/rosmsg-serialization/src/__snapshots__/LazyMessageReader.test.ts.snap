@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`LazyReader should deserialize CustomType custom
     ============
@@ -13,7 +13,7 @@ exports[`LazyReader should deserialize CustomType custom
   typeReaders,
   StandardTypeReader,
 ) {
-  class custom_type_CustomType {
+  class Type1 {
     static __first$size(view /* dataview */, offset) {
       return 1;
     }
@@ -34,10 +34,10 @@ exports[`LazyReader should deserialize CustomType custom
       return initOffset;
     }
 
-    // return an instance of custom_type_CustomType from the view at initOffset bytes into the view
+    // return an instance of Type1 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new custom_type_CustomType(view, offset);
+      return new Type1(view, offset);
     }
 
     #view = undefined;
@@ -76,15 +76,15 @@ exports[`LazyReader should deserialize CustomType custom
       return new (typeReaders.get("custom_type/CustomType"))(reader);
     }
 
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
   }
 
-  class __RootMsg {
+  class Type0 {
     static __custom$size(view /* dataview */, offset) {
-      return custom_type_CustomType.size(view, offset);
+      return Type1.size(view, offset);
     }
 
     // return the total serialized size of the message in the view
@@ -94,7 +94,7 @@ exports[`LazyReader should deserialize CustomType custom
 
       // custom_type/CustomType custom
       {
-        const size = __RootMsg.__custom$size(view, offset);
+        const size = Type0.__custom$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -106,10 +106,10 @@ exports[`LazyReader should deserialize CustomType custom
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -148,12 +148,12 @@ exports[`LazyReader should deserialize CustomType custom
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get custom() {
+    get ["custom"]() {
       const offset = this.__custom$offset(this.#view, this.#offset);
-      return custom_type_CustomType.build(this.#view, offset);
+      return Type1.build(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -177,7 +177,7 @@ exports[`LazyReader should deserialize CustomType[] custom
   typeReaders,
   StandardTypeReader,
 ) {
-  class custom_type_MoreCustom {
+  class Type2 {
     static __field$size(view /* dataview */, offset) {
       return 1;
     }
@@ -198,10 +198,10 @@ exports[`LazyReader should deserialize CustomType[] custom
       return initOffset;
     }
 
-    // return an instance of custom_type_MoreCustom from the view at initOffset bytes into the view
+    // return an instance of Type2 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new custom_type_MoreCustom(view, offset);
+      return new Type2(view, offset);
     }
 
     #view = undefined;
@@ -240,15 +240,15 @@ exports[`LazyReader should deserialize CustomType[] custom
       return new (typeReaders.get("custom_type/MoreCustom"))(reader);
     }
 
-    get field() {
+    get ["field"]() {
       const offset = this.__field$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
   }
 
-  class custom_type_CustomType {
+  class Type1 {
     static __another$size(view /* dataview */, offset) {
-      return custom_type_MoreCustom.size(view, offset);
+      return Type2.size(view, offset);
     }
 
     // return the total serialized size of the message in the view
@@ -258,7 +258,7 @@ exports[`LazyReader should deserialize CustomType[] custom
 
       // custom_type/MoreCustom another
       {
-        const size = custom_type_CustomType.__another$size(view, offset);
+        const size = Type1.__another$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -270,10 +270,10 @@ exports[`LazyReader should deserialize CustomType[] custom
       return initOffset;
     }
 
-    // return an instance of custom_type_CustomType from the view at initOffset bytes into the view
+    // return an instance of Type1 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new custom_type_CustomType(view, offset);
+      return new Type1(view, offset);
     }
 
     #view = undefined;
@@ -312,15 +312,15 @@ exports[`LazyReader should deserialize CustomType[] custom
       return new (typeReaders.get("custom_type/CustomType"))(reader);
     }
 
-    get another() {
+    get ["another"]() {
       const offset = this.__another$offset(this.#view, this.#offset);
-      return custom_type_MoreCustom.build(this.#view, offset);
+      return Type2.build(this.#view, offset);
     }
   }
 
-  class __RootMsg {
+  class Type0 {
     static __custom$size(view /* dataview */, offset) {
-      return builtinSizes.array(view, offset, custom_type_CustomType.size);
+      return builtinSizes.array(view, offset, Type1.size);
     }
 
     // return the total serialized size of the message in the view
@@ -330,7 +330,7 @@ exports[`LazyReader should deserialize CustomType[] custom
 
       // custom_type/CustomType custom
       {
-        const size = __RootMsg.__custom$size(view, offset);
+        const size = Type0.__custom$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -342,10 +342,10 @@ exports[`LazyReader should deserialize CustomType[] custom
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -385,17 +385,17 @@ exports[`LazyReader should deserialize CustomType[] custom
     }
 
     // custom_type/CustomType[] custom
-    get custom() {
+    get ["custom"]() {
       const offset = this.__custom$offset(this.#view, this.#offset);
       return deserializers.dynamicArray(
         this.#view,
         offset,
-        custom_type_CustomType.build,
-        custom_type_CustomType.size,
+        Type1.build,
+        Type1.size,
       );
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -413,7 +413,7 @@ exports[`LazyReader should deserialize CustomType[] custom
   typeReaders,
   StandardTypeReader,
 ) {
-  class custom_type_CustomType {
+  class Type1 {
     static __first$size(view /* dataview */, offset) {
       return 1;
     }
@@ -434,10 +434,10 @@ exports[`LazyReader should deserialize CustomType[] custom
       return initOffset;
     }
 
-    // return an instance of custom_type_CustomType from the view at initOffset bytes into the view
+    // return an instance of Type1 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new custom_type_CustomType(view, offset);
+      return new Type1(view, offset);
     }
 
     #view = undefined;
@@ -476,15 +476,15 @@ exports[`LazyReader should deserialize CustomType[] custom
       return new (typeReaders.get("custom_type/CustomType"))(reader);
     }
 
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
   }
 
-  class __RootMsg {
+  class Type0 {
     static __custom$size(view /* dataview */, offset) {
-      return builtinSizes.array(view, offset, custom_type_CustomType.size);
+      return builtinSizes.array(view, offset, Type1.size);
     }
 
     // return the total serialized size of the message in the view
@@ -494,7 +494,7 @@ exports[`LazyReader should deserialize CustomType[] custom
 
       // custom_type/CustomType custom
       {
-        const size = __RootMsg.__custom$size(view, offset);
+        const size = Type0.__custom$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -506,10 +506,10 @@ exports[`LazyReader should deserialize CustomType[] custom
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -549,17 +549,17 @@ exports[`LazyReader should deserialize CustomType[] custom
     }
 
     // custom_type/CustomType[] custom
-    get custom() {
+    get ["custom"]() {
       const offset = this.__custom$offset(this.#view, this.#offset);
       return deserializers.dynamicArray(
         this.#view,
         offset,
-        custom_type_CustomType.build,
-        custom_type_CustomType.size,
+        Type1.build,
+        Type1.size,
       );
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -577,7 +577,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
   typeReaders,
   StandardTypeReader,
 ) {
-  class custom_type_CustomType {
+  class Type1 {
     static __first$size(view /* dataview */, offset) {
       return 1;
     }
@@ -598,10 +598,10 @@ exports[`LazyReader should deserialize CustomType[3] custom
       return initOffset;
     }
 
-    // return an instance of custom_type_CustomType from the view at initOffset bytes into the view
+    // return an instance of Type1 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new custom_type_CustomType(view, offset);
+      return new Type1(view, offset);
     }
 
     #view = undefined;
@@ -640,20 +640,15 @@ exports[`LazyReader should deserialize CustomType[3] custom
       return new (typeReaders.get("custom_type/CustomType"))(reader);
     }
 
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
   }
 
-  class __RootMsg {
+  class Type0 {
     static __custom$size(view /* dataview */, offset) {
-      return builtinSizes.fixedArray(
-        view,
-        offset,
-        3,
-        custom_type_CustomType.size,
-      );
+      return builtinSizes.fixedArray(view, offset, 3, Type1.size);
     }
 
     // return the total serialized size of the message in the view
@@ -663,7 +658,7 @@ exports[`LazyReader should deserialize CustomType[3] custom
 
       // custom_type/CustomType custom
       {
-        const size = __RootMsg.__custom$size(view, offset);
+        const size = Type0.__custom$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -675,10 +670,10 @@ exports[`LazyReader should deserialize CustomType[3] custom
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -718,18 +713,18 @@ exports[`LazyReader should deserialize CustomType[3] custom
     }
 
     // custom_type/CustomType[3] custom
-    get custom() {
+    get ["custom"]() {
       const offset = this.__custom$offset(this.#view, this.#offset);
       return deserializers.fixedArray(
         this.#view,
         offset,
         3,
-        custom_type_CustomType.build,
-        custom_type_CustomType.size,
+        Type1.build,
+        Type1.size,
       );
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -741,7 +736,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __stamp$size(view /* dataview */, offset) {
       return 8;
     }
@@ -762,10 +757,10 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -804,12 +799,12 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get stamp() {
+    get ["stamp"]() {
       const offset = this.__stamp$offset(this.#view, this.#offset);
       return deserializers.duration(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -821,7 +816,7 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 2`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __stamp$size(view /* dataview */, offset) {
       return 8;
     }
@@ -842,10 +837,10 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 2`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -884,12 +879,12 @@ exports[`LazyReader should deserialize duration stamp: duration stamp 2`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get stamp() {
+    get ["stamp"]() {
       const offset = this.__stamp$offset(this.#view, this.#offset);
       return deserializers.duration(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -901,7 +896,7 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       const len = view.getUint32(offset, true);
       return 4 + len * 8;
@@ -914,7 +909,7 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
 
       // duration arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -926,10 +921,10 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -969,13 +964,13 @@ exports[`LazyReader should deserialize duration[] arr: duration[] arr 1`] = `
     }
 
     // duration[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.durationArray(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -987,7 +982,7 @@ exports[`LazyReader should deserialize duration[1] arr: duration[1] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       return 8 * 1;
     }
@@ -1008,10 +1003,10 @@ exports[`LazyReader should deserialize duration[1] arr: duration[1] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1051,12 +1046,12 @@ exports[`LazyReader should deserialize duration[1] arr: duration[1] arr 1`] = `
     }
 
     // duration[1] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       return deserializers.durationArray(this.#view, offset, 1);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1068,7 +1063,7 @@ exports[`LazyReader should deserialize float32 sample: float32 sample 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 4;
     }
@@ -1089,10 +1084,10 @@ exports[`LazyReader should deserialize float32 sample: float32 sample 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1131,12 +1126,12 @@ exports[`LazyReader should deserialize float32 sample: float32 sample 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.float32(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1148,7 +1143,7 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       const len = view.getUint32(offset, true);
       return 4 + len * 4;
@@ -1161,7 +1156,7 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
 
       // float32 arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -1173,10 +1168,10 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1216,13 +1211,13 @@ exports[`LazyReader should deserialize float32[] arr: float32[] arr 1`] = `
     }
 
     // float32[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.float32Array(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1236,7 +1231,7 @@ float32[] second 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       const len = view.getUint32(offset, true);
       return 4 + len * 4;
@@ -1254,14 +1249,14 @@ float32[] second 1`] = `
 
       // float32 first
       {
-        const size = __RootMsg.__first$size(view, offset);
+        const size = Type0.__first$size(view, offset);
         totalSize += size;
         offset += size;
       }
 
       // float32 second
       {
-        const size = __RootMsg.__second$size(view, offset);
+        const size = Type0.__second$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -1278,15 +1273,15 @@ float32[] second 1`] = `
         return this.#_second_offset_cache;
       }
       const prevOffset = this.__first$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__first$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__first$size(view, prevOffset);
       this.#_second_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1327,20 +1322,20 @@ float32[] second 1`] = `
     }
 
     // float32[] first
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.float32Array(this.#view, offset + 4, len);
     }
 
     // float32[] second
-    get second() {
+    get ["second"]() {
       const offset = this.__second$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.float32Array(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1352,7 +1347,7 @@ exports[`LazyReader should deserialize float32[2] arr: float32[2] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       return 4 * 2;
     }
@@ -1373,10 +1368,10 @@ exports[`LazyReader should deserialize float32[2] arr: float32[2] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1416,12 +1411,12 @@ exports[`LazyReader should deserialize float32[2] arr: float32[2] arr 1`] = `
     }
 
     // float32[2] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       return deserializers.float32Array(this.#view, offset, 2);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1433,7 +1428,7 @@ exports[`LazyReader should deserialize float64 sample: float64 sample 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 8;
     }
@@ -1454,10 +1449,10 @@ exports[`LazyReader should deserialize float64 sample: float64 sample 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1496,12 +1491,12 @@ exports[`LazyReader should deserialize float64 sample: float64 sample 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.float64(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1517,7 +1512,7 @@ exports[`LazyReader should deserialize int8 STATUS_ONE = 1
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __status$size(view /* dataview */, offset) {
       return 1;
     }
@@ -1538,10 +1533,10 @@ exports[`LazyReader should deserialize int8 STATUS_ONE = 1
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1580,12 +1575,12 @@ exports[`LazyReader should deserialize int8 STATUS_ONE = 1
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get status() {
+    get ["status"]() {
       const offset = this.__status$offset(this.#view, this.#offset);
       return deserializers.int8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1599,7 +1594,7 @@ int8 second 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       return 1;
     }
@@ -1633,15 +1628,15 @@ int8 second 1`] = `
         return this.#_second_offset_cache;
       }
       const prevOffset = this.__first$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__first$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__first$size(view, prevOffset);
       this.#_second_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1681,16 +1676,16 @@ int8 second 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.int8(this.#view, offset);
     }
-    get second() {
+    get ["second"]() {
       const offset = this.__second$offset(this.#view, this.#offset);
       return deserializers.int8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1702,7 +1697,7 @@ exports[`LazyReader should deserialize int8 sample # highest: int8 sample # high
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 1;
     }
@@ -1723,10 +1718,10 @@ exports[`LazyReader should deserialize int8 sample # highest: int8 sample # high
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1765,12 +1760,12 @@ exports[`LazyReader should deserialize int8 sample # highest: int8 sample # high
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1782,7 +1777,7 @@ exports[`LazyReader should deserialize int8 sample # lowest: int8 sample # lowes
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 1;
     }
@@ -1803,10 +1798,10 @@ exports[`LazyReader should deserialize int8 sample # lowest: int8 sample # lowes
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1845,12 +1840,12 @@ exports[`LazyReader should deserialize int8 sample # lowest: int8 sample # lowes
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1862,7 +1857,7 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       const len = view.getUint32(offset, true);
       return 4 + len * 1;
@@ -1875,7 +1870,7 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
 
       // int8 first
       {
-        const size = __RootMsg.__first$size(view, offset);
+        const size = Type0.__first$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -1887,10 +1882,10 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -1930,13 +1925,13 @@ exports[`LazyReader should deserialize int8[] first: int8[] first 1`] = `
     }
 
     // int8[] first
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.int8Array(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -1948,7 +1943,7 @@ exports[`LazyReader should deserialize int8[4] first: int8[4] first 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       return 1 * 4;
     }
@@ -1969,10 +1964,10 @@ exports[`LazyReader should deserialize int8[4] first: int8[4] first 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2012,12 +2007,12 @@ exports[`LazyReader should deserialize int8[4] first: int8[4] first 1`] = `
     }
 
     // int8[4] first
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.int8Array(this.#view, offset, 4);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2029,7 +2024,7 @@ exports[`LazyReader should deserialize int16 sample # highest: int16 sample # hi
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 2;
     }
@@ -2050,10 +2045,10 @@ exports[`LazyReader should deserialize int16 sample # highest: int16 sample # hi
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2092,12 +2087,12 @@ exports[`LazyReader should deserialize int16 sample # highest: int16 sample # hi
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int16(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2109,7 +2104,7 @@ exports[`LazyReader should deserialize int16 sample # lowest: int16 sample # low
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 2;
     }
@@ -2130,10 +2125,10 @@ exports[`LazyReader should deserialize int16 sample # lowest: int16 sample # low
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2172,12 +2167,12 @@ exports[`LazyReader should deserialize int16 sample # lowest: int16 sample # low
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int16(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2189,7 +2184,7 @@ exports[`LazyReader should deserialize int32 sample # highest: int32 sample # hi
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 4;
     }
@@ -2210,10 +2205,10 @@ exports[`LazyReader should deserialize int32 sample # highest: int32 sample # hi
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2252,12 +2247,12 @@ exports[`LazyReader should deserialize int32 sample # highest: int32 sample # hi
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int32(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2269,7 +2264,7 @@ exports[`LazyReader should deserialize int32 sample # lowest: int32 sample # low
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 4;
     }
@@ -2290,10 +2285,10 @@ exports[`LazyReader should deserialize int32 sample # lowest: int32 sample # low
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2332,12 +2327,12 @@ exports[`LazyReader should deserialize int32 sample # lowest: int32 sample # low
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int32(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2349,7 +2344,7 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       const len = view.getUint32(offset, true);
       return 4 + len * 4;
@@ -2362,7 +2357,7 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
 
       // int32 arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -2374,10 +2369,10 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2417,13 +2412,13 @@ exports[`LazyReader should deserialize int32[] arr: int32[] arr 1`] = `
     }
 
     // int32[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.int32Array(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2435,7 +2430,7 @@ exports[`LazyReader should deserialize int64 sample # highest: int64 sample # hi
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 8;
     }
@@ -2456,10 +2451,10 @@ exports[`LazyReader should deserialize int64 sample # highest: int64 sample # hi
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2498,12 +2493,12 @@ exports[`LazyReader should deserialize int64 sample # highest: int64 sample # hi
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int64(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2515,7 +2510,7 @@ exports[`LazyReader should deserialize int64 sample # lowest: int64 sample # low
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 8;
     }
@@ -2536,10 +2531,10 @@ exports[`LazyReader should deserialize int64 sample # lowest: int64 sample # low
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2578,12 +2573,12 @@ exports[`LazyReader should deserialize int64 sample # lowest: int64 sample # low
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.int64(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2597,7 +2592,7 @@ int8 second 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       return builtinSizes.string(view, offset);
     }
@@ -2613,7 +2608,7 @@ int8 second 1`] = `
 
       // string first
       {
-        const size = __RootMsg.__first$size(view, offset);
+        const size = Type0.__first$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -2634,15 +2629,15 @@ int8 second 1`] = `
         return this.#_second_offset_cache;
       }
       const prevOffset = this.__first$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__first$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__first$size(view, prevOffset);
       this.#_second_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2682,16 +2677,16 @@ int8 second 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.string(this.#view, offset);
     }
-    get second() {
+    get ["second"]() {
       const offset = this.__second$offset(this.#view, this.#offset);
       return deserializers.int8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2703,7 +2698,7 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return builtinSizes.string(view, offset);
     }
@@ -2715,7 +2710,7 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
 
       // string sample
       {
-        const size = __RootMsg.__sample$size(view, offset);
+        const size = Type0.__sample$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -2727,10 +2722,10 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2769,12 +2764,12 @@ exports[`LazyReader should deserialize string sample # empty string: string samp
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.string(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2786,7 +2781,7 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return builtinSizes.string(view, offset);
     }
@@ -2798,7 +2793,7 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
 
       // string sample
       {
-        const size = __RootMsg.__sample$size(view, offset);
+        const size = Type0.__sample$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -2810,10 +2805,10 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2852,12 +2847,12 @@ exports[`LazyReader should deserialize string sample # some string: string sampl
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.string(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2869,7 +2864,7 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return builtinSizes.string(view, offset);
     }
@@ -2881,7 +2876,7 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
 
       // string sample
       {
-        const size = __RootMsg.__sample$size(view, offset);
+        const size = Type0.__sample$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -2893,10 +2888,10 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -2935,12 +2930,12 @@ exports[`LazyReader should deserialize string sample: string sample 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.string(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -2952,7 +2947,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       return builtinSizes.array(view, offset, builtinSizes.string);
     }
@@ -2964,7 +2959,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
 
       // string first
       {
-        const size = __RootMsg.__first$size(view, offset);
+        const size = Type0.__first$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -2976,10 +2971,10 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3019,7 +3014,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
     }
 
     // string[] first
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.dynamicArray(
         this.#view,
@@ -3029,7 +3024,7 @@ exports[`LazyReader should deserialize string[] first: string[] first 1`] = `
       );
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3041,7 +3036,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       return builtinSizes.fixedArray(view, offset, 2, builtinSizes.string);
     }
@@ -3053,7 +3048,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
 
       // string first
       {
-        const size = __RootMsg.__first$size(view, offset);
+        const size = Type0.__first$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -3065,10 +3060,10 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3108,7 +3103,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
     }
 
     // string[2] first
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.fixedArray(
         this.#view,
@@ -3119,7 +3114,7 @@ exports[`LazyReader should deserialize string[2] first: string[2] first 1`] = `
       );
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3131,7 +3126,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __stamp$size(view /* dataview */, offset) {
       return 8;
     }
@@ -3152,10 +3147,10 @@ exports[`LazyReader should deserialize time stamp: time stamp 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3194,12 +3189,12 @@ exports[`LazyReader should deserialize time stamp: time stamp 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get stamp() {
+    get ["stamp"]() {
       const offset = this.__stamp$offset(this.#view, this.#offset);
       return deserializers.time(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3211,7 +3206,7 @@ exports[`LazyReader should deserialize time stamp: time stamp 2`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __stamp$size(view /* dataview */, offset) {
       return 8;
     }
@@ -3232,10 +3227,10 @@ exports[`LazyReader should deserialize time stamp: time stamp 2`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3274,12 +3269,12 @@ exports[`LazyReader should deserialize time stamp: time stamp 2`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get stamp() {
+    get ["stamp"]() {
       const offset = this.__stamp$offset(this.#view, this.#offset);
       return deserializers.time(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3291,7 +3286,7 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       const len = view.getUint32(offset, true);
       return 4 + len * 8;
@@ -3304,7 +3299,7 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
 
       // time arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -3316,10 +3311,10 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3359,13 +3354,13 @@ exports[`LazyReader should deserialize time[] arr: time[] arr 1`] = `
     }
 
     // time[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.timeArray(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3377,7 +3372,7 @@ exports[`LazyReader should deserialize time[1] arr: time[1] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __arr$size(view /* dataview */, offset) {
       return 8 * 1;
     }
@@ -3398,10 +3393,10 @@ exports[`LazyReader should deserialize time[1] arr: time[1] arr 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3441,12 +3436,12 @@ exports[`LazyReader should deserialize time[1] arr: time[1] arr 1`] = `
     }
 
     // time[1] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       return deserializers.timeArray(this.#view, offset, 1);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3460,7 +3455,7 @@ float32[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __blank$size(view /* dataview */, offset) {
       return 1;
     }
@@ -3481,7 +3476,7 @@ float32[] arr 1`] = `
 
       // float32 arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -3498,15 +3493,15 @@ float32[] arr 1`] = `
         return this.#_arr_offset_cache;
       }
       const prevOffset = this.__blank$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__blank$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__blank$size(view, prevOffset);
       this.#_arr_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3546,19 +3541,19 @@ float32[] arr 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get blank() {
+    get ["blank"]() {
       const offset = this.__blank$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
 
     // float32[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.float32Array(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3572,7 +3567,7 @@ float32[2] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __blank$size(view /* dataview */, offset) {
       return 1;
     }
@@ -3606,15 +3601,15 @@ float32[2] arr 1`] = `
         return this.#_arr_offset_cache;
       }
       const prevOffset = this.__blank$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__blank$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__blank$size(view, prevOffset);
       this.#_arr_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3654,18 +3649,18 @@ float32[2] arr 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get blank() {
+    get ["blank"]() {
       const offset = this.__blank$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
 
     // float32[2] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       return deserializers.float32Array(this.#view, offset, 2);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3679,7 +3674,7 @@ int32[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __blank$size(view /* dataview */, offset) {
       return 1;
     }
@@ -3700,7 +3695,7 @@ int32[] arr 1`] = `
 
       // int32 arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -3717,15 +3712,15 @@ int32[] arr 1`] = `
         return this.#_arr_offset_cache;
       }
       const prevOffset = this.__blank$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__blank$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__blank$size(view, prevOffset);
       this.#_arr_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3765,19 +3760,19 @@ int32[] arr 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get blank() {
+    get ["blank"]() {
       const offset = this.__blank$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
 
     // int32[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.int32Array(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3791,7 +3786,7 @@ time[] arr 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __blank$size(view /* dataview */, offset) {
       return 1;
     }
@@ -3812,7 +3807,7 @@ time[] arr 1`] = `
 
       // time arr
       {
-        const size = __RootMsg.__arr$size(view, offset);
+        const size = Type0.__arr$size(view, offset);
         totalSize += size;
         offset += size;
       }
@@ -3829,15 +3824,15 @@ time[] arr 1`] = `
         return this.#_arr_offset_cache;
       }
       const prevOffset = this.__blank$offset(view, initOffset);
-      const totalOffset = prevOffset + __RootMsg.__blank$size(view, prevOffset);
+      const totalOffset = prevOffset + Type0.__blank$size(view, prevOffset);
       this.#_arr_offset_cache = totalOffset;
       return totalOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3877,19 +3872,19 @@ time[] arr 1`] = `
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get blank() {
+    get ["blank"]() {
       const offset = this.__blank$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
 
     // time[] arr
-    get arr() {
+    get ["arr"]() {
       const offset = this.__arr$offset(this.#view, this.#offset);
       const len = this.#view.getUint32(offset, true);
       return deserializers.timeArray(this.#view, offset + 4, len);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3901,7 +3896,7 @@ exports[`LazyReader should deserialize uint8 sample # highest: uint8 sample # hi
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 1;
     }
@@ -3922,10 +3917,10 @@ exports[`LazyReader should deserialize uint8 sample # highest: uint8 sample # hi
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -3964,12 +3959,12 @@ exports[`LazyReader should deserialize uint8 sample # highest: uint8 sample # hi
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -3981,7 +3976,7 @@ exports[`LazyReader should deserialize uint8 sample # lowest: uint8 sample # low
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 1;
     }
@@ -4002,10 +3997,10 @@ exports[`LazyReader should deserialize uint8 sample # lowest: uint8 sample # low
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4044,12 +4039,12 @@ exports[`LazyReader should deserialize uint8 sample # lowest: uint8 sample # low
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint8(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4061,7 +4056,7 @@ exports[`LazyReader should deserialize uint8[4] first: uint8[4] first 1`] = `
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __first$size(view /* dataview */, offset) {
       return 1 * 4;
     }
@@ -4082,10 +4077,10 @@ exports[`LazyReader should deserialize uint8[4] first: uint8[4] first 1`] = `
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4125,12 +4120,12 @@ exports[`LazyReader should deserialize uint8[4] first: uint8[4] first 1`] = `
     }
 
     // uint8[4] first
-    get first() {
+    get ["first"]() {
       const offset = this.__first$offset(this.#view, this.#offset);
       return deserializers.uint8Array(this.#view, offset, 4);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4142,7 +4137,7 @@ exports[`LazyReader should deserialize uint16 sample # highest: uint16 sample # 
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 2;
     }
@@ -4163,10 +4158,10 @@ exports[`LazyReader should deserialize uint16 sample # highest: uint16 sample # 
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4205,12 +4200,12 @@ exports[`LazyReader should deserialize uint16 sample # highest: uint16 sample # 
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint16(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4222,7 +4217,7 @@ exports[`LazyReader should deserialize uint16 sample # lowest: uint16 sample # l
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 2;
     }
@@ -4243,10 +4238,10 @@ exports[`LazyReader should deserialize uint16 sample # lowest: uint16 sample # l
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4285,12 +4280,12 @@ exports[`LazyReader should deserialize uint16 sample # lowest: uint16 sample # l
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint16(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4302,7 +4297,7 @@ exports[`LazyReader should deserialize uint32 sample # highest: uint32 sample # 
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 4;
     }
@@ -4323,10 +4318,10 @@ exports[`LazyReader should deserialize uint32 sample # highest: uint32 sample # 
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4365,12 +4360,12 @@ exports[`LazyReader should deserialize uint32 sample # highest: uint32 sample # 
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint32(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4382,7 +4377,7 @@ exports[`LazyReader should deserialize uint32 sample # lowest: uint32 sample # l
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 4;
     }
@@ -4403,10 +4398,10 @@ exports[`LazyReader should deserialize uint32 sample # lowest: uint32 sample # l
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4445,12 +4440,12 @@ exports[`LazyReader should deserialize uint32 sample # lowest: uint32 sample # l
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint32(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4462,7 +4457,7 @@ exports[`LazyReader should deserialize uint64 sample # highest: uint64 sample # 
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 8;
     }
@@ -4483,10 +4478,10 @@ exports[`LazyReader should deserialize uint64 sample # highest: uint64 sample # 
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4525,12 +4520,12 @@ exports[`LazyReader should deserialize uint64 sample # highest: uint64 sample # 
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint64(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
@@ -4542,7 +4537,7 @@ exports[`LazyReader should deserialize uint64 sample # lowest: uint64 sample # l
   typeReaders,
   StandardTypeReader,
 ) {
-  class __RootMsg {
+  class Type0 {
     static __sample$size(view /* dataview */, offset) {
       return 8;
     }
@@ -4563,10 +4558,10 @@ exports[`LazyReader should deserialize uint64 sample # lowest: uint64 sample # l
       return initOffset;
     }
 
-    // return an instance of __RootMsg from the view at initOffset bytes into the view
+    // return an instance of Type0 from the view at initOffset bytes into the view
     // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
     static build(view /* DataView */, offset = 0) {
-      return new __RootMsg(view, offset);
+      return new Type0(view, offset);
     }
 
     #view = undefined;
@@ -4605,12 +4600,12 @@ exports[`LazyReader should deserialize uint64 sample # lowest: uint64 sample # l
       return new (typeReaders.get("__RootMsg"))(reader);
     }
 
-    get sample() {
+    get ["sample"]() {
       const offset = this.__sample$offset(this.#view, this.#offset);
       return deserializers.uint64(this.#view, offset);
     }
   }
-  return __RootMsg;
+  return Type0;
 }
 "
 `;
