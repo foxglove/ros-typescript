@@ -1,7 +1,7 @@
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
-import { createParsers, StandardTypeReader } from ".";
 import { deserializers, fixedSizeTypes, FixedSizeTypes } from "./BuiltinDeserialize";
+import { createParsers, StandardTypeReader } from "./MessageReader";
 import { resolveMessageDefinition } from "./resolveMessageDefinition";
 import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
@@ -67,185 +67,145 @@ interface SerializedMessageReader {
   source: () => string;
 }
 
-// Return a static size function for our @param field
-function sizeFunction(field: MessageDefinitionField, typeName: string): string {
-  if (field.isConstant === true) {
-    return "";
-  }
+type ViewReader = (view: DataView, offset: number) => unknown;
+type ViewSize = (view: DataView, offset: number) => number;
+type ArrayReader = (view: DataView, offset: number, length: number) => unknown;
+type LazyField = { name: string; read: ViewReader; size: ViewSize };
+type LazyMessageClass = {
+  build: (view: DataView, offset?: number) => unknown;
+  size: (view: DataView, offset?: number) => number;
+  prototype: object;
+  readField: (message: never, index: number) => unknown;
+};
 
+function createLazyField(
+  field: MessageDefinitionField,
+  classes: Map<MessageDefinition, LazyMessageClass>,
+  definitions: readonly MessageDefinition[],
+): LazyField {
+  const fixedLength = field.arrayLength;
   const fieldSize =
     field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
-
-  // if the field size is not known, size will be calculated on-demand
-  if (fieldSize == undefined) {
-    // the size function for the field to use in calculating the size on-demand
-    let fieldSizeFn: string;
-    if (field.isComplex === true) {
-      fieldSizeFn = `${typeName}.size`;
-    } else if (field.type === "string") {
-      fieldSizeFn = "builtinSizes.string";
-    } else {
-      fieldSizeFn = `${typeName}.size`;
+  if (fieldSize != undefined) {
+    const read = deserializers[field.type as FixedSizeTypes] as ViewReader;
+    if (field.isArray !== true) {
+      return { name: field.name, read, size: () => fieldSize };
     }
-
-    if (field.isArray === true) {
-      if (field.arrayLength != undefined) {
-        return `
-          static __${field.name}$size(view /* dataview */, offset) {
-              return builtinSizes.fixedArray(view, offset, ${field.arrayLength}, ${fieldSizeFn});
-          }`;
-      } else {
-        return `
-          static __${field.name}$size(view /* dataview */, offset) {
-              return builtinSizes.array(view, offset, ${fieldSizeFn});
-          }`;
-      }
+    const readArray = deserializers[
+      (field.type + "Array") as keyof typeof deserializers
+    ] as ArrayReader;
+    if (fixedLength != undefined) {
+      const fixedSize = fieldSize * fixedLength;
+      return {
+        name: field.name,
+        read: (view, offset) => readArray(view, offset, fixedLength),
+        size: () => fixedSize,
+      };
     }
-
-    return `
-      static __${field.name}$size(view /* dataview */, offset) {
-          return ${fieldSizeFn}(view, offset);
-      }`;
+    return {
+      name: field.name,
+      read: (view, offset) => readArray(view, offset + 4, view.getUint32(offset, true)),
+      size: (view, offset) => 4 + view.getUint32(offset, true) * fieldSize,
+    };
+  }
+  let readElement: ViewReader;
+  let sizeElement: ViewSize;
+  if (field.isComplex === true) {
+    const type = resolveMessageDefinition(definitions, field.type);
+    const messageClass = classes.get(type)!;
+    readElement = messageClass.build;
+    sizeElement = messageClass.size;
+  } else if (field.type === "string") {
+    readElement = deserializers.string;
+    sizeElement = builtinSizes.string;
   } else {
-    if (field.isArray === true) {
-      if (field.arrayLength != undefined) {
-        return `
-          static __${field.name}$size(view /* dataview */, offset) {
-            return ${fieldSize} * ${field.arrayLength};
-          }`;
-      } else {
-        return `
-          static __${field.name}$size(view /* dataview */, offset) {
-            const len = view.getUint32(offset, true);
-            return 4 + len * ${fieldSize};
-          }`;
-      }
-    }
-
-    return `
-      static __${field.name}$size(view /* dataview */, offset) {
-          return ${fieldSize};
-      }`;
+    const type = field.type;
+    const unsupported = (): never => {
+      throw new Error(`Unsupported lazy primitive type '${type}'`);
+    };
+    readElement = unsupported;
+    sizeElement = unsupported;
   }
+  if (field.isArray !== true) {
+    return { name: field.name, read: readElement, size: sizeElement };
+  }
+  if (fixedLength != undefined) {
+    return {
+      name: field.name,
+      read: (view, offset) =>
+        deserializers.fixedArray(view, offset, fixedLength, readElement, sizeElement),
+      size: (view, offset) => builtinSizes.fixedArray(view, offset, fixedLength, sizeElement),
+    };
+  }
+  return {
+    name: field.name,
+    read: (view, offset) => deserializers.dynamicArray(view, offset, readElement, sizeElement),
+    size: (view, offset) => builtinSizes.array(view, offset, sizeElement),
+  };
 }
 
-// Return the part of the static size() function for our message class for @param field
-function sizePartForDefinition(className: string, field: MessageDefinitionField): string {
-  if (field.isConstant === true) {
-    return "";
-  }
+function createLazyMessageClass(
+  fields: readonly LazyField[],
+  toObject: (view: DataView, offset: number) => unknown,
+): LazyMessageClass {
+  class LazyMessage {
+    readonly #view: DataView;
+    readonly #offset: number;
+    #fieldOffsets: (number | undefined)[] | undefined;
 
-  const fieldSize =
-    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
-  const isFixedArray = field.isArray === true && field.arrayLength != undefined;
+    constructor(view: DataView, offset = 0) {
+      this.#view = view;
+      this.#offset = offset;
+    }
 
-  if (fieldSize != undefined && (isFixedArray || field.isArray === false)) {
-    if (field.arrayLength != undefined) {
-      const totalSize = fieldSize * field.arrayLength;
-      return `
-        // ${field.type}[${field.arrayLength}] ${field.name}
-        totalSize += ${totalSize};
-        offset += ${totalSize};
-      `;
-    } else {
-      return `
-        // ${field.type} ${field.name}
-        totalSize += ${fieldSize};
-        offset += ${fieldSize};
-      `;
+    static size(view: DataView, initialOffset = 0): number {
+      let offset = initialOffset;
+      for (const field of fields) {
+        offset += field.size(view, offset);
+      }
+      return offset - initialOffset;
+    }
+
+    static build(view: DataView, offset = 0): LazyMessage {
+      return new LazyMessage(view, offset);
+    }
+
+    static readField(message: LazyMessage, index: number): unknown {
+      if (index === 0) {
+        return fields[index]!.read(message.#view, message.#offset);
+      }
+      const offsets = (message.#fieldOffsets ??= []);
+      let known = index;
+      while (known > 0 && offsets[known] == undefined) {
+        known--;
+      }
+      let offset = known === 0 ? message.#offset : offsets[known]!;
+      for (let current = known; current < index; current++) {
+        offset += fields[current]!.size(message.#view, offset);
+        offsets[current + 1] = offset;
+      }
+      return fields[index]!.read(message.#view, offset);
+    }
+
+    toJSON(): unknown {
+      return toObject(this.#view, this.#offset);
+    }
+
+    toObject(): unknown {
+      return toObject(this.#view, this.#offset);
     }
   }
-
-  return `
-    // ${field.type} ${field.name}
-    {
-        const size = ${className}.__${field.name}$size(view, offset);
-        totalSize += size;
-        offset += size;
-    }
-    `;
+  return LazyMessage;
 }
 
-// Create a getter function for the field
-function getterFunction(field: MessageDefinitionField, typeName: string): string {
-  if (field.isConstant === true) {
-    return "";
-  }
-
-  const isBuiltinReader =
-    field.isComplex !== true && Object.prototype.hasOwnProperty.call(deserializers, field.type);
-  const isBuiltinSize =
-    field.isComplex !== true && Object.prototype.hasOwnProperty.call(builtinSizes, field.type);
-
-  // function to return a read array item
-  const readerFn = isBuiltinReader ? `deserializers.${field.type}` : `${typeName}.build`;
-
-  // function to return size of individual array item
-  const sizeFn = isBuiltinSize ? `builtinSizes.${field.type}` : `${typeName}.size`;
-
-  const fieldSize =
-    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
-
-  if (field.isArray === true) {
-    const arrLen = field.arrayLength;
-    if (arrLen != undefined) {
-      // total size is known, which means we should use a builtin array reader
-      if (fieldSize != undefined) {
-        return `
-          // ${field.type}[${arrLen}] ${field.name}
-          get [${JSON.stringify(field.name)}]() {
-            const offset = this.__${field.name}$offset(this.#view, this.#offset);
-            return deserializers.${field.type}Array(this.#view, offset, ${arrLen});
-          }`;
-      } else {
-        // fixed size array of complex size items
-        return `
-        // ${field.type}[${arrLen}] ${field.name}
-          get [${JSON.stringify(field.name)}]() {
-            const offset = this.__${field.name}$offset(this.#view, this.#offset);
-            return deserializers.fixedArray(this.#view, offset, ${arrLen}, ${readerFn}, ${sizeFn});
-          }`;
-      }
-    } else {
-      // total size is known, which means we should use a builtin array reader
-      if (fieldSize != undefined) {
-        return `
-          // ${field.type}[] ${field.name}
-          get [${JSON.stringify(field.name)}]() {
-            const offset = this.__${field.name}$offset(this.#view, this.#offset);
-            const len = this.#view.getUint32(offset, true);
-            return deserializers.${field.type}Array(this.#view, offset + 4, len);
-          }`;
-      } else {
-        return `
-          // ${field.type}[] ${field.name}
-          get [${JSON.stringify(field.name)}]() {
-            const offset = this.__${field.name}$offset(this.#view, this.#offset);
-            return deserializers.dynamicArray(this.#view, offset, ${readerFn}, ${sizeFn});
-          }`;
-      }
-    }
-  } else {
-    return `get [${JSON.stringify(field.name)}]() {
-        const offset = this.__${field.name}$offset(this.#view, this.#offset);
-        return ${readerFn}(this.#view, offset);
-      }`;
-  }
-}
-
-// Create a SerializedMessageReader
-//
-// The output is a set of classes - one for each custom message type. Only the root message
-// class is exposed.
-//
-// Each LazyMessage class consists of static _size_ functions, _offset_ methods, and property _getters.
-// The size functions calculate the size of fields within arrays.
-// The offset methods calculate the start byte of the field within the entire message buffer.
-// The getter de-serializes the field from the message buffer.
 export default function buildReader(
   definitions: readonly MessageDefinition[],
 ): SerializedMessageReader {
   validateMessageDefinitionsForCodegen(definitions);
+  const rootType = definitions.find((type) => type.name == undefined) ?? definitions[0];
+  if (rootType == undefined) {
+    throw new Error("no types given");
+  }
   for (const type of definitions) {
     for (const field of type.definitions) {
       if (field.isConstant !== true && (field.name === "toObject" || field.name === "toJSON")) {
@@ -253,139 +213,63 @@ export default function buildReader(
       }
     }
   }
-
-  const classes = new Array<string>();
-  const rootType = definitions.find((type) => type.name == undefined) ?? definitions[0];
-  if (rootType == undefined) {
-    throw new Error("no types given");
-  }
-  const rootClassName = "__RootMsg";
-  const rootTypeName = `Type${definitions.indexOf(rootType)}`;
-  const typeNameForField = (field: MessageDefinitionField): string =>
-    field.isComplex === true && field.isConstant !== true
-      ? `Type${definitions.indexOf(resolveMessageDefinition(definitions, field.type))}`
-      : field.type;
-
+  const rootKey = "__RootMsg";
+  const typeReaders = createParsers({ definitions, topLevelReaderKey: rootKey });
+  const classes = new Map<MessageDefinition, LazyMessageClass>();
+  const typeFields = new Map<MessageDefinition, LazyField[]>();
   for (const type of definitions) {
-    const name = `Type${definitions.indexOf(type)}`;
-
-    const offsetFns = new Array<string>();
-    const initializers = new Array<string>();
-
-    // getters need to "look back" at the previous field to create the offset function calls
-    let prevField: MessageDefinitionField | undefined;
-
-    for (const field of type.definitions) {
-      // constants have no impact on deserialization
-      if (field.isConstant === true) {
-        continue;
-      }
-
-      // offsets tell you where the raw data of your field starts (including any length bytes)
-      // they are the size of the offset of the previous field + size of previous field
-      // the first first field is at offset 0
-      if (prevField == undefined) {
-        offsetFns.push(`
-          __${field.name}$offset(view, initOffset) {
-            return initOffset;
-          }`);
-      } else {
-        // offsets tell you where the raw data of your field starts (including any length bytes)
-        // they are the size of the offset of the previous field + size of previous field
-        initializers.push(`#_${field.name}_offset_cache = undefined;`);
-        offsetFns.push(`
-          __${field.name}$offset(view, initOffset) {
-            if (this.#_${field.name}_offset_cache) {
-              return this.#_${field.name}_offset_cache;
-            }
-            const prevOffset = this.__${prevField.name}$offset(view, initOffset);
-            const totalOffset = prevOffset + ${name}.__${prevField.name}$size(view, prevOffset);
-            this.#_${field.name}_offset_cache = totalOffset;
-            return totalOffset;
-          }`);
-      }
-
-      prevField = field;
-    }
-
-    const messageSrc = `class ${name} {
-        ${type.definitions.map((field) => sizeFunction(field, typeNameForField(field))).join("\n")}
-
-        // return the total serialized size of the message in the view
-        static size(view /* DataView */, initOffset = 0) {
-          let totalSize = 0;
-          let offset = initOffset;
-
-          ${type.definitions.map(sizePartForDefinition.bind(undefined, name)).join("\n")}
-
-          return totalSize;
-        }
-
-        ${offsetFns.join("\n")}
-
-        // return an instance of ${name} from the view at initOffset bytes into the view
-        // NOTE: the underlying view data lifetime must be at least the lifetime of the instance
-        static build(view /* DataView */, offset = 0) {
-          return new ${name}(view, offset);
-        }
-
-        #view = undefined;
-        #offset;
-        ${initializers.join("\n")}
-  
-        constructor(view, offset = 0) {
-          this.#view = view;
-          this.#offset = offset;
-        }
-
-        // return a json object of the fields
-        // This fully deserializes all fields of the message into native types
-        // Typed arrays are considered native types and remain as typed arrays
-        toJSON() {
-          const view = this.#view;
-          const buffer = new Uint8Array(view.buffer, view.byteOffset + this.#offset, view.byteLength - this.#offset);
-          const reader = new StandardTypeReader(buffer);
-          return new (typeReaders.get(${JSON.stringify(type.name ?? rootClassName)}))(reader);
-        }
-
-        // return a plain javascript object of the message
-        // This fully deserializes all fields of the message into native types
-        // Typed arrays are considered native types and remain as typed arrays
-        toObject() {
-          const view = this.#view;
-          const buffer = new Uint8Array(view.buffer, view.byteOffset + this.#offset, view.byteLength - this.#offset);
-          const reader = new StandardTypeReader(buffer);
-          return new (typeReaders.get(${JSON.stringify(type.name ?? rootClassName)}))(reader);
-        }
-
-        ${type.definitions.map((field) => getterFunction(field, typeNameForField(field))).join("\n")}
-    }`;
-
-    classes.push(messageSrc);
+    const fields: LazyField[] = [];
+    typeFields.set(type, fields);
+    const Reader = typeReaders.get(type.name ?? rootKey)!;
+    classes.set(
+      type,
+      createLazyMessageClass(fields, (view, offset) => {
+        const buffer = new Uint8Array(
+          view.buffer,
+          view.byteOffset + offset,
+          view.byteLength - offset,
+        );
+        return new Reader(new StandardTypeReader(buffer));
+      }),
+    );
   }
-
-  // Output the types in reverse order so the root message appears last
-  // Since the root message depends on custom types we want those to be defined
-  const src = classes.reverse().join("\n\n");
-
-  const typeReaders = createParsers({ definitions, topLevelReaderKey: rootClassName });
-
-  // close over our builtin deserializers and builtin size functions
-  // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func
-  const wrapFn = new Function(
-    "deserializers",
-    "builtinSizes",
-    "typeReaders",
-    "StandardTypeReader",
-    `${src}\nreturn ${rootTypeName};`,
-  );
-  const rootMsg = wrapFn.call(
-    undefined,
-    deserializers,
-    builtinSizes,
-    typeReaders,
-    StandardTypeReader,
-  ) as SerializedMessageReader;
-  rootMsg.source = () => wrapFn.toString();
-  return rootMsg;
+  for (const type of definitions) {
+    const fields = typeFields.get(type)!;
+    const messageClass = classes.get(type)!;
+    for (const field of type.definitions) {
+      if (field.isConstant !== true) {
+        fields.push(createLazyField(field, classes, definitions));
+      }
+    }
+    for (let index = 0; index < fields.length; index++) {
+      Object.defineProperty(messageClass.prototype, fields[index]!.name, {
+        configurable: true,
+        enumerable: false,
+        get(this: never) {
+          return messageClass.readField(this, index);
+        },
+      });
+    }
+  }
+  const plan = {
+    root: definitions.indexOf(rootType),
+    types: definitions.map((type) => ({
+      name: type.name,
+      fields: type.definitions
+        .filter((field) => field.isConstant !== true)
+        .map((field) => ({
+          name: field.name,
+          type:
+            field.isComplex === true
+              ? resolveMessageDefinition(definitions, field.type).name
+              : field.type,
+          isComplex: field.isComplex === true,
+          isArray: field.isArray === true,
+          arrayLength: field.arrayLength,
+        })),
+    })),
+  };
+  const source = JSON.stringify(plan, undefined, 2);
+  const root = classes.get(rootType)!;
+  return { build: root.build, size: root.size, source: () => source };
 }
