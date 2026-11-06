@@ -7,7 +7,7 @@
 //   found at http://www.apache.org/licenses/LICENSE-2.0
 //   You may not use this file except in compliance with the License.
 
-import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
+import { MessageDefinition } from "@foxglove/message-definition";
 
 import { resolveMessageDefinition } from "./resolveMessageDefinition";
 import { stringLengthUtf8 } from "./stringLengthUtf8";
@@ -19,11 +19,6 @@ export interface Time {
   // additional nanoseconds past the sec value
   nsec: number;
 }
-
-type NamedRosMsgDefinition = {
-  name: string;
-  definitions: MessageDefinitionField[];
-};
 
 // write a Time object to a DataView.
 function writeTime(time: Time, view: DataView, offset: number): void {
@@ -205,119 +200,205 @@ type WriterAndSizeCalculator = {
   byteSizeCalculator: (message: unknown) => number;
 };
 
+type WriteTarget = StandardTypeWriter | StandardTypeOffsetCalculator;
+type ValueWriter = (target: WriteTarget, value: unknown) => void;
+type FieldWriter = (target: WriteTarget, message: Record<string, unknown>) => void;
+
+const primitiveWriters = new Map<string, ValueWriter>([
+  ["json", (target, value) => target.json(value)],
+  ["string", (target, value) => target.string(value as string)],
+  ["bool", (target, value) => target.bool(value as boolean)],
+  ["int8", (target, value) => target.int8(value as number)],
+  ["uint8", (target, value) => target.uint8(value as number)],
+  ["int16", (target, value) => target.int16(value as number)],
+  ["uint16", (target, value) => target.uint16(value as number)],
+  ["int32", (target, value) => target.int32(value as number)],
+  ["uint32", (target, value) => target.uint32(value as number)],
+  ["int64", (target, value) => target.int64(value as bigint | number)],
+  ["uint64", (target, value) => target.uint64(value as bigint | number)],
+  ["float32", (target, value) => target.float32(value as number)],
+  ["float64", (target, value) => target.float64(value as number)],
+  ["time", (target, value) => target.time(value as Time)],
+  ["duration", (target, value) => target.duration(value as Time)],
+]);
+
+type ArrayWriter = (target: WriteTarget, values: ArrayLike<unknown>, length: number) => void;
+
+const primitiveArrayWriters = new Map<string, ArrayWriter>([
+  [
+    "bool",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.bool(values[index] as boolean);
+      }
+    },
+  ],
+  [
+    "int8",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.int8(values[index] as number);
+      }
+    },
+  ],
+  [
+    "uint8",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.uint8(values[index] as number);
+      }
+    },
+  ],
+  [
+    "int16",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.int16(values[index] as number);
+      }
+    },
+  ],
+  [
+    "uint16",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.uint16(values[index] as number);
+      }
+    },
+  ],
+  [
+    "int32",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.int32(values[index] as number);
+      }
+    },
+  ],
+  [
+    "uint32",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.uint32(values[index] as number);
+      }
+    },
+  ],
+  [
+    "int64",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.int64(values[index] as bigint | number);
+      }
+    },
+  ],
+  [
+    "uint64",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.uint64(values[index] as bigint | number);
+      }
+    },
+  ],
+  [
+    "float32",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.float32(values[index] as number);
+      }
+    },
+  ],
+  [
+    "float64",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.float64(values[index] as number);
+      }
+    },
+  ],
+  [
+    "time",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.time(values[index] as Time);
+      }
+    },
+  ],
+  [
+    "duration",
+    (target, values, length) => {
+      for (let index = 0; index < length; index++) {
+        target.duration(values[index] as Time);
+      }
+    },
+  ],
+]);
+
+function writeFields(fields: readonly FieldWriter[], target: WriteTarget, message: unknown): void {
+  for (const field of fields) {
+    field(target, message as Record<string, unknown>);
+  }
+}
+
 function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSizeCalculator {
   if (types.length === 0) {
-    throw new Error(`no types given`);
+    throw new Error("no types given");
   }
   validateMessageDefinitionsForCodegen(types);
-
-  const unnamedTypes = types.filter((type) => type.name == undefined);
-  if (unnamedTypes.length > 1) {
-    throw new Error("multiple unnamed types");
+  const rootType = types.find((type) => type.name == undefined) ?? types[0]!;
+  const typeFields = new Map<MessageDefinition, FieldWriter[]>();
+  for (const type of types) {
+    typeFields.set(type, []);
   }
-
-  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : types[0]!;
-
-  const namedTypes: NamedRosMsgDefinition[] = types.filter(
-    (type) => type.name != undefined,
-  ) as NamedRosMsgDefinition[];
-
-  const constructorBody = (
-    type: MessageDefinition | NamedRosMsgDefinition,
-    argName: "offsetCalculator" | "writer",
-  ): string => {
-    const lines: string[] = [];
-    type.definitions.forEach((def) => {
-      if (def.isConstant ?? false) {
-        return;
+  for (const type of types) {
+    const fields = typeFields.get(type)!;
+    for (const field of type.definitions) {
+      if (field.isConstant === true) {
+        continue;
       }
-
-      // Accesses the field we are currently writing. Pulled out for easy reuse.
-      const accessMessageField = `message["${def.name}"]`;
-      if (def.isArray ?? false) {
-        const lenField = `length_${def.name}`;
-        // set a variable pointing to the parsed fixed array length
-        // or write the byte indicating the dynamic length
-        if (def.arrayLength != undefined) {
-          lines.push(`var ${lenField} = ${def.arrayLength};`);
-        } else {
-          lines.push(`var ${lenField} = ${accessMessageField}.length;`);
-          lines.push(`${argName}.uint32(${lenField});`);
-        }
-
-        // start the for-loop
-        lines.push(`for (var i = 0; i < ${lenField}; i++) {`);
-        // if the sub type is complex we need to allocate it and parse its values
-        if (def.isComplex ?? false) {
-          const defType = resolveMessageDefinition(types, def.type);
-          // recursively call the function for the sub-type
-          lines.push(`  Type${types.indexOf(defType)}(${argName}, ${accessMessageField}[i]);`);
-        } else {
-          // if the subtype is not complex its a simple low-level operation
-          lines.push(`  ${argName}.${def.type}(${accessMessageField}[i]);`);
-        }
-        lines.push("}"); // close the for-loop
-      } else if (def.isComplex ?? false) {
-        const defType = resolveMessageDefinition(types, def.type);
-        lines.push(`Type${types.indexOf(defType)}(${argName}, ${accessMessageField});`);
+      const name = field.name;
+      let writeValue: ValueWriter;
+      if (field.isComplex === true) {
+        const subFields = typeFields.get(resolveMessageDefinition(types, field.type))!;
+        writeValue = (target, value) => {
+          writeFields(subFields, target, value);
+        };
       } else {
-        // Call primitives directly.
-        lines.push(`${argName}.${def.type}(${accessMessageField});`);
+        writeValue = primitiveWriters.get(field.type)!;
       }
-    });
-    return lines.join("\n    ");
-  };
-
-  let writerJs = "";
-  let calculateSizeJs = "";
-
-  namedTypes.forEach((t) => {
-    writerJs += `
-  function Type${types.indexOf(t)}(writer, message) {
-    ${constructorBody(t, "writer")}
-  };\n`;
-    calculateSizeJs += `
-  function Type${types.indexOf(t)}(offsetCalculator, message) {
-    ${constructorBody(t, "offsetCalculator")}
-  };\n`;
-  });
-
-  writerJs += `
-  return function write(writer, message) {
-    ${constructorBody(unnamedType, "writer")}
-    return writer.data;
-  };`;
-  calculateSizeJs += `
-  return function calculateSize(offsetCalculator, message) {
-    ${constructorBody(unnamedType, "offsetCalculator")}
-    return offsetCalculator.offset;
-  };`;
-
-  let write: (writer: StandardTypeWriter, message: unknown) => Uint8Array;
-  let calculateSize: (offsetCalculator: StandardTypeOffsetCalculator, message: unknown) => number;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,no-eval
-    write = eval(`(function buildWriter() { ${writerJs} })()`);
-  } catch (e) {
-    console.error("error building writer:", writerJs);
-    throw e;
+      if (field.isArray === true) {
+        const fixedLength = field.arrayLength;
+        const writeArray =
+          field.isComplex === true ? undefined : primitiveArrayWriters.get(field.type);
+        fields.push((target, message) => {
+          const values = message[name] as ArrayLike<unknown>;
+          const length = fixedLength ?? values.length;
+          if (fixedLength == undefined) {
+            target.uint32(length);
+          }
+          if (writeArray != undefined) {
+            writeArray(target, values, length);
+          } else {
+            for (let index = 0; index < length; index++) {
+              writeValue(target, values[index]);
+            }
+          }
+        });
+      } else {
+        fields.push((target, message) => {
+          writeValue(target, message[name]);
+        });
+      }
+    }
   }
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,no-eval
-    calculateSize = eval(`(function buildSizeCalculator() { ${calculateSizeJs} })()`);
-  } catch (e) {
-    console.error("error building size calculator:", calculateSizeJs);
-    throw e;
-  }
-
+  const rootFields = typeFields.get(rootType)!;
   return {
     writer(message: unknown, data: Uint8Array): Uint8Array {
       const writer = new StandardTypeWriter(data);
-      return write(writer, message);
+      writeFields(rootFields, writer, message);
+      return writer.data;
     },
     byteSizeCalculator(message: unknown): number {
-      const offsetCalculator = new StandardTypeOffsetCalculator();
-      return calculateSize(offsetCalculator, message);
+      const calculator = new StandardTypeOffsetCalculator();
+      writeFields(rootFields, calculator, message);
+      return calculator.offset;
     },
   };
 }

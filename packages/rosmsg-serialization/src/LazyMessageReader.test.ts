@@ -1,11 +1,67 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
-import * as prettier from "prettier";
 
 import { LazyMessageReader } from "./LazyMessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 describe("LazyReader", () => {
+  it("constructs and converts nested lazy messages with runtime code generation disabled", () => {
+    const definitions = parseMessageDefinition(
+      "test/Value[] values\n===\nMSG: test/Value\nuint8 data",
+    );
+    const functionSpy = jest.spyOn(globalThis, "Function").mockImplementation(() => {
+      throw new Error("Runtime code generation is disabled");
+    });
+    const evalSpy = jest.spyOn(globalThis, "eval").mockImplementation(() => {
+      throw new Error("Runtime code generation is disabled");
+    });
+    try {
+      const reader = new LazyMessageReader<{ values: { data: number }[] }>(definitions);
+      const data = new Uint8Array([2, 0, 0, 0, 7, 9]);
+      const message = reader.readMessage(data);
+      expect(message.values[1]?.data).toBe(9);
+      expect(reader.size(data)).toBe(6);
+      expect(message.toObject()).toEqual({ values: [{ data: 7 }, { data: 9 }] });
+      expect(JSON.parse(JSON.stringify(message))).toEqual(message.toObject());
+      expect(JSON.parse(reader.source())).toHaveProperty("root", 0);
+    } finally {
+      functionSpy.mockRestore();
+      evalSpy.mockRestore();
+    }
+  });
+
+  it("returns a deterministic schema plan with resolved message references", () => {
+    const definitions = parseMessageDefinition("Value[2] values\n===\nMSG: test/Value\nuint8 data");
+    const reader = new LazyMessageReader(definitions);
+    expect(JSON.parse(reader.source())).toEqual({
+      root: 0,
+      types: [
+        {
+          fields: [
+            { name: "values", type: "test/Value", isComplex: true, isArray: true, arrayLength: 2 },
+          ],
+        },
+        {
+          name: "test/Value",
+          fields: [{ name: "data", type: "uint8", isComplex: false, isArray: false }],
+        },
+      ],
+    });
+    expect(reader.source()).toBe(new LazyMessageReader(definitions).source());
+    expect(reader.source()).not.toBe(
+      new LazyMessageReader(parseMessageDefinition("uint8 other")).source(),
+    );
+  });
+
+  it("preserves eager conversion of json fields without adding lazy json support", () => {
+    const definitions: MessageDefinition[] = [{ definitions: [{ name: "value", type: "json" }] }];
+    const reader = new LazyMessageReader<{ value: unknown }>(definitions);
+    const data = new Uint8Array([1, 0, 0, 0, 55]);
+    const message = reader.readMessage(data);
+    expect(message.toObject()).toEqual({ value: 7 });
+    expect(() => message.value).toThrow("Unsupported lazy primitive type 'json'");
+  });
+
   it.each(["toObject", "toJSON"])("rejects conflicting field %s in nested types", (name) => {
     const definitions: MessageDefinition[] = [
       { definitions: [{ name: "nested", type: "test/Nested", isComplex: true }] },
@@ -93,13 +149,11 @@ describe("LazyReader", () => {
 
   it.each(messageReaderTests)(
     "should deserialize %s",
-    async (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
+    (msgDef: string, arr: Iterable<number>, expected: Record<string, unknown>) => {
       const buffer = Uint8Array.from(arr);
       const reader = new LazyMessageReader<Record<string, unknown>>(parseMessageDefinition(msgDef));
 
-      // allows for easier review of the generated parser source
-      const source = reader.source();
-      expect(await prettier.format(source, { parser: "babel" })).toMatchSnapshot(msgDef);
+      expect(reader.source()).toMatchSnapshot(msgDef);
 
       // read aligned array
       {
