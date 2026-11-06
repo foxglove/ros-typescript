@@ -79,10 +79,14 @@ function sizeFunction(field: MessageDefinitionField, typeName: string): string {
   // if the field size is not known, size will be calculated on-demand
   if (fieldSize == undefined) {
     // the size function for the field to use in calculating the size on-demand
-    const fieldSizeFn =
-      field.isComplex !== true && field.type === "string"
-        ? "builtinSizes.string"
-        : `${typeName}.size`;
+    let fieldSizeFn: string;
+    if (field.isComplex === true) {
+      fieldSizeFn = `${typeName}.size`;
+    } else if (field.type === "string") {
+      fieldSizeFn = "builtinSizes.string";
+    } else {
+      fieldSizeFn = `${typeName}.size`;
+    }
 
     if (field.isArray === true) {
       if (field.arrayLength != undefined) {
