@@ -47,6 +47,11 @@ describe("MessageReader", () => {
     expect(message.second.y).toBe(770);
   });
 
+  it("reads a field named constructor", () => {
+    const reader = new MessageReader(parseMessageDefinition("uint8 constructor"));
+    expect(reader.readMessage<{ constructor: number }>(new Uint8Array([7])).constructor).toBe(7);
+  });
+
   it("rejects invalid ROS field names before generating readers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationReaderInjected?: boolean;

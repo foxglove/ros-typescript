@@ -73,12 +73,20 @@ function sizeFunction(field: MessageDefinitionField, typeName: string): string {
     return "";
   }
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize =
+    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
 
   // if the field size is not known, size will be calculated on-demand
   if (fieldSize == undefined) {
     // the size function for the field to use in calculating the size on-demand
-    const fieldSizeFn = field.type === "string" ? "builtinSizes.string" : `${typeName}.size`;
+    let fieldSizeFn: string;
+    if (field.isComplex === true) {
+      fieldSizeFn = `${typeName}.size`;
+    } else if (field.type === "string") {
+      fieldSizeFn = "builtinSizes.string";
+    } else {
+      fieldSizeFn = `${typeName}.size`;
+    }
 
     if (field.isArray === true) {
       if (field.arrayLength != undefined) {
@@ -127,7 +135,8 @@ function sizePartForDefinition(className: string, field: MessageDefinitionField)
     return "";
   }
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize =
+    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
   const isFixedArray = field.isArray === true && field.arrayLength != undefined;
 
   if (fieldSize != undefined && (isFixedArray || field.isArray === false)) {
@@ -163,8 +172,10 @@ function getterFunction(field: MessageDefinitionField, typeName: string): string
     return "";
   }
 
-  const isBuiltinReader = Object.prototype.hasOwnProperty.call(deserializers, field.type);
-  const isBuiltinSize = Object.prototype.hasOwnProperty.call(builtinSizes, field.type);
+  const isBuiltinReader =
+    field.isComplex !== true && Object.prototype.hasOwnProperty.call(deserializers, field.type);
+  const isBuiltinSize =
+    field.isComplex !== true && Object.prototype.hasOwnProperty.call(builtinSizes, field.type);
 
   // function to return a read array item
   const readerFn = isBuiltinReader ? `deserializers.${field.type}` : `${typeName}.build`;
@@ -172,7 +183,8 @@ function getterFunction(field: MessageDefinitionField, typeName: string): string
   // function to return size of individual array item
   const sizeFn = isBuiltinSize ? `builtinSizes.${field.type}` : `${typeName}.size`;
 
-  const fieldSize = fixedSizeTypes.get(field.type as FixedSizeTypes);
+  const fieldSize =
+    field.isComplex === true ? undefined : fixedSizeTypes.get(field.type as FixedSizeTypes);
 
   if (field.isArray === true) {
     const arrLen = field.arrayLength;
@@ -181,7 +193,7 @@ function getterFunction(field: MessageDefinitionField, typeName: string): string
       if (fieldSize != undefined) {
         return `
           // ${field.type}[${arrLen}] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.${field.type}Array(this.#view, offset, ${arrLen});
           }`;
@@ -189,7 +201,7 @@ function getterFunction(field: MessageDefinitionField, typeName: string): string
         // fixed size array of complex size items
         return `
         // ${field.type}[${arrLen}] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.fixedArray(this.#view, offset, ${arrLen}, ${readerFn}, ${sizeFn});
           }`;
@@ -199,7 +211,7 @@ function getterFunction(field: MessageDefinitionField, typeName: string): string
       if (fieldSize != undefined) {
         return `
           // ${field.type}[] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             const len = this.#view.getUint32(offset, true);
             return deserializers.${field.type}Array(this.#view, offset + 4, len);
@@ -207,14 +219,14 @@ function getterFunction(field: MessageDefinitionField, typeName: string): string
       } else {
         return `
           // ${field.type}[] ${field.name}
-          get ${field.name}() {
+          get [${JSON.stringify(field.name)}]() {
             const offset = this.__${field.name}$offset(this.#view, this.#offset);
             return deserializers.dynamicArray(this.#view, offset, ${readerFn}, ${sizeFn});
           }`;
       }
     }
   } else {
-    return `get ${field.name}() {
+    return `get [${JSON.stringify(field.name)}]() {
         const offset = this.__${field.name}$offset(this.#view, this.#offset);
         return ${readerFn}(this.#view, offset);
       }`;
@@ -234,6 +246,13 @@ export default function buildReader(
   definitions: readonly MessageDefinition[],
 ): SerializedMessageReader {
   validateMessageDefinitionsForCodegen(definitions);
+  for (const type of definitions) {
+    for (const field of type.definitions) {
+      if (field.isConstant !== true && (field.name === "toObject" || field.name === "toJSON")) {
+        throw new Error(`ROS field '${field.name}' conflicts with a lazy message method`);
+      }
+    }
+  }
 
   const classes = new Array<string>();
   const rootType = definitions.find((type) => type.name == undefined) ?? definitions[0];
