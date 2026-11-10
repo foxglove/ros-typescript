@@ -6,6 +6,22 @@ import { LazyMessageReader } from "./LazyMessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 describe("LazyReader", () => {
+  it.each(["toObject", "toJSON"])("rejects conflicting field %s in nested types", (name) => {
+    const definitions: MessageDefinition[] = [
+      { definitions: [{ name: "nested", type: "test/Nested", isComplex: true }] },
+      { name: "test/Nested", definitions: [{ name, type: "uint8" }] },
+    ];
+    expect(() => new LazyMessageReader(definitions)).toThrow(
+      `ROS field '${name}' conflicts with a lazy message method`,
+    );
+  });
+
+  it.each(["toObject", "toJSON"])("rejects conflicting root field %s", (name) => {
+    expect(() => new LazyMessageReader(parseMessageDefinition(`uint8 ${name}`))).toThrow(
+      `ROS field '${name}' conflicts with a lazy message method`,
+    );
+  });
+
   it.each(["prototype", "constructor", "class", "let", "eval", "arguments", "Type0"])(
     "reads a complex type named %s without using it as an identifier",
     (name) => {
@@ -28,6 +44,13 @@ describe("LazyReader", () => {
     const message = reader.readMessage(new Uint8Array([1, 2, 3]));
     expect(message.first.x).toBe(1);
     expect(message.second.y).toBe(770);
+  });
+
+  it("reads a field named constructor", () => {
+    const reader = new LazyMessageReader<{ constructor: number }>(
+      parseMessageDefinition("uint8 constructor"),
+    );
+    expect(reader.readMessage(new Uint8Array([7])).constructor).toBe(7);
   });
 
   it("rejects invalid ROS field names before generating lazy readers", () => {

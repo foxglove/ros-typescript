@@ -83,6 +83,14 @@ describe("MessageWriter", () => {
     expect(writer.writeMessage(message)).toEqual(new Uint8Array([1, 2, 3]));
   });
 
+  it.each(["toObject", "toJSON", "constructor"])("preserves the eager field %s", (name) => {
+    const definitions = parseMessageDefinition(`uint8 ${name}`);
+    const message = { [name]: 7 };
+    const bytes = new MessageWriter(definitions).writeMessage(message);
+    expect(bytes).toEqual(new Uint8Array([7]));
+    expect(new MessageReader(definitions).readMessage(bytes)).toEqual(message);
+  });
+
   it("rejects invalid ROS field names before generating writers", () => {
     const globalWithMarker = globalThis as typeof globalThis & {
       rosmsgSerializationWriterInjected?: boolean;

@@ -220,7 +220,7 @@ export const createParsers = ({
       }
       if (def.isArray === true) {
         // detect if typed array
-        const typedArrayType = toTypedArrayType(def.type);
+        const typedArrayType = def.isComplex === true ? undefined : toTypedArrayType(def.type);
         if (typedArrayType != undefined) {
           readerLines.push(
             `this.${def.name} = reader.typedArray(${String(def.arrayLength)}, ${typedArrayType});`,
