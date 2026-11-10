@@ -20,43 +20,59 @@ const PRIMITIVE_TYPES = new Set([
   "json",
 ]);
 
+function assertValidRosFieldName(name: string): void {
+  if (!ROS_FIELD_NAME_PATTERN.test(name)) {
+    throw new Error(
+      `Invalid message definition field name: '${name}' is not a valid ROS field name`,
+    );
+  }
+}
+
+function assertValidRosTypeName(name: string): void {
+  if (!ROS_TYPE_NAME_PATTERN.test(name)) {
+    throw new Error(`Invalid message definition type name: '${name}' is not a valid ROS type name`);
+  }
+}
+
+// Generators interpolate non-complex field types verbatim, so they must be one identifier.
+function assertValidRosPrimitiveTypeName(type: string): void {
+  if (!ROS_FIELD_NAME_PATTERN.test(type)) {
+    throw new Error(
+      `Invalid message definition type name: '${type}' is not a valid ROS primitive type name`,
+    );
+  }
+  if (!PRIMITIVE_TYPES.has(type)) {
+    throw new Error(`Unsupported ROS primitive type '${type}'`);
+  }
+}
+
+function assertValidArrayLength(arrayLength: number | undefined): void {
+  if (arrayLength != undefined && (!Number.isSafeInteger(arrayLength) || arrayLength < 0)) {
+    throw new Error(
+      `Invalid message definition array length: '${String(arrayLength)}' is not a non-negative integer`,
+    );
+  }
+}
+
 export function validateMessageDefinitionsForCodegen(
   definitions: readonly MessageDefinition[],
 ): void {
   for (const type of definitions) {
-    if (type.name != undefined && !ROS_TYPE_NAME_PATTERN.test(type.name)) {
-      throw new Error(
-        `Invalid message definition type name: '${type.name}' is not a valid ROS type name`,
-      );
+    if (type.name != undefined) {
+      assertValidRosTypeName(type.name);
     }
     for (const field of type.definitions) {
       if (field.isConstant === true) {
         continue;
       }
-      if (!ROS_FIELD_NAME_PATTERN.test(field.name)) {
-        throw new Error(
-          `Invalid message definition field name: '${field.name}' is not a valid ROS field name`,
-        );
-      }
+
+      assertValidRosFieldName(field.name);
       if (field.isComplex === true) {
-        if (!ROS_TYPE_NAME_PATTERN.test(field.type)) {
-          throw new Error(
-            `Invalid message definition type name: '${field.type}' is not a valid ROS type name`,
-          );
-        }
-      } else if (!ROS_FIELD_NAME_PATTERN.test(field.type)) {
-        throw new Error(
-          `Invalid message definition type name: '${field.type}' is not a valid ROS primitive type name`,
-        );
-      } else if (!PRIMITIVE_TYPES.has(field.type)) {
-        throw new Error(`Unsupported ROS primitive type '${field.type}'`);
+        assertValidRosTypeName(field.type);
+      } else {
+        assertValidRosPrimitiveTypeName(field.type);
       }
-      const { arrayLength } = field;
-      if (arrayLength != undefined && (!Number.isSafeInteger(arrayLength) || arrayLength < 0)) {
-        throw new Error(
-          `Invalid message definition array length: '${String(arrayLength)}' is not a non-negative integer`,
-        );
-      }
+      assertValidArrayLength(field.arrayLength);
     }
   }
 }
