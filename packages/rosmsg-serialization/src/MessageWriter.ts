@@ -9,6 +9,7 @@
 
 import { MessageDefinition, MessageDefinitionField } from "@foxglove/message-definition";
 
+import { resolveMessageDefinition } from "./resolveMessageDefinition";
 import { stringLengthUtf8 } from "./stringLengthUtf8";
 import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
@@ -199,32 +200,6 @@ class StandardTypeWriter {
   }
 }
 
-const findTypeByName = (types: MessageDefinition[], name = ""): NamedRosMsgDefinition => {
-  let foundName = ""; // track name separately in a non-null variable to appease Flow
-  const matches = types.filter((type) => {
-    const typeName = type.name ?? "";
-    // if the search is empty, return unnamed types
-    if (name.length === 0) {
-      return typeName.length === 0;
-    }
-    // return if the search is in the type name
-    // or matches exactly if a fully-qualified name match is passed to us
-    const nameEnd = name.includes("/") ? name : `/${name}`;
-    if (typeName.endsWith(nameEnd)) {
-      foundName = typeName;
-      return true;
-    }
-    return false;
-  });
-  if (matches.length !== 1) {
-    throw new Error(
-      `Expected 1 top level type definition for '${name}' but found ${matches.length}.`,
-    );
-  }
-  return { ...matches[0]!, name: foundName };
-};
-
-const friendlyName = (name: string): string => name.replace(/\//g, "_");
 type WriterAndSizeCalculator = {
   writer: (message: unknown, output: Uint8Array) => Uint8Array;
   byteSizeCalculator: (message: unknown) => number;
@@ -274,17 +249,17 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
         lines.push(`for (var i = 0; i < ${lenField}; i++) {`);
         // if the sub type is complex we need to allocate it and parse its values
         if (def.isComplex ?? false) {
-          const defType = findTypeByName(types, def.type);
+          const defType = resolveMessageDefinition(types, def.type);
           // recursively call the function for the sub-type
-          lines.push(`  ${friendlyName(defType.name)}(${argName}, ${accessMessageField}[i]);`);
+          lines.push(`  Type${types.indexOf(defType)}(${argName}, ${accessMessageField}[i]);`);
         } else {
           // if the subtype is not complex its a simple low-level operation
           lines.push(`  ${argName}.${def.type}(${accessMessageField}[i]);`);
         }
         lines.push("}"); // close the for-loop
       } else if (def.isComplex ?? false) {
-        const defType = findTypeByName(types, def.type);
-        lines.push(`${friendlyName(defType.name)}(${argName}, ${accessMessageField});`);
+        const defType = resolveMessageDefinition(types, def.type);
+        lines.push(`Type${types.indexOf(defType)}(${argName}, ${accessMessageField});`);
       } else {
         // Call primitives directly.
         lines.push(`${argName}.${def.type}(${accessMessageField});`);
@@ -298,11 +273,11 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
 
   namedTypes.forEach((t) => {
     writerJs += `
-  function ${friendlyName(t.name)}(writer, message) {
+  function Type${types.indexOf(t)}(writer, message) {
     ${constructorBody(t, "writer")}
   };\n`;
     calculateSizeJs += `
-  function ${friendlyName(t.name)}(offsetCalculator, message) {
+  function Type${types.indexOf(t)}(offsetCalculator, message) {
     ${constructorBody(t, "offsetCalculator")}
   };\n`;
   });
