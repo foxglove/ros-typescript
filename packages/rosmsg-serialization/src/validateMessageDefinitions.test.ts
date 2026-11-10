@@ -14,6 +14,7 @@ describe.each([MessageReader, LazyMessageReader, MessageWriter])(
       "hasOwnProperty",
       "typedArray",
       "fixedArray",
+      "json",
       "bogus",
     ])("rejects unsupported primitive %s", (type) => {
       const definitions: MessageDefinition[] = [{ definitions: [{ name: "data", type }] }];

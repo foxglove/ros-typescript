@@ -17,7 +17,6 @@ const PRIMITIVE_TYPES = new Set([
   "string",
   "time",
   "duration",
-  "json",
 ]);
 
 function assertValidRosFieldName(name: string): void {

@@ -41,11 +41,6 @@ class StandardTypeOffsetCalculator {
     return offset;
   }
 
-  // These are not actually used in the StandardTypeWriter, so they must be kept in sync with those implementations.
-  json(value: unknown): number {
-    return this.string(JSON.stringify(value));
-  }
-
   // The following are used in the StandardTypeWriter.
   string(value: string): number {
     // uint32 length
@@ -122,10 +117,6 @@ class StandardTypeWriter {
     this.data = data;
     this.view = new DataView(data.buffer, data.byteOffset, data.byteLength);
     this.offsetCalculator = new StandardTypeOffsetCalculator();
-  }
-
-  json(value: unknown): void {
-    this.string(JSON.stringify(value));
   }
 
   string(value: string): void {

@@ -45,15 +45,6 @@ export class StandardTypeReader {
     this.view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
   }
 
-  json(): unknown {
-    const resultString = this.string();
-    try {
-      return JSON.parse(resultString);
-    } catch {
-      return `Could not parse ${resultString}`;
-    }
-  }
-
   string(): string {
     const len = this.uint32();
     const totalOffset = this.view.byteOffset + this.offset;
