@@ -10,6 +10,7 @@
 import { MessageDefinition } from "@foxglove/message-definition";
 
 import decodeString from "./decodeString";
+import { resolveMessageDefinition } from "./resolveMessageDefinition";
 import { validateMessageDefinitionsForCodegen } from "./validateMessageDefinitions";
 
 type TypedArray =
@@ -42,15 +43,6 @@ export class StandardTypeReader {
     this.buffer = buffer;
     this.offset = 0;
     this.view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-  }
-
-  json(): unknown {
-    const resultString = this.string();
-    try {
-      return JSON.parse(resultString);
-    } catch {
-      return `Could not parse ${resultString}`;
-    }
   }
 
   string(): string {
@@ -165,33 +157,6 @@ export class StandardTypeReader {
   }
 }
 
-const findTypeByName = (types: readonly MessageDefinition[], name = ""): NamedMessageDefinition => {
-  let foundName = ""; // track name separately in a non-null variable to appease Flow
-  const matches = types.filter((type) => {
-    const typeName = type.name ?? "";
-    // if the search is empty, return unnamed types
-    if (!name) {
-      return !typeName;
-    }
-    // return if the search is in the type name
-    // or matches exactly if a fully-qualified name match is passed to us
-    const nameEnd = name.includes("/") ? name : `/${name}`;
-    if (typeName.endsWith(nameEnd)) {
-      foundName = typeName;
-      return true;
-    }
-    return false;
-  });
-  if (matches.length !== 1) {
-    throw new Error(
-      `Expected 1 top level type definition for '${name}' but found ${matches.length}.`,
-    );
-  }
-  return { ...matches[0]!, name: foundName };
-};
-
-const friendlyName = (name: string) => name.replace(/\//g, "_");
-
 type NamedMessageDefinition = MessageDefinition & { name: string };
 
 function toTypedArrayType(rosType: string): string | undefined {
@@ -277,17 +242,21 @@ export const createParsers = ({
         readerLines.push(`for (var i = 0; i < ${lenField}; i++) {`);
         // if the sub type is complex we need to allocate it and parse its values
         if (def.isComplex === true) {
-          const defType = findTypeByName(definitions, def.type);
+          const defType = resolveMessageDefinition(definitions, def.type);
           // recursively call the constructor for the sub-type
-          readerLines.push(`  ${arrayName}[i] = new Record.${friendlyName(defType.name)}(reader);`);
+          readerLines.push(
+            `  ${arrayName}[i] = new Record.Type${definitions.indexOf(defType)}(reader);`,
+          );
         } else {
           // if the subtype is not complex its a simple low-level reader operation
           readerLines.push(`  ${arrayName}[i] = reader.${def.type}();`);
         }
         readerLines.push("}"); // close the for-loop
       } else if (def.isComplex === true) {
-        const defType = findTypeByName(definitions, def.type);
-        readerLines.push(`this.${def.name} = new Record.${friendlyName(defType.name)}(reader);`);
+        const defType = resolveMessageDefinition(definitions, def.type);
+        readerLines.push(
+          `this.${def.name} = new Record.Type${definitions.indexOf(defType)}(reader);`,
+        );
       } else {
         readerLines.push(`this.${def.name} = reader.${def.type}();`);
       }
@@ -308,10 +277,10 @@ export const createParsers = ({
 
   for (const type of namedTypes) {
     js += `
-  Record.${friendlyName(type.name)} = function(reader) {
+  Record.Type${definitions.indexOf(type)} = function(reader) {
     ${constructorBody(type)}
   };
-  builtReaders.set(${JSON.stringify(type.name)}, Record.${friendlyName(type.name)});
+  builtReaders.set(${JSON.stringify(type.name)}, Record.Type${definitions.indexOf(type)});
   `;
   }
 

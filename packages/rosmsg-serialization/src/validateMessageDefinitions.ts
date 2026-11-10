@@ -1,9 +1,23 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 
 const ROS_FIELD_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
-// Named types and complex field types are interpolated into generated code after replacing "/"
-// with "_", so they must reduce to a single identifier.
 const ROS_TYPE_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_/]*$/;
+const PRIMITIVE_TYPES = new Set([
+  "bool",
+  "int8",
+  "uint8",
+  "int16",
+  "uint16",
+  "int32",
+  "uint32",
+  "int64",
+  "uint64",
+  "float32",
+  "float64",
+  "string",
+  "time",
+  "duration",
+]);
 
 function assertValidRosFieldName(name: string): void {
   if (!ROS_FIELD_NAME_PATTERN.test(name)) {
@@ -25,6 +39,9 @@ function assertValidRosPrimitiveTypeName(type: string): void {
     throw new Error(
       `Invalid message definition type name: '${type}' is not a valid ROS primitive type name`,
     );
+  }
+  if (!PRIMITIVE_TYPES.has(type)) {
+    throw new Error(`Unsupported ROS primitive type '${type}'`);
   }
 }
 
