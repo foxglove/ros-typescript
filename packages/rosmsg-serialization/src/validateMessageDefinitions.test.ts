@@ -21,6 +21,28 @@ describe.each([MessageReader, LazyMessageReader, MessageWriter])(
       expect(() => new Reader(definitions)).toThrow(`Unsupported ROS primitive type '${type}'`);
     });
 
+    it("rejects duplicate named definitions", () => {
+      const definitions = [
+        { definitions: [] },
+        { name: "test/Value", definitions: [] },
+        { name: "test/Value", definitions: [] },
+      ];
+      expect(() => new Reader(definitions)).toThrow("Duplicate ROS type 'test/Value'");
+    });
+
+    it("rejects unresolved complex types in unused definitions", () => {
+      const definitions = [
+        { definitions: [] },
+        {
+          name: "test/Unused",
+          definitions: [{ name: "value", type: "test/Missing", isComplex: true }],
+        },
+      ];
+      expect(() => new Reader(definitions)).toThrow(
+        "Expected 1 top level type definition for 'test/Missing' but found 0",
+      );
+    });
+
     it("rejects ambiguous short type names", () => {
       const definitions = [
         { definitions: [{ name: "value", type: "Value", isComplex: true }] },

@@ -1,5 +1,7 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 
+import { resolveMessageDefinition } from "./resolveMessageDefinition";
+
 const ROS_FIELD_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
 const ROS_TYPE_NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_/]*$/;
 const PRIMITIVE_TYPES = new Set([
@@ -56,6 +58,15 @@ function assertValidArrayLength(arrayLength: number | undefined): void {
 export function validateMessageDefinitionsForCodegen(
   definitions: readonly MessageDefinition[],
 ): void {
+  const names = new Set<string | undefined>();
+  for (const type of definitions) {
+    if (names.has(type.name)) {
+      throw new Error(
+        type.name == undefined ? "multiple unnamed types" : `Duplicate ROS type '${type.name}'`,
+      );
+    }
+    names.add(type.name);
+  }
   for (const type of definitions) {
     if (type.name != undefined) {
       assertValidRosTypeName(type.name);
@@ -68,6 +79,7 @@ export function validateMessageDefinitionsForCodegen(
       assertValidRosFieldName(field.name);
       if (field.isComplex === true) {
         assertValidRosTypeName(field.type);
+        resolveMessageDefinition(definitions, field.type);
       } else {
         assertValidRosPrimitiveTypeName(field.type);
       }

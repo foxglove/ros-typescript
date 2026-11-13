@@ -157,33 +157,53 @@ export class StandardTypeReader {
   }
 }
 
-type NamedMessageDefinition = MessageDefinition & { name: string };
+type RecordConstructor = new (reader: StandardTypeReader) => unknown;
+type ValueReader = (reader: StandardTypeReader) => unknown;
+type FieldReader = { name: string; read: ValueReader };
 
-function toTypedArrayType(rosType: string): string | undefined {
-  switch (rosType) {
-    case "int8":
-      return "Int8Array";
-    case "uint8":
-      return "Uint8Array";
-    case "int16":
-      return "Int16Array";
-    case "uint16":
-      return "Uint16Array";
-    case "int32":
-      return "Int32Array";
-    case "uint32":
-      return "Uint32Array";
-    case "int64":
-      return "BigInt64Array";
-    case "uint64":
-      return "BigUint64Array";
-    case "float32":
-      return "Float32Array";
-    case "float64":
-      return "Float64Array";
-    default:
-      return undefined;
+const primitiveReaders = new Map<string, ValueReader>([
+  ["string", (reader) => reader.string()],
+  ["bool", (reader) => reader.bool()],
+  ["int8", (reader) => reader.int8()],
+  ["uint8", (reader) => reader.uint8()],
+  ["int16", (reader) => reader.int16()],
+  ["uint16", (reader) => reader.uint16()],
+  ["int32", (reader) => reader.int32()],
+  ["uint32", (reader) => reader.uint32()],
+  ["int64", (reader) => reader.int64()],
+  ["uint64", (reader) => reader.uint64()],
+  ["float32", (reader) => reader.float32()],
+  ["float64", (reader) => reader.float64()],
+  ["time", (reader) => reader.time()],
+  ["duration", (reader) => reader.duration()],
+]);
+
+const typedArrayConstructors = new Map<string, TypedArrayConstructor>([
+  ["int8", Int8Array],
+  ["uint8", Uint8Array],
+  ["int16", Int16Array],
+  ["uint16", Uint16Array],
+  ["int32", Int32Array],
+  ["uint32", Uint32Array],
+  ["int64", BigInt64Array],
+  ["uint64", BigUint64Array],
+  ["float32", Float32Array],
+  ["float64", Float64Array],
+]);
+
+function createRecordClass(
+  fields: readonly FieldReader[],
+  options: { freeze?: boolean },
+): RecordConstructor {
+  function MessageRecord(this: Record<string, unknown>, reader: StandardTypeReader) {
+    for (const field of fields) {
+      this[field.name] = field.read(reader);
+    }
+    if (options.freeze === true) {
+      Object.freeze(this);
+    }
   }
+  return MessageRecord as unknown as RecordConstructor;
 }
 
 export const createParsers = ({
@@ -196,101 +216,60 @@ export const createParsers = ({
   topLevelReaderKey: string;
 }): Map<string, new (reader: StandardTypeReader) => unknown> => {
   if (definitions.length === 0) {
-    throw new Error(`no types given`);
+    throw new Error("no types given");
   }
   validateMessageDefinitionsForCodegen(definitions);
-
-  const unnamedTypes = definitions.filter((type) => !type.name);
-  if (unnamedTypes.length > 1) {
-    throw new Error("multiple unnamed types");
+  const rootType = definitions.find((type) => type.name == undefined) ?? definitions[0]!;
+  const typeFields = new Map<MessageDefinition, FieldReader[]>();
+  const constructors = new Map<MessageDefinition, RecordConstructor>();
+  for (const type of definitions) {
+    const fields: FieldReader[] = [];
+    typeFields.set(type, fields);
+    constructors.set(type, createRecordClass(fields, { freeze: options.freeze }));
   }
-
-  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : definitions[0]!;
-
-  // keep only definitions with a name
-  const namedTypes: NamedMessageDefinition[] = definitions.filter(
-    (type) => !!type.name,
-  ) as NamedMessageDefinition[];
-
-  const constructorBody = (type: MessageDefinition | NamedMessageDefinition) => {
-    const readerLines: string[] = [];
-    type.definitions.forEach((def) => {
-      if (def.isConstant === true) {
-        return;
+  for (const type of definitions) {
+    const fields = typeFields.get(type)!;
+    for (const field of type.definitions) {
+      if (field.isConstant === true) {
+        continue;
       }
-      if (def.isArray === true) {
-        // detect if typed array
-        const typedArrayType = toTypedArrayType(def.type);
-        if (typedArrayType != undefined) {
-          readerLines.push(
-            `this.${def.name} = reader.typedArray(${String(def.arrayLength)}, ${typedArrayType});`,
-          );
-          return;
-        }
-
-        const lenField = `length_${def.name}`;
-        // set a variable pointing to the parsed fixed array length
-        // or read the byte indicating the dynamic length
-        readerLines.push(`var ${lenField} = ${def.arrayLength ?? "reader.uint32();"}`);
-
-        // only allocate an array if there is a length - skips empty allocations
-        const arrayName = `this.${def.name}`;
-
-        // allocate the new array to a fixed length since we know it ahead of time
-        readerLines.push(`${arrayName} = new Array(${lenField})`);
-        // start the for-loop
-        readerLines.push(`for (var i = 0; i < ${lenField}; i++) {`);
-        // if the sub type is complex we need to allocate it and parse its values
-        if (def.isComplex === true) {
-          const defType = resolveMessageDefinition(definitions, def.type);
-          // recursively call the constructor for the sub-type
-          readerLines.push(
-            `  ${arrayName}[i] = new Record.Type${definitions.indexOf(defType)}(reader);`,
-          );
-        } else {
-          // if the subtype is not complex its a simple low-level reader operation
-          readerLines.push(`  ${arrayName}[i] = reader.${def.type}();`);
-        }
-        readerLines.push("}"); // close the for-loop
-      } else if (def.isComplex === true) {
-        const defType = resolveMessageDefinition(definitions, def.type);
-        readerLines.push(
-          `this.${def.name} = new Record.Type${definitions.indexOf(defType)}(reader);`,
-        );
+      let readElement: ValueReader;
+      if (field.isComplex === true) {
+        const Constructor = constructors.get(resolveMessageDefinition(definitions, field.type))!;
+        readElement = (reader) => new Constructor(reader);
       } else {
-        readerLines.push(`this.${def.name} = reader.${def.type}();`);
+        readElement = primitiveReaders.get(field.type)!;
       }
-    });
-    if (options.freeze === true) {
-      readerLines.push("Object.freeze(this);");
+      let read = readElement;
+      if (field.isArray === true) {
+        const fixedLength = field.arrayLength;
+        const TypedArrayType =
+          field.isComplex === true ? undefined : typedArrayConstructors.get(field.type);
+        if (TypedArrayType != undefined) {
+          read = (reader) => reader.typedArray(fixedLength, TypedArrayType);
+        } else {
+          read = (reader) => {
+            const length = fixedLength ?? reader.uint32();
+            const values = new Array<unknown>(length);
+            for (let index = 0; index < length; index++) {
+              values[index] = readElement(reader);
+            }
+            return values;
+          };
+        }
+      }
+      fields.push({ name: field.name, read });
     }
-    return readerLines.join("\n    ");
-  };
-
-  let js = `
-  const builtReaders = new Map();
-  var Record = function (reader) {
-    ${constructorBody(unnamedType)}
-  };
-  builtReaders.set(topLevelReaderKey, Record);
-  `;
-
-  for (const type of namedTypes) {
-    js += `
-  Record.Type${definitions.indexOf(type)} = function(reader) {
-    ${constructorBody(type)}
-  };
-  builtReaders.set(${JSON.stringify(type.name)}, Record.Type${definitions.indexOf(type)});
-  `;
   }
-
-  js += `return builtReaders;`;
-
-  // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func, @typescript-eslint/no-unsafe-call
-  return new Function("topLevelReaderKey", js)(topLevelReaderKey) as Map<
-    string,
-    new (reader: StandardTypeReader) => unknown
-  >;
+  const builtReaders = new Map<string, RecordConstructor>([
+    [topLevelReaderKey, constructors.get(rootType)!],
+  ]);
+  for (const type of definitions) {
+    if (type.name != undefined) {
+      builtReaders.set(type.name, constructors.get(type)!);
+    }
+  }
+  return builtReaders;
 };
 
 export class MessageReader {
