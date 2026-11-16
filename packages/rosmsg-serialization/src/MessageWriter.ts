@@ -287,15 +287,15 @@ function createWriterAndSizeCalculator(types: MessageDefinition[]): WriterAndSiz
   let write: (writer: StandardTypeWriter, message: unknown) => Uint8Array;
   let calculateSize: (offsetCalculator: StandardTypeOffsetCalculator, message: unknown) => number;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,no-eval
-    write = eval(`(function buildWriter() { ${writerJs} })()`);
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func, @typescript-eslint/no-unsafe-call -- generated code references only its own arguments and declared functions
+    write = new Function(writerJs)() as typeof write;
   } catch (e) {
     console.error("error building writer:", writerJs);
     throw e;
   }
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,no-eval
-    calculateSize = eval(`(function buildSizeCalculator() { ${calculateSizeJs} })()`);
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func, @typescript-eslint/no-unsafe-call -- generated code references only its own arguments and declared functions
+    calculateSize = new Function(calculateSizeJs)() as typeof calculateSize;
   } catch (e) {
     console.error("error building size calculator:", calculateSizeJs);
     throw e;
