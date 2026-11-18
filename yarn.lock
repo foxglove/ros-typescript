@@ -4358,15 +4358,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-file-progress@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "eslint-plugin-file-progress@npm:3.0.2"
+"eslint-plugin-file-progress@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "eslint-plugin-file-progress@npm:4.0.0"
   dependencies:
-    nanospinner: "npm:^1.2.0"
+    nanospinner: "npm:^1.2.2"
     picocolors: "npm:^1.1.1"
   peerDependencies:
-    eslint: ^9.0.0
-  checksum: 10c0/d384ce86688bb456dfe5bf75328325c3cb14e95d693b926802f0ef16e182c37c5a1db1c1c84081d3336dfbaf5007fbc849ebbdd0cc9c4c0daf1f42dd3469ec71
+    eslint: ^10.0.0
+  checksum: 10c0/930a154f9b64f8fd5d5d9bb5420f5c76f8ddd28917c50e28b1c851061106cee4fc52a76f85e867afebb21a9a5d1948c2066db0c165c1b74dd38e226efbaaf5e3
   languageName: node
   linkType: hard
 
@@ -7422,7 +7422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanospinner@npm:^1.2.0":
+"nanospinner@npm:^1.2.2":
   version: 1.2.2
   resolution: "nanospinner@npm:1.2.2"
   dependencies:
@@ -8315,7 +8315,7 @@ __metadata:
     "@foxglove/tsconfig": "npm:^3.1.0"
     "@types/jest": "npm:^30.0.0"
     eslint: "npm:^9.31.0"
-    eslint-plugin-file-progress: "npm:^3.0.2"
+    eslint-plugin-file-progress: "npm:^4.0.0"
     jest: "npm:^30.0.3"
     prettier: "npm:^3.6.2"
     rimraf: "npm:^6.0.1"
