@@ -10,7 +10,7 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
-import { MessageReader } from "./MessageReader";
+import { createParsers, MessageReader, StandardTypeReader } from "./MessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 const getStringBuffer = (str: string) => {
@@ -21,6 +21,33 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
+  it("constructs and reads nested messages with runtime code generation disabled", () => {
+    const definitions = parseMessageDefinition(
+      "test/Value[] values\n===\nMSG: test/Value\nuint8 data",
+    );
+    const functionSpy = jest.spyOn(globalThis, "Function").mockImplementation(() => {
+      throw new Error("Runtime code generation is disabled");
+    });
+    const evalSpy = jest.spyOn(globalThis, "eval").mockImplementation(() => {
+      throw new Error("Runtime code generation is disabled");
+    });
+    try {
+      const reader = new MessageReader(definitions, { freeze: true });
+      const message = reader.readMessage<{ values: { data: number }[] }>(
+        new Uint8Array([2, 0, 0, 0, 7, 9]),
+      );
+      expect(message).toEqual({ values: [{ data: 7 }, { data: 9 }] });
+      expect(Object.isFrozen(message)).toBe(true);
+      expect(Object.isFrozen(message.values[0])).toBe(true);
+      const parsers = createParsers({ definitions, topLevelReaderKey: "root" });
+      const Nested = parsers.get("test/Value")!;
+      expect(new Nested(new StandardTypeReader(new Uint8Array([11])))).toEqual({ data: 11 });
+    } finally {
+      functionSpy.mockRestore();
+      evalSpy.mockRestore();
+    }
+  });
+
   it.each(["prototype", "constructor", "class", "let", "eval", "arguments", "Type0"])(
     "reads a complex type named %s without using it as an identifier",
     (name) => {
