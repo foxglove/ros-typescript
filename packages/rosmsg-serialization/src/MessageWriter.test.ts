@@ -61,6 +61,67 @@ function writeDoubleLE(data: Uint8Array, value: number, offset: number): void {
 }
 
 describe("MessageWriter", () => {
+  it.each([
+    { type: "uint8", values: [257, -1, 3.9], bytes: [1, 255, 3] },
+    { type: "int16", values: [-32769, 65537, -3.9], bytes: [255, 127, 1, 0, 253, 255] },
+    { type: "float32", values: [1.5, -2.25], bytes: [0, 0, 192, 63, 0, 0, 16, 192] },
+    { type: "bool", values: [false, true, false], bytes: [0, 1, 0] },
+    {
+      type: "int64",
+      values: [1, -2n],
+      bytes: [1, 0, 0, 0, 0, 0, 0, 0, 254, 255, 255, 255, 255, 255, 255, 255],
+    },
+  ])("preserves $type array encoding and coercion", ({ type, values, bytes }) => {
+    const writer = new MessageWriter(parseMessageDefinition(`${type}[] values`));
+    const expected = new Uint8Array([values.length, 0, 0, 0, ...bytes]);
+    expect(writer.calculateByteSize({ values })).toBe(expected.byteLength);
+    expect(writer.writeMessage({ values })).toEqual(expected);
+  });
+
+  it("writes a large numeric array into an unaligned output view", () => {
+    const values = Uint16Array.from({ length: 4096 }, (_, index) => index * 17);
+    const writer = new MessageWriter(parseMessageDefinition("uint16[] values"));
+    const expected = new Uint8Array(4 + values.length * 2);
+    expected.set([0, 16, 0, 0]);
+    for (let index = 0; index < values.length; index++) {
+      expected[4 + index * 2] = values[index]! & 255;
+      expected[5 + index * 2] = values[index]! >>> 8;
+    }
+    const backing = new Uint8Array(expected.length + 2).fill(99);
+    const output = backing.subarray(1, -1);
+    expect(writer.calculateByteSize({ values })).toBe(expected.length);
+    expect(writer.writeMessage({ values }, output)).toBe(output);
+    expect(output).toEqual(expected);
+    expect(backing[0]).toBe(99);
+    expect(backing[backing.length - 1]).toBe(99);
+  });
+
+  it("constructs, sizes and writes messages with runtime code generation disabled", () => {
+    const definitions = parseMessageDefinition(
+      "test/Value[] values\n===\nMSG: test/Value\nuint8 data",
+    );
+    const functionSpy = jest.spyOn(globalThis, "Function").mockImplementation(() => {
+      throw new Error("Runtime code generation is disabled");
+    });
+    const evalSpy = jest.spyOn(globalThis, "eval").mockImplementation(() => {
+      throw new Error("Runtime code generation is disabled");
+    });
+    try {
+      const writer = new MessageWriter(definitions);
+      const message = { values: [{ data: 7 }, { data: 9 }] };
+      expect(writer.calculateByteSize(message)).toBe(6);
+      expect(writer.writeMessage(message)).toEqual(new Uint8Array([2, 0, 0, 0, 7, 9]));
+      const backing = new Uint8Array(8).fill(99);
+      expect(writer.writeMessage(message, backing.subarray(1, 7))).toEqual(
+        new Uint8Array([2, 0, 0, 0, 7, 9]),
+      );
+      expect(backing).toEqual(new Uint8Array([99, 2, 0, 0, 0, 7, 9, 99]));
+    } finally {
+      functionSpy.mockRestore();
+      evalSpy.mockRestore();
+    }
+  });
+
   it.each(["prototype", "constructor", "class", "let", "eval", "arguments", "Type0"])(
     "writes a complex type named %s without using it as an identifier",
     (name) => {
