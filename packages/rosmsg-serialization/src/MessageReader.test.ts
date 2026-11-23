@@ -10,7 +10,7 @@
 import type { MessageDefinition } from "@foxglove/message-definition";
 import { parse as parseMessageDefinition } from "@foxglove/rosmsg";
 
-import { MessageReader } from "./MessageReader";
+import { createParsers, MessageReader, StandardTypeReader } from "./MessageReader";
 import messageReaderTests from "./fixtures/messageReaderTests";
 
 const getStringBuffer = (str: string) => {
@@ -21,6 +21,28 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
+  it("decodes through the public parser constructor when string compilation is disabled", () => {
+    const definitions = parseMessageDefinition(
+      "Child child\nuint8 tail\n===\nMSG: pkg/Child\nuint16 n",
+    );
+    const reader = new StandardTypeReader(Uint8Array.of(0, 1, 2, 3));
+    reader.uint8();
+    const compiler = jest.spyOn(globalThis, "Function").mockImplementation(() => {
+      throw new Error("String compilation is disabled");
+    });
+    try {
+      const parsers = createParsers({ definitions, topLevelReaderKey: "root" });
+      const Root = parsers.get("root")!;
+      const result = new Root(reader);
+      expect(result).toEqual({ child: { n: 513 }, tail: 3 });
+      expect(result).toBeInstanceOf(Root);
+      expect(result).toHaveProperty("child", expect.any(parsers.get("pkg/Child")!));
+      expect(reader.offset).toBe(4);
+    } finally {
+      compiler.mockRestore();
+    }
+  });
+
   it.each(["prototype", "constructor", "class", "let", "eval", "arguments", "Type0"])(
     "reads a complex type named %s without using it as an identifier",
     (name) => {

@@ -157,33 +157,68 @@ export class StandardTypeReader {
   }
 }
 
-type NamedMessageDefinition = MessageDefinition & { name: string };
+type RecordData = Record<string, unknown>;
+type Parser = { new (reader: StandardTypeReader): RecordData; prototype: RecordData };
+type Primitive = Exclude<keyof StandardTypeReader, "buffer" | "offset" | "view" | "typedArray">;
+type Layout = {
+  Parser: Parser;
+  fields: {
+    name: string;
+    element: Primitive | Layout;
+    array: boolean;
+    length?: number;
+    typedArray?: TypedArrayConstructor;
+  }[];
+};
 
-function toTypedArrayType(rosType: string): string | undefined {
+function toTypedArrayType(rosType: string): TypedArrayConstructor | undefined {
   switch (rosType) {
     case "int8":
-      return "Int8Array";
+      return Int8Array;
     case "uint8":
-      return "Uint8Array";
+      return Uint8Array;
     case "int16":
-      return "Int16Array";
+      return Int16Array;
     case "uint16":
-      return "Uint16Array";
+      return Uint16Array;
     case "int32":
-      return "Int32Array";
+      return Int32Array;
     case "uint32":
-      return "Uint32Array";
+      return Uint32Array;
     case "int64":
-      return "BigInt64Array";
+      return BigInt64Array;
     case "uint64":
-      return "BigUint64Array";
+      return BigUint64Array;
     case "float32":
-      return "Float32Array";
+      return Float32Array;
     case "float64":
-      return "Float64Array";
+      return Float64Array;
     default:
       return undefined;
   }
+}
+
+function decode(
+  reader: StandardTypeReader,
+  root: Layout,
+  message: RecordData,
+  options: { freeze?: boolean },
+): void {
+  function read(
+    layout: Layout,
+    record = Object.create(layout.Parser.prototype) as RecordData,
+  ): RecordData {
+    for (const { name, element, array, length, typedArray } of layout.fields) {
+      if (typedArray != undefined) {
+        record[name] = reader.typedArray(length, typedArray);
+      } else {
+        const next = () => (typeof element === "string" ? reader[element]() : read(element));
+        record[name] = array ? Array.from({ length: length ?? reader.uint32() }, next) : next();
+      }
+    }
+    return options.freeze === true ? Object.freeze(record) : record;
+  }
+  read(root, message);
 }
 
 export const createParsers = ({
@@ -205,92 +240,43 @@ export const createParsers = ({
     throw new Error("multiple unnamed types");
   }
 
-  const unnamedType = unnamedTypes.length > 0 ? unnamedTypes[0]! : definitions[0]!;
-
-  // keep only definitions with a name
-  const namedTypes: NamedMessageDefinition[] = definitions.filter(
-    (type) => !!type.name,
-  ) as NamedMessageDefinition[];
-
-  const constructorBody = (type: MessageDefinition | NamedMessageDefinition) => {
-    const readerLines: string[] = [];
-    type.definitions.forEach((def) => {
-      if (def.isConstant === true) {
-        return;
-      }
-      if (def.isArray === true) {
-        // detect if typed array
-        const typedArrayType = toTypedArrayType(def.type);
-        if (typedArrayType != undefined) {
-          readerLines.push(
-            `this.${def.name} = reader.typedArray(${String(def.arrayLength)}, ${typedArrayType});`,
-          );
-          return;
-        }
-
-        const lenField = `length_${def.name}`;
-        // set a variable pointing to the parsed fixed array length
-        // or read the byte indicating the dynamic length
-        readerLines.push(`var ${lenField} = ${def.arrayLength ?? "reader.uint32();"}`);
-
-        // only allocate an array if there is a length - skips empty allocations
-        const arrayName = `this.${def.name}`;
-
-        // allocate the new array to a fixed length since we know it ahead of time
-        readerLines.push(`${arrayName} = new Array(${lenField})`);
-        // start the for-loop
-        readerLines.push(`for (var i = 0; i < ${lenField}; i++) {`);
-        // if the sub type is complex we need to allocate it and parse its values
-        if (def.isComplex === true) {
-          const defType = resolveMessageDefinition(definitions, def.type);
-          // recursively call the constructor for the sub-type
-          readerLines.push(
-            `  ${arrayName}[i] = new Record.Type${definitions.indexOf(defType)}(reader);`,
-          );
-        } else {
-          // if the subtype is not complex its a simple low-level reader operation
-          readerLines.push(`  ${arrayName}[i] = reader.${def.type}();`);
-        }
-        readerLines.push("}"); // close the for-loop
-      } else if (def.isComplex === true) {
-        const defType = resolveMessageDefinition(definitions, def.type);
-        readerLines.push(
-          `this.${def.name} = new Record.Type${definitions.indexOf(defType)}(reader);`,
-        );
-      } else {
-        readerLines.push(`this.${def.name} = reader.${def.type}();`);
-      }
-    });
-    if (options.freeze === true) {
-      readerLines.push("Object.freeze(this);");
+  const root = unnamedTypes[0] ?? definitions[0]!;
+  const layouts = new Map<MessageDefinition, Layout>();
+  const recordOptions = { freeze: options.freeze };
+  for (const type of definitions) {
+    function Parse(this: RecordData, reader: StandardTypeReader): void {
+      decode(reader, layout, this, recordOptions);
     }
-    return readerLines.join("\n    ");
-  };
-
-  let js = `
-  const builtReaders = new Map();
-  var Record = function (reader) {
-    ${constructorBody(unnamedType)}
-  };
-  builtReaders.set(topLevelReaderKey, Record);
-  `;
-
-  for (const type of namedTypes) {
-    js += `
-  Record.Type${definitions.indexOf(type)} = function(reader) {
-    ${constructorBody(type)}
-  };
-  builtReaders.set(${JSON.stringify(type.name)}, Record.Type${definitions.indexOf(type)});
-  `;
+    const layout: Layout = { Parser: Parse as typeof Parse & Parser, fields: [] };
+    layouts.set(type, layout);
   }
 
-  js += `return builtReaders;`;
-
-  // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func, @typescript-eslint/no-unsafe-call
-  return new Function("topLevelReaderKey", js)(topLevelReaderKey) as Map<
-    string,
-    new (reader: StandardTypeReader) => unknown
-  >;
+  const parsers = new Map([[topLevelReaderKey, layouts.get(root)!.Parser]]);
+  for (const [type, layout] of layouts) {
+    if (type.name != undefined) {
+      parsers.set(type.name, layout.Parser);
+    }
+    for (const field of type.definitions) {
+      if (field.isConstant === true) {
+        continue;
+      }
+      const element =
+        field.isComplex === true
+          ? layouts.get(resolveMessageDefinition(definitions, field.type))!
+          : (field.type as Primitive);
+      layout.fields.push({
+        name: field.name,
+        element,
+        array: field.isArray === true,
+        length: field.arrayLength,
+        typedArray:
+          field.isArray === true && typeof element === "string"
+            ? toTypedArrayType(element)
+            : undefined,
+      });
+    }
+  }
+  return parsers;
 };
 
 export class MessageReader {
