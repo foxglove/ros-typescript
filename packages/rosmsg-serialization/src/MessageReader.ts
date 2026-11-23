@@ -157,16 +157,13 @@ export class StandardTypeReader {
   }
 }
 
-const readFields = Symbol("readFields");
-interface DecodedRecord {
-  [readFields](decoder: RecordDecoder): void;
-}
+type MessageRecord = Record<string, unknown>;
 type RecordConstructor = {
-  new (reader: StandardTypeReader): DecodedRecord;
-  prototype: DecodedRecord;
+  new (reader: StandardTypeReader): MessageRecord;
+  prototype: MessageRecord;
 };
 type Primitive = Exclude<keyof StandardTypeReader, "buffer" | "view" | "offset" | "typedArray">;
-type RecordType = { fields: Field[]; Parser: RecordConstructor };
+type RecordType = { fields: Field[]; Parser: RecordConstructor; freeze: boolean };
 type Field = {
   name: string;
   element: Primitive | RecordType;
@@ -195,7 +192,16 @@ class RecordDecoder {
     this.#reader = reader;
   }
 
-  read(field: Field): unknown {
+  readRecord(record: MessageRecord, type: RecordType): void {
+    for (const field of type.fields) {
+      record[field.name] = this.#readField(field);
+    }
+    if (type.freeze) {
+      Object.freeze(record);
+    }
+  }
+
+  #readField(field: Field): unknown {
     if (!field.isArray) {
       return this.#readElement(field.element);
     }
@@ -214,8 +220,8 @@ class RecordDecoder {
     if (typeof element === "string") {
       return this.#reader[element]();
     }
-    const nested = Object.create(element.Parser.prototype) as DecodedRecord;
-    nested[readFields](this);
+    const nested = Object.create(element.Parser.prototype) as MessageRecord;
+    this.readRecord(nested, element);
     return nested;
   }
 }
@@ -237,24 +243,15 @@ export const createParsers = ({
   const types = new Map<MessageDefinition, RecordType>();
   const freeze = options.freeze === true;
   for (const type of definitions) {
-    const fields: Field[] = [];
-    class MessageRecord {
-      [name: string]: unknown;
-
-      constructor(reader: StandardTypeReader) {
-        this[readFields](new RecordDecoder(reader));
-      }
-
-      [readFields](decoder: RecordDecoder): void {
-        for (const field of fields) {
-          this[field.name] = decoder.read(field);
-        }
-        if (freeze) {
-          Object.freeze(this);
-        }
-      }
+    function Parser(this: MessageRecord, reader: StandardTypeReader): void {
+      new RecordDecoder(reader).readRecord(this, recordType);
     }
-    types.set(type, { fields, Parser: MessageRecord });
+    const recordType: RecordType = {
+      fields: [],
+      Parser: Parser as typeof Parser & RecordConstructor,
+      freeze,
+    };
+    types.set(type, recordType);
   }
   for (const type of definitions) {
     const { fields } = types.get(type)!;
