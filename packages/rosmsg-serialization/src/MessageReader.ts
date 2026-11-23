@@ -161,23 +161,6 @@ type RecordConstructor = new (reader: StandardTypeReader) => unknown;
 type ValueReader = (reader: StandardTypeReader) => unknown;
 type FieldReader = { name: string; read: ValueReader };
 
-const primitiveReaders = new Map<string, ValueReader>([
-  ["string", (reader) => reader.string()],
-  ["bool", (reader) => reader.bool()],
-  ["int8", (reader) => reader.int8()],
-  ["uint8", (reader) => reader.uint8()],
-  ["int16", (reader) => reader.int16()],
-  ["uint16", (reader) => reader.uint16()],
-  ["int32", (reader) => reader.int32()],
-  ["uint32", (reader) => reader.uint32()],
-  ["int64", (reader) => reader.int64()],
-  ["uint64", (reader) => reader.uint64()],
-  ["float32", (reader) => reader.float32()],
-  ["float64", (reader) => reader.float64()],
-  ["time", (reader) => reader.time()],
-  ["duration", (reader) => reader.duration()],
-]);
-
 const typedArrayConstructors = new Map<string, TypedArrayConstructor>([
   ["int8", Int8Array],
   ["uint8", Uint8Array],
@@ -238,7 +221,10 @@ export const createParsers = ({
         const Constructor = constructors.get(resolveMessageDefinition(definitions, field.type))!;
         readElement = (reader) => new Constructor(reader);
       } else {
-        readElement = primitiveReaders.get(field.type)!;
+        const method = StandardTypeReader.prototype[field.type as keyof StandardTypeReader] as (
+          this: StandardTypeReader,
+        ) => unknown;
+        readElement = (reader) => method.call(reader);
       }
       let read = readElement;
       if (field.isArray === true) {

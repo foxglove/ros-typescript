@@ -21,6 +21,26 @@ const getStringBuffer = (str: string) => {
 };
 
 describe("MessageReader", () => {
+  it("shares one reader and position across nested fields", () => {
+    const definitions = parseMessageDefinition(
+      "uint8 first\ntest/Value[] values\nuint8 last\n===\nMSG: test/Value\nuint8 data",
+    );
+    const readByte = jest.spyOn(StandardTypeReader.prototype, "uint8");
+    try {
+      const parsers = createParsers({ definitions, topLevelReaderKey: "root" });
+      const Root = parsers.get("root")!;
+      const reader = new StandardTypeReader(new Uint8Array([1, 2, 0, 0, 0, 7, 9, 11]));
+      expect(new Root(reader)).toEqual({ first: 1, values: [{ data: 7 }, { data: 9 }], last: 11 });
+      expect(readByte).toHaveBeenCalledTimes(4);
+      for (const context of readByte.mock.contexts) {
+        expect(context).toBe(reader);
+      }
+      expect(reader.offset).toBe(8);
+    } finally {
+      readByte.mockRestore();
+    }
+  });
+
   it("constructs and reads nested messages with runtime code generation disabled", () => {
     const definitions = parseMessageDefinition(
       "test/Value[] values\n===\nMSG: test/Value\nuint8 data",
